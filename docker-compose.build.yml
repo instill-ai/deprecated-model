@@ -1,0 +1,32 @@
+version: "3.9"
+
+services:
+  api_gateway_model:
+    image: ${API_GATEWAY_IMAGE}:${API_GATEWAY_VERSION}
+    build:
+      context: ./api-gateway
+      args:
+        SERVICE_NAME: ${API_GATEWAY_HOST}
+        GOLANG_VERSION: ${GOLANG_VERSION}
+        ALPINE_VERSION: ${ALPINE_VERSION}
+        KRAKEND_CE_VERSION: ${KRAKEND_CE_VERSION}
+
+  model_backend:
+    image: ${MODEL_BACKEND_IMAGE}:${MODEL_BACKEND_VERSION}
+    build:
+      context: ./${MODEL_BACKEND_HOST}
+      args:
+        SERVICE_NAME: ${MODEL_BACKEND_HOST}
+        GOLANG_VERSION: ${GOLANG_VERSION}
+        K6_VERSION: ${K6_VERSION}
+        UBUNTU_VERSION: ${UBUNTU_VERSION}
+        ARTIVC_VERSION: ${ARTIVC_VERSION}
+
+  controller_model:
+    image: ${CONTROLLER_MODEL_IMAGE}:${CONTROLLER_MODEL_VERSION}
+    build:
+      context: ./${CONTROLLER_MODEL_HOST}
+      args:
+        SERVICE_NAME: ${CONTROLLER_MODEL_HOST}
+        GOLANG_VERSION: ${GOLANG_VERSION}
+        K6_VERSION: ${K6_VERSION}

@@ -1,0 +1,76 @@
+version: "3.9"
+
+services:
+  api_gateway_model:
+    profiles:
+      - all
+      - model
+      - controller
+    image: ${API_GATEWAY_IMAGE}:latest
+    environment:
+      API_GATEWAY_LOG_LEVEL: DEBUG
+
+  model_backend_migrate:
+    profiles:
+      - all
+      - api-gateway
+      - controller
+    image: ${MODEL_BACKEND_IMAGE}:latest
+
+  model_backend_init:
+    profiles:
+      - all
+      - api-gateway
+      - controller
+    image: ${MODEL_BACKEND_IMAGE}:latest
+
+  model_backend_worker:
+    profiles:
+      - all
+      - api-gateway
+      - controller
+    image: ${MODEL_BACKEND_IMAGE}:latest
+    environment:
+      CFG_SERVER_DEBUG: "true"
+
+  model_backend:
+    profiles:
+      - all
+      - api-gateway
+      - controller
+    image: ${MODEL_BACKEND_IMAGE}:latest
+    environment:
+      CFG_SERVER_DEBUG: "true"
+      CFG_SERVER_EDITION: ${EDITION}
+    ports:
+      - ${MODEL_BACKEND_PRIVATEPORT}:${MODEL_BACKEND_PRIVATEPORT}
+      - ${MODEL_BACKEND_PUBLICPORT}:${MODEL_BACKEND_PUBLICPORT}
+
+  model_backend_init_model:
+    profiles:
+      - all
+      - api-gateway
+      - controller
+    image: ${MODEL_BACKEND_IMAGE}:latest
+    environment:
+      CFG_INITMODEL_ENABLED: ${INITMODEL_ENABLED}
+      CFG_INITMODEL_PATH: https://raw.githubusercontent.com/instill-ai/vdp/main/model-hub/model_hub_cpu.json
+
+  controller_model:
+    profiles:
+      - all
+      - api-gateway
+      - model
+    image: ${CONTROLLER_MODEL_IMAGE}:latest
+    environment:
+      CFG_SERVER_DEBUG: "true"
+      CFG_SERVER_EDITION: ${EDITION}
+    ports:
+      - ${CONTROLLER_MODEL_PRIVATEPORT}:${CONTROLLER_MODEL_PRIVATEPORT}
+
+  triton_conda_env:
+    image: instill/triton-conda-env:latest-${TRITON_CONDA_ENV_PLATFORM}
+
+  triton_server:
+    ports:
+      - ${TRITON_SERVER_PORT}:8001
