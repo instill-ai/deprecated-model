@@ -51,8 +51,8 @@ all:			## Launch all services with their up-to-date release version
 		-v $${TMP_CONFIG_DIR}:$${TMP_CONFIG_DIR} \
 		--name ${BASE_DOCKER_COMPOSE_NAME}-release \
 		${CONTAINER_COMPOSE_IMAGE_NAME}:release /bin/bash -c " \
-			cp -r /model/base/configs/* $${TMP_CONFIG_DIR} && \
-			/bin/bash -c 'cd base && make latest PROFILE=all OBSERVE_ENABLED=${OBSERVE_ENABLED} OBSERVE_CONFIG_PATH=$${TMP_CONFIG_DIR}' \
+			cp -r /instill-ai/base/configs/* $${TMP_CONFIG_DIR} && \
+			/bin/bash -c 'cd /instill-ai/base && make all EDITION=local-ce OBSERVE_ENABLED=${OBSERVE_ENABLED} OBSERVE_CONFIG_DIR_PATH=$${TMP_CONFIG_DIR}' \
 		" && rm -r $${TMP_CONFIG_DIR}
 ifeq (${NVIDIA_GPU_AVAILABLE}, true)
 	@docker inspect --type=image instill/tritonserver:${TRITON_SERVER_VERSION} >/dev/null 2>&1 || printf "\033[1;33mINFO:\033[0m This may take a while due to the enormous size of the Triton server image, but the image pulling process should be just a one-time effort.\n" && sleep 5
@@ -72,8 +72,8 @@ latest:			## Lunch all dependent services with their latest codebase
 		-v $${TMP_CONFIG_DIR}:$${TMP_CONFIG_DIR} \
 		--name ${BASE_DOCKER_COMPOSE_NAME}-latest \
 		${CONTAINER_COMPOSE_IMAGE_NAME}:latest /bin/bash -c " \
-			cp -r /model/base/configs/* $${TMP_CONFIG_DIR} && \
-			/bin/bash -c 'cd base && make latest PROFILE=all OBSERVE_ENABLED=${OBSERVE_ENABLED} OBSERVE_CONFIG_PATH=$${TMP_CONFIG_DIR}' \
+			cp -r /instill-ai/base/configs/* $${TMP_CONFIG_DIR} && \
+			/bin/bash -c 'cd /instill-ai/base && make latest EDITION=local-ce:latest PROFILE=$(PROFILE) OBSERVE_ENABLED=${OBSERVE_ENABLED} OBSERVE_CONFIG_DIR_PATH=$${TMP_CONFIG_DIR}' \
 		" && rm -r $${TMP_CONFIG_DIR}
 ifeq (${NVIDIA_GPU_AVAILABLE}, true)
 	@docker inspect --type=image instill/tritonserver:${TRITON_SERVER_VERSION} >/dev/null 2>&1 || printf "\033[1;33mINFO:\033[0m This may take a while due to the enormous size of the Triton server image, but the image pulling process should be just a one-time effort.\n" && sleep 5
@@ -124,7 +124,11 @@ down:			## Stop all services and remove all service containers and volumes
 	@docker rm -f ${CONTAINER_BACKEND_INTEGRATION_TEST_NAME}-helm-release >/dev/null 2>&1
 	@docker rm -f ${CONTAINER_CONSOLE_INTEGRATION_TEST_NAME}-helm-latest >/dev/null 2>&1
 	@docker compose -f docker-compose.yml -f docker-compose.observe.yml down -v
-	@docker run -it --rm -v /var/run/docker.sock:/var/run/docker.sock --name ${BASE_DOCKER_COMPOSE_NAME} ${CONTAINER_COMPOSE_IMAGE_NAME}:latest /bin/bash -c "/bin/bash -c 'cd base && make down'"
+	@docker run -it --rm \
+		-v /var/run/docker.sock:/var/run/docker.sock \
+		--name ${BASE_DOCKER_COMPOSE_NAME} ${CONTAINER_COMPOSE_IMAGE_NAME}:latest /bin/bash -c " \
+			/bin/bash -c 'cd /instill-ai/base && make down' \
+		"
 	@docker rm -f ${BASE_DOCKER_COMPOSE_NAME}-latest >/dev/null 2>&1
 	@docker rm -f ${BASE_DOCKER_COMPOSE_NAME}-release >/dev/null 2>&1
 
@@ -155,8 +159,8 @@ build-latest:				## Build latest images for all model components
 		-t ${CONTAINER_COMPOSE_IMAGE_NAME}:latest .
 	@docker run -it --rm \
 		-v /var/run/docker.sock:/var/run/docker.sock \
-		-v ${PWD}/.env:/model/.env \
-		-v ${PWD}/docker-compose.build.yml:/model/docker-compose.build.yml \
+		-v ${PWD}/.env:/instill-ai/model/.env \
+		-v ${PWD}/docker-compose.build.yml:/instill-ai/model/docker-compose.build.yml \
 		--name ${CONTAINER_BUILD_NAME}-latest \
 		${CONTAINER_COMPOSE_IMAGE_NAME}:latest /bin/bash -c " \
 			API_GATEWAY_VERSION=latest \
@@ -181,8 +185,8 @@ build-release:				## Build release images for all model components
 		-t ${CONTAINER_COMPOSE_IMAGE_NAME}:release .
 	@docker run -it --rm \
 		-v /var/run/docker.sock:/var/run/docker.sock \
-		-v ${PWD}/.env:/model/.env \
-		-v ${PWD}/docker-compose.build.yml:/model/docker-compose.build.yml \
+		-v ${PWD}/.env:/instill-ai/model/.env \
+		-v ${PWD}/docker-compose.build.yml:/instill-ai/model/docker-compose.build.yml \
 		--name ${CONTAINER_BUILD_NAME}-release \
 		${CONTAINER_COMPOSE_IMAGE_NAME}:release /bin/bash -c " \
 			API_GATEWAY_VERSION=${API_GATEWAY_VERSION} \
@@ -201,8 +205,10 @@ integration-test-latest:			## Run integration test on the latest model
 		-v $${TMP_CONFIG_DIR}:$${TMP_CONFIG_DIR} \
 		--name ${CONTAINER_BACKEND_INTEGRATION_TEST_NAME}-latest \
 		${CONTAINER_COMPOSE_IMAGE_NAME}:latest /bin/bash -c " \
-			cp -r /model/base/configs/* $${TMP_CONFIG_DIR} && \
-			/bin/bash -c 'cd base && make latest PROFILE=all' \
+			cp /instill-ai/base/.env $${TMP_CONFIG_DIR}/.env && \
+			cp /instill-ai/base/docker-compose.build.yml $${TMP_CONFIG_DIR}/docker-compose.build.yml && \
+			/bin/bash -c 'cd /instill-ai/base && make build-latest BUILD_CONFIG_DIR_PATH=$${TMP_CONFIG_DIR}' && \
+			/bin/bash -c 'cd /instill-ai/base && make latest PROFILE=all EDITION=local-ce:test' \
 		" && rm -r $${TMP_CONFIG_DIR}
 	@COMPOSE_PROFILES=all EDITION=local-ce:test ITMODE_ENABLED=true docker compose -f docker-compose.yml -f docker-compose.latest.yml up -d --quiet-pull
 	@COMPOSE_PROFILES=all EDITION=local-ce:test docker compose -f docker-compose.yml -f docker-compose.latest.yml rm -f
@@ -223,8 +229,10 @@ integration-test-release:			## Run integration test on the release model
 		-v $${TMP_CONFIG_DIR}:$${TMP_CONFIG_DIR} \
 		--name ${CONTAINER_BACKEND_INTEGRATION_TEST_NAME}-release \
 		${CONTAINER_COMPOSE_IMAGE_NAME}:release /bin/bash -c " \
-			cp -r /model/base/configs/* $${TMP_CONFIG_DIR} && \
-			/bin/bash -c 'cd base && make all' \
+			cp /instill-ai/base/.env $${TMP_CONFIG_DIR}/.env && \
+			cp /instill-ai/base/docker-compose.build.yml $${TMP_CONFIG_DIR}/docker-compose.build.yml && \
+			/bin/bash -c 'cd /instill-ai/base && make build-release BUILD_CONFIG_DIR_PATH=$${TMP_CONFIG_DIR}' \
+			/bin/bash -c 'cd /instill-ai/base && make all EDITION=local-ce:test' \
 		" && rm -r $${TMP_CONFIG_DIR}
 	@EDITION=local-ce:test ITMODE_ENABLED=true docker compose up -d --quiet-pull
 	@EDITION=local-ce:test docker compose rm -f
@@ -336,171 +344,7 @@ ifeq ($(UNAME_S),Linux)
 	@make down
 endif
 
-# ==================================================================
-# ==================== Console Integration Test ====================
-# ==================================================================
-
-.PHONY: console-integration-test-latest
-console-integration-test-latest:			## Run console integration test on the latest Instill Model
-	@make build-latest
-	@COMPOSE_PROFILES=all EDITION=local-ce:test ITMODE_ENABLED=true docker compose -f docker-compose.yml -f docker-compose.latest.yml up -d --quiet-pull
-	@COMPOSE_PROFILES=all EDITION=local-ce:test docker compose -f docker-compose.yml -f docker-compose.latest.yml rm -f
-	@docker run -it --rm \
-		-e NEXT_PUBLIC_CONSOLE_BASE_URL=http://console:3000 \
-		-e NEXT_PUBLIC_API_GATEWAY_BASE_URL=http://api-gateway:${API_GATEWAY_PORT}  \
-		-e NEXT_PUBLIC_API_VERSION=v1alpha \
-		-e NEXT_PUBLIC_SELF_SIGNED_CERTIFICATION=false \
-		-e NEXT_PUBLIC_INSTILL_AI_USER_COOKIE_NAME=instill-ai-user \
-		-e NEXT_PUBLIC_CONSOLE_EDITION=local-ce:test \
-		--network instill-network \
-		--entrypoint ./entrypoint-playwright.sh \
-		--name ${CONTAINER_CONSOLE_INTEGRATION_TEST_NAME}-latest \
-		${CONTAINER_PLAYWRIGHT_IMAGE_NAME}:latest
-	@make down
-
-.PHONY: console-integration-test-release
-console-integration-test-release:			## Run console integration test on the release Instill Model
-	@make build-release
-	@EDITION=local-ce:test ITMODE_ENABLED=true \
-		docker compose up -d --quiet-pull
-	@EDITION=local-ce:test docker compose rm -f
-	@docker run -it --rm \
-		-e NEXT_PUBLIC_CONSOLE_BASE_URL=http://console:3000 \
-		-e NEXT_PUBLIC_API_GATEWAY_BASE_URL=http://api-gateway:${API_GATEWAY_PORT}  \
-		-e NEXT_PUBLIC_API_VERSION=v1alpha \
-		-e NEXT_PUBLIC_SELF_SIGNED_CERTIFICATION=false \
-		-e NEXT_PUBLIC_INSTILL_AI_USER_COOKIE_NAME=instill-ai-user \
-		-e NEXT_PUBLIC_CONSOLE_EDITION=local-ce:test \
-		--network instill-network \
-		--entrypoint ./entrypoint-playwright.sh \
-		--name ${CONTAINER_CONSOLE_INTEGRATION_TEST_NAME}-release \
-		${CONTAINER_PLAYWRIGHT_IMAGE_NAME}:${CONSOLE_VERSION}
-	@make down
-
-.PHONY: console-helm-integration-test-latest
-console-helm-integration-test-latest:                       ## Run console integration test on the Helm latest for Instill Model
-ifeq ($(UNAME_S),Darwin)
-	@make build-latest
-	@helm install ${HELM_RELEASE_NAME} charts/base --devel --namespace instill-ai --create-namespace \
-		--set itMode=true \
-		--set edition=k8s-ce:test \
-		--set apigateway.image.tag=latest \
-		--set mgmt.image.tag=latest \
-		--set console.image.tag=latest \
-		--set apigatewayURL=http://host.docker.internal:${API_GATEWAY_PORT}
-	@kubectl rollout status deployment base-apigateway -n instill-ai --timeout=120s
-	@export APIGATEWAY_POD_NAME=$$(kubectl get pods --namespace instill-ai -l "app.kubernetes.io/component=api-gateway,app.kubernetes.io/instance=${HELM_RELEASE_NAME}" -o jsonpath="{.items[0].metadata.name}") && \
-		kubectl --namespace instill-ai port-forward $${APIGATEWAY_POD_NAME} ${API_GATEWAY_PORT}:${API_GATEWAY_PORT} > /dev/null 2>&1 &
-	@while ! nc -vz localhost ${API_GATEWAY_PORT} > /dev/null 2>&1; do sleep 1; done
-	@docker run -it --rm \
-		-e NEXT_PUBLIC_CONSOLE_BASE_URL=http://host.docker.internal:3000 \
-		-e NEXT_PUBLIC_API_GATEWAY_BASE_URL=http://host.docker.internal:${API_GATEWAY_PORT} \
-		-e NEXT_PUBLIC_API_VERSION=v1alpha \
-		-e NEXT_PUBLIC_SELF_SIGNED_CERTIFICATION=false \
-		-e NEXT_PUBLIC_INSTILL_AI_USER_COOKIE_NAME=instill-ai-user \
-		-e NEXT_PUBLIC_CONSOLE_EDITION=k8s-ce:test \
-		-p ${API_GATEWAY_PORT} :${API_GATEWAY_PORT}  \
-		-p 3000:3000 \
-		--entrypoint ./entrypoint-playwright.sh \
-		--name ${CONTAINER_CONSOLE_INTEGRATION_TEST_NAME}-latest \
-		${CONTAINER_COMPOSE_IMAGE_NAME}:latest
-	@helm uninstall ${HELM_RELEASE_NAME} --namespace instill-ai
-	@kubectl delete namespace instill-ai
-	@pkill -f "port-forward"
-	@make down
-endif
-ifeq ($(UNAME_S),Linux)
-	@make build-latest
-	@helm install ${HELM_RELEASE_NAME} charts/base --devel --namespace instill-ai --create-namespace \
-		--set itMode=true \
-		--set edition=k8s-ce:test \
-		--set apigateway.image.tag=latest \
-		--set mgmt.image.tag=latest \
-		--set apigatewayURL=http://localhost:${API_GATEWAY_PORT}
-	@kubectl rollout status deployment base-apigateway -n instill-ai --timeout=120s
-	@export APIGATEWAY_POD_NAME=$$(kubectl get pods --namespace instill-ai -l "app.kubernetes.io/component=api-gateway,app.kubernetes.io/instance=${HELM_RELEASE_NAME}" -o jsonpath="{.items[0].metadata.name}") && \
-		kubectl --namespace instill-ai port-forward $${APIGATEWAY_POD_NAME} ${API_GATEWAY_PORT}:${API_GATEWAY_PORT} > /dev/null 2>&1 &
-	@while ! nc -vz localhost ${API_GATEWAY_PORT} > /dev/null 2>&1; do sleep 1; done
-	@docker run -it --rm \
-		-e NEXT_PUBLIC_CONSOLE_BASE_URL=http://localhost:3000 \
-		-e NEXT_PUBLIC_API_GATEWAY_BASE_URL=http://localhost:${API_GATEWAY_PORT}  \
-		-e NEXT_PUBLIC_API_VERSION=v1alpha \
-		-e NEXT_PUBLIC_SELF_SIGNED_CERTIFICATION=false \
-		-e NEXT_PUBLIC_INSTILL_AI_USER_COOKIE_NAME=instill-ai-user \
-		-e NEXT_PUBLIC_CONSOLE_EDITION=k8s-ce:test \
-		--network host \
-		--entrypoint ./entrypoint-playwright.sh \
-		--name ${CONTAINER_CONSOLE_INTEGRATION_TEST_NAME}-latest \
-		${CONTAINER_COMPOSE_IMAGE_NAME}:latest
-	@helm uninstall ${HELM_RELEASE_NAME} --namespace instill-ai
-	@kubectl delete namespace instill-ai
-	@pkill -f "port-forward"
-	@make down
-endif
-
-.PHONY: console-helm-integration-test-release
-console-helm-integration-test-release:                       ## Run console integration test on the Helm release for Instill Model
-ifeq ($(UNAME_S),Darwin)
-	@make build-release
-	@helm install ${HELM_RELEASE_NAME} charts/base --devel --namespace instill-ai --create-namespace \
-		--set itMode=true \
-		--set edition=k8s-ce:test \
-		--set apigateway.image.tag=${API_GATEWAY_VERSION} \
-		--set mgmt.image.tag=${MGMT_BACKEND_VERSION} \
-		--set console.image.tag=${CONSOLE_VERSION} \
-		--set apigatewayURL=http://host.docker.internal:${API_GATEWAY_PORT}
-	@kubectl rollout status deployment base-apigateway -n instill-ai --timeout=120s
-	@export APIGATEWAY_POD_NAME=$$(kubectl get pods --namespace instill-ai -l "app.kubernetes.io/component=api-gateway,app.kubernetes.io/instance=${HELM_RELEASE_NAME}" -o jsonpath="{.items[0].metadata.name}") && \
-		kubectl --namespace instill-ai port-forward $${APIGATEWAY_POD_NAME} ${API_GATEWAY_PORT}:${API_GATEWAY_PORT} > /dev/null 2>&1 &
-	@while ! nc -vz localhost ${API_GATEWAY_PORT} > /dev/null 2>&1; do sleep 1; done
-	@docker run -it --rm \
-		-e NEXT_PUBLIC_CONSOLE_BASE_URL=http://host.docker.internal:3000 \
-		-e NEXT_PUBLIC_API_GATEWAY_BASE_URL=http://host.docker.internal:${API_GATEWAY_PORT}  \
-		-e NEXT_PUBLIC_API_VERSION=v1alpha \
-		-e NEXT_PUBLIC_SELF_SIGNED_CERTIFICATION=false \
-		-e NEXT_PUBLIC_INSTILL_AI_USER_COOKIE_NAME=instill-ai-user \
-		-e NEXT_PUBLIC_CONSOLE_EDITION=k8s-ce:test \
-		-p ${API_GATEWAY_PORT} :${API_GATEWAY_PORT}  \
-		-p 3000:3000 \
-		--entrypoint ./entrypoint-playwright.sh \
-		--name ${CONTAINER_CONSOLE_INTEGRATION_TEST_NAME}-release \
-		${CONTAINER_COMPOSE_IMAGE_NAME}:${CONSOLE_VERSION}
-	@helm uninstall ${HELM_RELEASE_NAME} --namespace instill-ai
-	@kubectl delete namespace instill-ai
-	@pkill -f "port-forward"
-	@make down
-endif
-ifeq ($(UNAME_S),Linux)
-	@make build-release
-	@helm install ${HELM_RELEASE_NAME} charts/base --devel --namespace instill-ai --create-namespace \
-		--set itMode=true \
-		--set edition=k8s-ce:test \
-		--set apigateway.image.tag=${API_GATEWAY_VERSION} \
-		--set mgmt.image.tag=${MGMT_BACKEND_VERSION} \
-		--set console.image.tag=${CONSOLE_VERSION} \
-		--set apigatewayURL=http://localhost:${API_GATEWAY_PORT}
-	@kubectl rollout status deployment base-apigateway -n instill-ai --timeout=120s
-	@export APIGATEWAY_POD_NAME=$$(kubectl get pods --namespace instill-ai -l "app.kubernetes.io/component=api-gateway,app.kubernetes.io/instance=${HELM_RELEASE_NAME}" -o jsonpath="{.items[0].metadata.name}") && \
-		kubectl --namespace instill-ai port-forward $${APIGATEWAY_POD_NAME} ${API_GATEWAY_PORT}:${API_GATEWAY_PORT} > /dev/null 2>&1 &
-	@while ! nc -vz localhost ${API_GATEWAY_PORT} > /dev/null 2>&1; do sleep 1; done
-	@docker run -it --rm \
-		-e NEXT_PUBLIC_CONSOLE_BASE_URL=http://localhost:3000 \
-		-e NEXT_PUBLIC_API_GATEWAY_BASE_URL=http://localhost:${API_GATEWAY_PORT}  \
-		-e NEXT_PUBLIC_API_VERSION=v1alpha \
-		-e NEXT_PUBLIC_SELF_SIGNED_CERTIFICATION=false \
-		-e NEXT_PUBLIC_INSTILL_AI_USER_COOKIE_NAME=instill-ai-user \
-		-e NEXT_PUBLIC_CONSOLE_EDITION=k8s-ce:test \
-		--network host \
-		--entrypoint ./entrypoint-playwright.sh \
-		--name ${CONTAINER_CONSOLE_INTEGRATION_TEST_NAME}-release \
-		${CONTAINER_COMPOSE_IMAGE_NAME}:${CONSOLE_VERSION}
-	@helm uninstall ${HELM_RELEASE_NAME} --namespace instill-ai
-	@kubectl delete namespace instill-ai
-	@pkill -f "port-forward"
-	@make down
-endif
-
 .PHONY: help
 help:       	## Show this help
 	@echo "\nMake Application with Docker Compose"
-	@awk 'BEGIN {FS = ":.*##"; printf "\nUsage:\n  make \033[36m<target>\033[0m (default: help)\n\nTargets:\n"} /^[a-zA-Z_-]+:.*?##/ { printf "  \033[36m%-24s\033[0m %s\n", $$1, $$2 }' $(MAKEFILE_LIST)
+	@awk 'BEGIN {FS = ":.*##"; printf "\nUsage:\n  make \033[36m<target>\033[0m (default: help)\n\nTargets:\n"} /^[a-zA-Z_-]+:.*?##/ { printf "  \033[36m%-32s\033[0m %s\n", $$1, $$2 }' $(MAKEFILE_LIST)

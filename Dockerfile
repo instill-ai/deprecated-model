@@ -36,12 +36,15 @@ COPY --from=base /etc /etc
 COPY --from=base /usr /usr
 COPY --from=docker:dind /usr/local/bin /usr/local/bin
 
-WORKDIR /model
-
 ARG CACHE_DATE
 RUN echo "Model latest codebase cloned on ${CACHE_DATE}"
 
+WORKDIR /instill-ai
+
 RUN git clone https://github.com/instill-ai/base.git
+
+WORKDIR /instill-ai/model
+
 RUN git clone https://github.com/instill-ai/api-gateway.git
 RUN git clone https://github.com/instill-ai/model-backend.git
 RUN git clone https://github.com/instill-ai/controller-model.git
@@ -52,13 +55,17 @@ COPY --from=base /etc /etc
 COPY --from=base /usr /usr
 COPY --from=docker:dind /usr/local/bin /usr/local/bin
 
-WORKDIR /model
-
 ARG CACHE_DATE
 RUN echo "Model release codebase cloned on ${CACHE_DATE}"
 
-ARG BASE_VERSION API_GATEWAY_VERSION MODEL_BACKEND_VERSION CONTROLLER_MODEL_VERSION CONSOLE_VERSION
+WORKDIR /instill-ai
+
+ARG BASE_VERSION
 RUN git clone -b v${BASE_VERSION} -c advice.detachedHead=false https://github.com/instill-ai/base.git
+
+WORKDIR /instill-ai/model
+
+ARG API_GATEWAY_VERSION MODEL_BACKEND_VERSION CONTROLLER_MODEL_VERSION
 RUN git clone -b v${API_GATEWAY_VERSION} -c advice.detachedHead=false https://github.com/instill-ai/api-gateway.git
 RUN git clone -b v${MODEL_BACKEND_VERSION} -c advice.detachedHead=false https://github.com/instill-ai/model-backend.git
 RUN git clone -b v${CONTROLLER_MODEL_VERSION} -c advice.detachedHead=false https://github.com/instill-ai/controller-model.git
