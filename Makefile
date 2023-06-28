@@ -159,8 +159,8 @@ build-latest:				## Build latest images for all model components
 		-t ${CONTAINER_COMPOSE_IMAGE_NAME}:latest .
 	@docker run -it --rm \
 		-v /var/run/docker.sock:/var/run/docker.sock \
-		-v ${PWD}/.env:/instill-ai/model/.env \
-		-v ${PWD}/docker-compose.build.yml:/instill-ai/model/docker-compose.build.yml \
+		-v ${BUILD_CONFIG_DIR_PATH}/.env:/instill-ai/model/.env \
+		-v ${BUILD_CONFIG_DIR_PATH}/docker-compose.build.yml:/instill-ai/model/docker-compose.build.yml \
 		--name ${CONTAINER_BUILD_NAME}-latest \
 		${CONTAINER_COMPOSE_IMAGE_NAME}:latest /bin/bash -c " \
 			API_GATEWAY_VERSION=latest \
@@ -185,8 +185,8 @@ build-release:				## Build release images for all model components
 		-t ${CONTAINER_COMPOSE_IMAGE_NAME}:release .
 	@docker run -it --rm \
 		-v /var/run/docker.sock:/var/run/docker.sock \
-		-v ${PWD}/.env:/instill-ai/model/.env \
-		-v ${PWD}/docker-compose.build.yml:/instill-ai/model/docker-compose.build.yml \
+		-v ${BUILD_CONFIG_DIR_PATH}/.env:/instill-ai/model/.env \
+		-v ${BUILD_CONFIG_DIR_PATH}/docker-compose.build.yml:/instill-ai/model/docker-compose.build.yml \
 		--name ${CONTAINER_BUILD_NAME}-release \
 		${CONTAINER_COMPOSE_IMAGE_NAME}:release /bin/bash -c " \
 			API_GATEWAY_VERSION=${API_GATEWAY_VERSION} \
