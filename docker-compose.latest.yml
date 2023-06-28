@@ -4,8 +4,15 @@ services:
   api_gateway_model:
     profiles:
       - all
+      - api-gateway-base
+      - mgmt
+      - console
+      - api-gateway-vdp
+      - pipeline
+      - connector
+      - controller-vdp
       - model
-      - controller
+      - controller-model
     image: ${API_GATEWAY_IMAGE}:latest
     environment:
       API_GATEWAY_LOG_LEVEL: DEBUG
@@ -13,22 +20,43 @@ services:
   model_backend_migrate:
     profiles:
       - all
-      - api-gateway
-      - controller
+      - api-gateway-base
+      - mgmt
+      - console
+      - api-gateway-vdp
+      - pipeline
+      - connector
+      - controller-vdp
+      - api-gateway-model
+      - controller-model
     image: ${MODEL_BACKEND_IMAGE}:latest
 
   model_backend_init:
     profiles:
       - all
-      - api-gateway
-      - controller
+      - api-gateway-base
+      - mgmt
+      - console
+      - api-gateway-vdp
+      - pipeline
+      - connector
+      - controller-vdp
+      - api-gateway-model
+      - controller-model
     image: ${MODEL_BACKEND_IMAGE}:latest
 
   model_backend_worker:
     profiles:
       - all
-      - api-gateway
-      - controller
+      - api-gateway-base
+      - mgmt
+      - console
+      - api-gateway-vdp
+      - pipeline
+      - connector
+      - controller-vdp
+      - api-gateway-model
+      - controller-model
     image: ${MODEL_BACKEND_IMAGE}:latest
     environment:
       CFG_SERVER_DEBUG: "true"
@@ -36,8 +64,15 @@ services:
   model_backend:
     profiles:
       - all
-      - api-gateway
-      - controller
+      - api-gateway-base
+      - mgmt
+      - console
+      - api-gateway-vdp
+      - pipeline
+      - connector
+      - controller-vdp
+      - api-gateway-model
+      - controller-model
     image: ${MODEL_BACKEND_IMAGE}:latest
     environment:
       CFG_SERVER_DEBUG: "true"
@@ -49,8 +84,15 @@ services:
   model_backend_init_model:
     profiles:
       - all
-      - api-gateway
-      - controller
+      - api-gateway-base
+      - mgmt
+      - console
+      - api-gateway-vdp
+      - pipeline
+      - connector
+      - controller-vdp
+      - api-gateway-model
+      - controller-model
     image: ${MODEL_BACKEND_IMAGE}:latest
     environment:
       CFG_INITMODEL_ENABLED: ${INITMODEL_ENABLED}
@@ -59,7 +101,14 @@ services:
   controller_model:
     profiles:
       - all
-      - api-gateway
+      - api-gateway-base
+      - mgmt
+      - console
+      - api-gateway-vdp
+      - pipeline
+      - connector
+      - controller-vdp
+      - api-gateway-model
       - model
     image: ${CONTROLLER_MODEL_IMAGE}:latest
     environment:
