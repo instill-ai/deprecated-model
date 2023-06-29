@@ -17,7 +17,7 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v3
         with:
-          repository: instill-ai/base
+          repository: instill-ai/model
 
       - name: Load .env file
         uses: cardinalby/export-env-action@v2
@@ -57,7 +57,7 @@ jobs:
         run: |
           git clone https://github.com/instill-ai/${{ inputs.component }}.git
           cd ${{ inputs.component }}
-          make integration-test API_GATEWAY_HOST=localhost API_GATEWAY_PORT=8080
+          make integration-test API_GATEWAY_HOST=localhost API_GATEWAY_PORT=9080
 
       - name: Uppercase component name
         if: inputs.target == 'release'
@@ -80,4 +80,4 @@ jobs:
         run: |
           git clone -b v$COMPONENT_VERSION https://github.com/instill-ai/${{ inputs.component }}.git
           cd ${{ inputs.component }}
-          make integration-test API_GATEWAY_HOST=localhost API_GATEWAY_PORT=8080
+          make integration-test API_GATEWAY_HOST=localhost API_GATEWAY_PORT=9080

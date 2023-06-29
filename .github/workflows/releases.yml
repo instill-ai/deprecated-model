@@ -75,25 +75,25 @@ jobs:
       - name: Update component image versions
         run: |
           source .env
-          yq ".apigateway.image.tag=\"$API_GATEWAY_VERSION\"" -i charts/base/values.yaml
-          yq ".mgmt.image.tag=\"$MGMT_BACKEND_VERSION\"" -i charts/base/values.yaml
-          yq ".console.image.tag=\"$CONSOLE_VERSION\"" -i charts/base/values.yaml
+          yq ".apiGatewayModel.image.tag=\"$API_GATEWAY_MODEL_VERSION\"" -i charts/model/values.yaml
+          yq ".modelBackend.image.tag=\"$MODEL_BACKEND_VERSION\"" -i charts/model/values.yaml
+          yq ".controllerModel.image.tag=\"$CONTROLLER_MODEL_VERSION\"" -i charts/model/values.yaml
       - name: Get current chart version
         id: get-current-chart-version
         run: |
-          echo "version=$(yq .version charts/base/Chart.yaml)" >> $GITHUB_OUTPUT
+          echo "version=$(yq .version charts/model/Chart.yaml)" >> $GITHUB_OUTPUT
       - name: Bump SemVer
         id: bump-semver
         run: |
           echo "next-version=$(semver bump patch ${{ steps.get-current-chart-version.outputs.version }})-alpha" >> $GITHUB_OUTPUT
       - name: Bump up Helm chart version
         run: |
-          yq ".version=\"${{ steps.bump-semver.outputs.next-version }}\"" -i charts/base/Chart.yaml
+          yq ".version=\"${{ steps.bump-semver.outputs.next-version }}\"" -i charts/model/Chart.yaml
       - name: Bump up Helm app version
         run: |
           string=${{ needs.release-please.outputs.TAG_NAME }}
           appVersion=${string#"v"}
-          yq ".appVersion=\"$appVersion\"" -i charts/base/Chart.yaml
+          yq ".appVersion=\"$appVersion\"" -i charts/model/Chart.yaml
       - name: Generate helm-doc
         run: |
           helm-docs charts/base

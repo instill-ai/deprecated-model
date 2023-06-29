@@ -1,0 +1,25 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ template "model.triton" . }}
+  labels:
+    {{- include "model.labels" . | nindent 4 }}
+    app.kubernetes.io/component: triton-inference-server
+  {{- with .Values.triton.serviceAnnotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  ports:
+    - name: {{ ternary "https" "http" .Values.internalTLS.enabled }}
+      port: {{ template "model.triton.httpPort" . }}
+      targetPort: {{ template "model.triton.httpPort" . }}
+    - name: grpc
+      port: {{ template "model.triton.grpcPort" . }}
+      targetPort: {{ template "model.triton.grpcPort" . }}
+    - name: metrics
+      port: {{ template "model.triton.metricsPort" . }}
+      targetPort: {{ template "model.triton.metricsPort" . }}
+  selector:
+    {{- include "model.matchLabels" . | nindent 4 }}
+    app.kubernetes.io/component: triton-inference-server

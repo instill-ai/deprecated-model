@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ template "model.controllerModel" . }}
+  labels:
+    {{- include "model.labels" . | nindent 4 }}
+    app.kubernetes.io/component: controller-model
+  {{- with .Values.controllerModel.serviceAnnotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  ports:
+    - name: {{ ternary "https" "http" .Values.internalTLS.enabled }}-private
+      port: {{ template "model.controllerModel.privatePort" . }}
+      targetPort: {{ template "model.controllerModel.privatePort" . }}
+  selector:
+    {{- include "model.matchLabels" . | nindent 4 }}
+    app.kubernetes.io/component: controller-model

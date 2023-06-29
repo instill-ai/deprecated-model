@@ -1,0 +1,19 @@
+apiVersion: v2
+name: model
+description: The Helm chart of Instill Model
+type: application
+version: 0.1.0-alpha #! auto-updated by the CI workflow
+appVersion: 0.1.0-alpha #! auto-updated by the CI workflow
+keywords:
+  - unstructured data
+  - pipeline
+  - ETL/ELT
+  - AI
+  - Data
+sources:
+  - https://github.com/instill-ai/model
+home: "https://www.instill.tech"
+icon: https://storage.googleapis.com/public-europe-west2-c-artifacts/imgs/helm-model-logo.png
+maintainers:
+  - name: Instill AI LTD
+    url: https://github.com/instill-ai

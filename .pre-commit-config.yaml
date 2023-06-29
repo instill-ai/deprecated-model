@@ -16,12 +16,12 @@ repos:
     hooks:
       - id: conventional-pre-commit
         stages: [commit-msg]
-  # - repo: local
-  #   hooks:
-  #     - id: helm-lint
-  #       name: Helm Lint
-  #       entry: bash -c 'helm lint --strict charts/**'
-  #       language: system
+  - repo: local
+    hooks:
+      - id: helm-lint
+        name: Helm Lint
+        entry: bash -c 'helm lint --strict charts/**'
+        language: system
   - repo: https://github.com/norwoodj/helm-docs
     rev: v1.11.0
     hooks:

@@ -1,0 +1,46 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ template "model.controllerModel" . }}
+  labels:
+    {{- include "model.labels" . | nindent 4 }}
+    app.kubernetes.io/component: controller-model
+data:
+  config.yaml: |+
+    server:
+      privateport: {{ template "model.controllerModel.privatePort" . }}
+      edition: {{ .Values.edition }}
+      loopinterval: {{ .Values.controllerModel.loopinterval }}
+      timeout: 120
+      debug: {{ ternary "true" "false" (eq (.Values.logLevel | upper) "DEBUG") }}
+      {{- if .Values.internalTLS.enabled }}
+      https:
+        cert: /etc/instill-ai/model/ssl/controller/tls.crt
+        key: /etc/instill-ai/model/ssl/controller/tls.key
+      {{- end }}
+    etcd:
+      host: {{ template "base.etcd" . }}
+      port: {{ template "base.etcd.clientPort" . }}
+      timeout: 5
+    tritonserver:
+      host: {{ include "model.triton" . }}
+      grpcuri: {{ include "model.triton" . }}:{{ include "model.triton.grpcPort" . }}
+      modelstore: /modelstore-repository
+    modelbackend:
+      host: {{ template "model.modelBackend" . }}
+      publicport: {{ template "model.modelBackend.publicPort" . }}
+      privateport: {{ template "model.modelBackend.privatePort" . }}
+      {{- if .Values.internalTLS.enabled }}
+      https:
+        cert: /etc/instill-ai/model/ssl/model/tls.crt
+        key: /etc/instill-ai/model/ssl/model/tls.key
+      {{- end }}
+    mgmtbackend:
+      host: {{ template "base.mgmtBackend" . }}
+      publicport: {{ template "base.mgmtBackend.publicPort" . }}
+      privateport: {{ template "base.mgmtBackend.privatePort" . }}
+      {{- if .Values.internalTLS.enabled }}
+      https:
+        cert: /etc/instill-ai/model/ssl/mgmt/tls.crt
+        key: /etc/instill-ai/model/ssl/mgmt/tls.key
+      {{- end }}

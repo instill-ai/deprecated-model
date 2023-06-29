@@ -1,0 +1,28 @@
+{{- if and .Values.internalTLS.enabled (eq .Values.internalTLS.certSource "auto") }}
+{{- $ca := genCA "vdp-internal-ca" 365 }}
+{{- $agCN := (include "model.apiGatewayModel" .) }}
+{{- $agCrt := genSignedCert $agCN (list "127.0.0.1") (list "localhost" $agCN) 365 $ca }}
+{{- $modelCN := (include "model.modelBackend" .) }}
+{{- $modelCrt := genSignedCert $modelCN (list "127.0.0.1") (list "localhost" $modelCN) 365 $ca }}
+apiVersion: v1
+kind: Secret
+metadata:
+  name: "{{ template "model.internalTLS.apiGatewayModel.secretName" . }}"
+  labels:
+    {{- include "model.labels" . | nindent 4 }}
+type: kubernetes.io/tls
+data:
+  tls.crt: {{ $agCrt.Cert | b64enc | quote }}
+  tls.key: {{ $agCrt.Key | b64enc | quote }}
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: "{{ template "model.internalTLS.modelBackend.secretName" . }}"
+  labels:
+    {{- include "model.labels" . | nindent 4 }}
+type: kubernetes.io/tls
+data:
+  tls.crt: {{ $modelCrt.Cert | b64enc | quote }}
+  tls.key: {{ $modelCrt.Key | b64enc | quote }}
+{{- end }}

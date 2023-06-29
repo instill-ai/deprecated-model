@@ -1,0 +1,161 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ template "model.apiGatewayModel" . }}
+  labels:
+    {{- include "model.labels" . | nindent 4 }}
+    app.kubernetes.io/component: api-gateway-model
+  annotations:
+    rollme: {{ randAlphaNum 5 | quote }}
+spec:
+  strategy:
+    type: {{ .Values.updateStrategy.type }}
+    {{- if eq .Values.updateStrategy.type "Recreate" }}
+    rollingUpdate: null
+    {{- end }}
+  {{- if not .Values.apiGatewayModel.autoscaling.enabled }}
+  replicas: {{ .Values.apiGatewayModel.replicaCount }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "model.matchLabels" . | nindent 6 }}
+      app.kubernetes.io/component: api-gateway-model
+  template:
+    metadata:
+      labels:
+        {{- include "model.matchLabels" . | nindent 8 }}
+        app.kubernetes.io/component: api-gateway-model
+      annotations:
+        checksum/config: {{ include (print $.Template.BasePath "/api-gateway-model/configmap.yaml") . | sha256sum }}
+        {{- with .Values.apiGatewayModel.podAnnotations }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+    spec:
+      securityContext:
+        runAsUser: 1000
+        runAsGroup: 1000
+      {{- if .Values.apiGatewayModel.serviceAccountName }}
+      serviceAccountName: {{ .Values.apiGatewayModel.serviceAccountName }}
+      {{- end }}
+      automountServiceAccountToken: {{ .Values.apiGatewayModel.automountServiceAccountToken | default false }}
+      terminationGracePeriodSeconds: 120
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      initContainers:
+        - name: wait-for-dependencies
+          image: curlimages/curl:8.00.1
+          command: ['sh', '-c']
+          args:
+          - >
+            while [[ "$(curl -s -o /dev/null -w ''%{http_code}'' ${MODEL_BACKEND_HOST}:${MODEL_BACKEND_PORT}/v1alpha/health/model)" != "200" ]]; do echo waiting for model-backend; sleep 1; done &&
+            while [[ "$(curl -s -o /dev/null -w ''%{http_code}'' ${CONTROLLER_MODEL_HOST}:${CONTROLLER_MODEL_PORT}/v1alpha/health/controller)" != "200" ]]; do echo waiting for controller-model; sleep 1; done
+            {{- if .Values.tags.observability }}
+              && while [[ "$(curl -s -o /dev/null -w ''%{http_code}'' ${INFLUXDB_HOST}:${INFLUXDB_PORT}/health)" != "200" ]]; do echo waiting for influxdb; sleep 1; done
+            {{- end }}
+          env:
+            - name: MODEL_BACKEND_HOST
+              value: "{{ template "model.modelBackend" . }}"
+            - name: MODEL_BACKEND_PORT
+              value: "{{ template "model.modelBackend.publicPort" . }}"
+            - name: CONTROLLER_MODEL_HOST
+              value: "{{ template "model.controllerModel" . }}"
+            - name: CONTROLLER_MODEL_PORT
+              value: "{{ template "model.controllerModel.privatePort" . }}"
+            - name: INFLUXDB_HOST
+              value: "{{ template "base.influxdb" . }}"
+            - name: INFLUXDB_PORT
+              value: "{{ template "base.influxdb.port" . }}"
+        {{- with .Values.apiGatewayModel.extraInitContainers }}
+        {{- toYaml . | indent 8 }}
+        {{- end }}
+      containers:
+        - name: api-gateway-model
+          image: {{ .Values.apiGatewayModel.image.repository }}:{{ .Values.apiGatewayModel.image.tag }}
+          imagePullPolicy: {{ .Values.apiGatewayModel.image.pullPolicy }}
+          readinessProbe:
+            httpGet:
+              path: /__health
+              scheme: {{ upper (ternary "https" "http" .Values.apiGatewayModel.tls.enabled) }}
+              port: {{ ternary "https" "http" .Values.apiGatewayModel.tls.enabled }}
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /__health
+              scheme: {{ upper (ternary "https" "http" .Values.apiGatewayModel.tls.enabled) }}
+              port: {{ ternary "https" "http" .Values.apiGatewayModel.tls.enabled }}
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          {{- if .Values.apiGatewayModel.resources }}
+          resources:
+            {{- toYaml .Values.apiGatewayModel.resources | nindent 12 }}
+          {{- end }}
+          command: ["/bin/bash", "-c"]
+          args:
+            - |
+              make config && \
+              krakend run \
+            {{- if (eq (.Values.logLevel | upper) "DEBUG") }}
+              --debug \
+            {{- end }}
+              --config krakend.json
+          ports:
+            - name: {{ ternary "https" "http" .Values.apiGatewayModel.tls.enabled }}
+              containerPort: {{ template "model.apiGatewayModel.httpPort" . }}
+              protocol: TCP
+            - name: stats
+              containerPort: {{ template "model.apiGatewayModel.statsPort" . }}
+              protocol: TCP
+            - name: metrics
+              containerPort: {{ template "model.apiGatewayModel.metricsPort" . }}
+              protocol: TCP
+          volumeMounts:
+            - name: config
+              mountPath: {{ .Values.apiGatewayModel.configPath }}
+              subPath: ".env"
+            {{- if .Values.apiGatewayModel.tls.enabled }}
+            - name: {{ template "model.internalTLS.apiGatewayModel.secretName" . }}
+              mountPath: "/etc/instill-ai/model/ssl/api-gateway"
+              readOnly: true
+            {{- end }}
+            {{- with .Values.apiGatewayModel.extraVolumeMounts }}
+            {{- toYaml . | nindent 12 }}
+            {{- end }}
+          {{- with .Values.apiGatewayModel.extraEnv }}
+          env:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+        {{- with .Values.apiGatewayModel.sidecarContainers }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+      volumes:
+        - name: config
+          configMap:
+            name: {{ template "model.apiGatewayModel" . }}
+        {{- if .Values.apiGatewayModel.tls.enabled }}
+        - name: {{ template "model.internalTLS.apiGatewayModel.secretName" . }}
+          secret:
+            secretName: {{ template "model.internalTLS.apiGatewayModel.secretName" . }}
+            items:
+            - key: tls.crt
+              path: tls.crt
+            - key: tls.key
+              path: tls.key
+        {{- end }}
+        {{- with .Values.apiGatewayModel.extraVolumes }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+      {{- with .Values.apiGatewayModel.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.apiGatewayModel.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.apiGatewayModel.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

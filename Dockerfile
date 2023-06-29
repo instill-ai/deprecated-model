@@ -22,13 +22,21 @@ RUN apt-get update && apt-get install -y \
     git \
     bash \
     make \
-    wget \
+    wget \    
     vim && rm -rf /var/lib/apt/lists/*
 
 # Install k6
 ARG TARGETARCH K6_VERSION
-ADD https://github.com/grafana/k6/releases/download/v${K6_VERSION}/k6-v${K6_VERSION}-linux-$TARGETARCH.tar.gz k6-v${K6_VERSION}-linux-$TARGETARCH.tar.gz
-RUN tar -xf k6-v${K6_VERSION}-linux-$TARGETARCH.tar.gz --strip-components 1 -C /usr/bin
+ADD https://github.com/grafana/k6/releases/download/v${K6_VERSION}/k6-v${K6_VERSION}-linux-${TARGETARCH}.tar.gz k6-v${K6_VERSION}-linux-${TARGETARCH}.tar.gz
+RUN tar -xf k6-v${K6_VERSION}-linux-${TARGETARCH}.tar.gz --strip-components 1 -C /usr/bin
+
+# Install Helm
+RUN curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
+
+# Install Kubectl
+RUN curl -LO https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/${TARGETARCH}/kubectl
+RUN chmod +x ./kubectl
+RUN mv ./kubectl /usr/local/bin
 
 FROM ubuntu:${UBUNTU_VERSION} AS latest
 
@@ -65,7 +73,7 @@ RUN git clone -b v${BASE_VERSION} -c advice.detachedHead=false https://github.co
 
 WORKDIR /instill-ai/model
 
-ARG API_GATEWAY_VERSION MODEL_BACKEND_VERSION CONTROLLER_MODEL_VERSION
-RUN git clone -b v${API_GATEWAY_VERSION} -c advice.detachedHead=false https://github.com/instill-ai/api-gateway.git
+ARG API_GATEWAY_MODEL_VERSION MODEL_BACKEND_VERSION CONTROLLER_MODEL_VERSION
+RUN git clone -b v${API_GATEWAY_MODEL_VERSION} -c advice.detachedHead=false https://github.com/instill-ai/api-gateway.git
 RUN git clone -b v${MODEL_BACKEND_VERSION} -c advice.detachedHead=false https://github.com/instill-ai/model-backend.git
 RUN git clone -b v${CONTROLLER_MODEL_VERSION} -c advice.detachedHead=false https://github.com/instill-ai/controller-model.git

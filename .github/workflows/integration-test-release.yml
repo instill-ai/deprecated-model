@@ -12,11 +12,11 @@ jobs:
       fail-fast: false
       matrix:
         component: [mgmt-backend]
-    uses: instill-ai/base/.github/workflows/integration-test-backend.yml@main
+    uses: instill-ai/model/.github/workflows/integration-test-backend.yml@main
     with:
       component: ${{ matrix.component }}
       target: release
   console:
-    uses: instill-ai/base/.github/workflows/integration-test-console.yml@main
+    uses: instill-ai/model/.github/workflows/integration-test-console.yml@main
     with:
       target: release
