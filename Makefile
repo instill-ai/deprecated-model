@@ -32,12 +32,10 @@ endif
 UNAME_S := $(shell uname -s)
 
 CONTAINER_BUILD_NAME := model-build
+CONTAINER_COMPOSE_NAME := model-dind
 CONTAINER_COMPOSE_IMAGE_NAME := instill/model-compose
-CONTAINER_PLAYWRIGHT_IMAGE_NAME := instill/model-console-playwright
 CONTAINER_BACKEND_INTEGRATION_TEST_NAME := model-backend-integration-test
 CONTAINER_CONSOLE_INTEGRATION_TEST_NAME := model-console-integration-test
-
-BASE_DOCKER_COMPOSE_NAME := base-dind
 
 HELM_NAMESPACE := instill-ai
 HELM_RELEASE_NAME := model
@@ -46,14 +44,16 @@ HELM_RELEASE_NAME := model
 
 .PHONY: all
 all:			## Launch all services with their up-to-date release version
+ifeq ($(BASE_ENABLED), true)
 	@export TMP_CONFIG_DIR=$(shell mktemp -d) && docker run -it --rm \
 		-v /var/run/docker.sock:/var/run/docker.sock \
 		-v $${TMP_CONFIG_DIR}:$${TMP_CONFIG_DIR} \
-		--name ${BASE_DOCKER_COMPOSE_NAME}-release \
+		--name ${CONTAINER_COMPOSE_NAME}-release \
 		${CONTAINER_COMPOSE_IMAGE_NAME}:release /bin/bash -c " \
 			cp -r /instill-ai/base/configs/* $${TMP_CONFIG_DIR} && \
 			/bin/bash -c 'cd /instill-ai/base && make all EDITION=local-ce OBSERVE_ENABLED=${OBSERVE_ENABLED} OBSERVE_CONFIG_DIR_PATH=$${TMP_CONFIG_DIR}' \
 		" && rm -r $${TMP_CONFIG_DIR}
+endif
 ifeq (${NVIDIA_GPU_AVAILABLE}, true)
 	@docker inspect --type=image instill/tritonserver:${TRITON_SERVER_VERSION} >/dev/null 2>&1 || printf "\033[1;33mINFO:\033[0m This may take a while due to the enormous size of the Triton server image, but the image pulling process should be just a one-time effort.\n" && sleep 5
 	@cat docker-compose.nvidia.yml | yq '.services.triton_server.deploy.resources.reservations.devices[0].device_ids |= (strenv(NVIDIA_VISIBLE_DEVICES) | split(",")) | ..style="double"' | \
@@ -67,14 +67,16 @@ endif
 
 .PHONY: latest
 latest:			## Lunch all dependent services with their latest codebase
+ifeq ($(BASE_ENABLED), true)
 	@export TMP_CONFIG_DIR=$(shell mktemp -d) && docker run -it --rm \
 		-v /var/run/docker.sock:/var/run/docker.sock \
 		-v $${TMP_CONFIG_DIR}:$${TMP_CONFIG_DIR} \
-		--name ${BASE_DOCKER_COMPOSE_NAME}-latest \
+		--name ${CONTAINER_COMPOSE_NAME}-latest \
 		${CONTAINER_COMPOSE_IMAGE_NAME}:latest /bin/bash -c " \
 			cp -r /instill-ai/base/configs/* $${TMP_CONFIG_DIR} && \
 			/bin/bash -c 'cd /instill-ai/base && make latest EDITION=local-ce:latest PROFILE=$(PROFILE) OBSERVE_ENABLED=${OBSERVE_ENABLED} OBSERVE_CONFIG_DIR_PATH=$${TMP_CONFIG_DIR}' \
 		" && rm -r $${TMP_CONFIG_DIR}
+endif
 ifeq (${NVIDIA_GPU_AVAILABLE}, true)
 	@docker inspect --type=image instill/tritonserver:${TRITON_SERVER_VERSION} >/dev/null 2>&1 || printf "\033[1;33mINFO:\033[0m This may take a while due to the enormous size of the Triton server image, but the image pulling process should be just a one-time effort.\n" && sleep 5
 	@cat docker-compose.nvidia.yml | yq '.services.triton_server.deploy.resources.reservations.devices[0].device_ids |= (strenv(NVIDIA_VISIBLE_DEVICES) | split(",")) | ..style="double"' | \
@@ -122,15 +124,18 @@ down:			## Stop all services and remove all service containers and volumes
 	@docker rm -f ${CONTAINER_BACKEND_INTEGRATION_TEST_NAME}-helm-latest >/dev/null 2>&1
 	@docker rm -f ${CONTAINER_CONSOLE_INTEGRATION_TEST_NAME}-helm-latest >/dev/null 2>&1
 	@docker rm -f ${CONTAINER_BACKEND_INTEGRATION_TEST_NAME}-helm-release >/dev/null 2>&1
-	@docker rm -f ${CONTAINER_CONSOLE_INTEGRATION_TEST_NAME}-helm-latest >/dev/null 2>&1
+	@docker rm -f ${CONTAINER_CONSOLE_INTEGRATION_TEST_NAME}-helm-release >/dev/null 2>&1
 	@docker compose -f docker-compose.yml -f docker-compose.observe.yml down -v >/dev/null 2>&1
-	@docker run -it --rm \
-		-v /var/run/docker.sock:/var/run/docker.sock \
-		--name ${BASE_DOCKER_COMPOSE_NAME} ${CONTAINER_COMPOSE_IMAGE_NAME}:latest /bin/bash -c " \
-			/bin/bash -c 'cd /instill-ai/base && make down >/dev/null 2>&1' \
-		"
-	@docker rm -f ${BASE_DOCKER_COMPOSE_NAME}-latest >/dev/null 2>&1
-	@docker rm -f ${BASE_DOCKER_COMPOSE_NAME}-release >/dev/null 2>&1
+	@if docker compose ls -q | grep -q "instill-base"; then \
+		docker run -it --rm \
+			-v /var/run/docker.sock:/var/run/docker.sock \
+			--name ${CONTAINER_COMPOSE_NAME} \
+			${CONTAINER_COMPOSE_IMAGE_NAME}:latest /bin/bash -c " \
+				/bin/bash -c 'cd /instill-ai/base && make down >/dev/null 2>&1' \
+			"; \
+	fi
+	@docker rm -f ${CONTAINER_COMPOSE_NAME}-latest >/dev/null 2>&1
+	@docker rm -f ${CONTAINER_COMPOSE_NAME}-release >/dev/null 2>&1
 
 .PHONY: images
 images:			## List all container images
