@@ -57,7 +57,7 @@ expose:
       secretName: ""
   ingress:
     hosts:
-      apigateway: api.instill.tech/model
+      apiGatewayModel: model.instill.tech
     # set to the type of ingress controller if it has specific requirements.
     # leave as `default` for most ingress controllers.
     # set to `gce` if using the GCE ingress controller
@@ -109,20 +109,6 @@ expose:
       apiGatewayModelMetrics:
     # Annotations on the LoadBalancer service
     annotations: {}
-
-# -- The external URL for VDP core service. It is used to
-# populate the API endpoints showed on the console
-#
-# Format: protocol://domain[:port]. Usually:
-# 1) if "expose.type" is "ingress", the "domain" should be
-# the value of "expose.ingress.hosts.gateway"
-# 2) if "expose.type" is "clusterIP", the "domain" should be
-# the value of "expose.clusterIP.name"
-# 3) if "expose.type" is "nodePort", the "domain" should be
-# the IP address of Kubernetes node
-#
-# If Instill Model is deployed behind the proxy, set it as the URL of the proxy (without protocol and port)
-apiGatewayModelURL: http://localhost:9080
 
 # -- The internal TLS used for VDP components secure communicating. In order to enable https
 # in each components tls cert files need to provided in advance.
