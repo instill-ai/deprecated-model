@@ -136,6 +136,11 @@ app.kubernetes.io/name: {{ include "model.name" . }}
   {{- printf "base-etcd" -}}
 {{- end -}}
 
+{{/* api-gateway project */}}
+{{- define "model.apiGatewayModel.project" -}}
+  {{- printf "model" -}}
+{{- end -}}
+
 {{/* api-gateway-model service and container port */}}
 {{- define "model.apiGatewayModel.httpPort" -}}
   {{- printf "9080" -}}
