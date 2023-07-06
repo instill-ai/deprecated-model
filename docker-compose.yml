@@ -3,6 +3,7 @@ version: "3.9"
 networks:
   default:
     name: instill-network
+    external: true
 
 volumes:
   conda_pack:
@@ -41,9 +42,6 @@ services:
       envsubst <config/.env.envsubst >config/.env &&
       make config &&
       krakend run -c krakend.json"
-    depends_on:
-      model_backend:
-        condition: service_healthy
 
   model_backend_migrate:
     container_name: ${MODEL_BACKEND_HOST}-migrate
@@ -169,9 +167,6 @@ services:
       CFG_LOG_EXTERNAL: ${OBSERVE_ENABLED}
       CFG_LOG_OTELCOLLECTOR_PORT: ${OTEL_COLLECTOR_PORT}
     entrypoint: ./controller-model
-    depends_on:
-      model_backend:
-        condition: service_started
 
   triton_conda_env:
     container_name: triton-conda-env
