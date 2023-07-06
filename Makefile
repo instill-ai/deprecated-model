@@ -44,17 +44,19 @@ HELM_RELEASE_NAME := model
 
 .PHONY: all
 all:			## Launch all services with their up-to-date release version
-ifeq ($(BASE_ENABLED), true)
-	@export TMP_CONFIG_DIR=$(shell mktemp -d) && docker run -it --rm \
-		-v /var/run/docker.sock:/var/run/docker.sock \
-		-v $${TMP_CONFIG_DIR}:$${TMP_CONFIG_DIR} \
-		--name ${CONTAINER_COMPOSE_NAME}-release \
-		${CONTAINER_COMPOSE_IMAGE_NAME}:release /bin/bash -c " \
-			cp -r /instill-ai/base/configs/* $${TMP_CONFIG_DIR} && \
-			/bin/bash -c 'cd /instill-ai/base && make all EDITION=local-ce OBSERVE_ENABLED=${OBSERVE_ENABLED} OBSERVE_CONFIG_DIR_PATH=$${TMP_CONFIG_DIR}' && \
-			/bin/bash -c 'rm -r $${TMP_CONFIG_DIR}/*' \
-		" && rm -r $${TMP_CONFIG_DIR}
-endif
+	@if ! (docker compose ls -q | grep -q "instill-base"); then \
+		export TMP_CONFIG_DIR=$(shell mktemp -d) && \
+		docker run -it --rm \
+			-v /var/run/docker.sock:/var/run/docker.sock \
+			-v $${TMP_CONFIG_DIR}:$${TMP_CONFIG_DIR} \
+			--name ${CONTAINER_COMPOSE_NAME}-release \
+			${CONTAINER_COMPOSE_IMAGE_NAME}:release /bin/bash -c " \
+				cp -r /instill-ai/base/configs/* $${TMP_CONFIG_DIR} && \
+				/bin/bash -c 'cd /instill-ai/base && make all EDITION=local-ce OBSERVE_ENABLED=${OBSERVE_ENABLED} OBSERVE_CONFIG_DIR_PATH=$${TMP_CONFIG_DIR}' && \
+				/bin/bash -c 'rm -r $${TMP_CONFIG_DIR}/*' \
+			" && \
+		rm -r $${TMP_CONFIG_DIR}; \
+	fi
 ifeq (${NVIDIA_GPU_AVAILABLE}, true)
 	@docker inspect --type=image instill/tritonserver:${TRITON_SERVER_VERSION} >/dev/null 2>&1 || printf "\033[1;33mINFO:\033[0m This may take a while due to the enormous size of the Triton server image, but the image pulling process should be just a one-time effort.\n" && sleep 5
 	@cat docker-compose.nvidia.yml | yq '.services.triton_server.deploy.resources.reservations.devices[0].device_ids |= (strenv(NVIDIA_VISIBLE_DEVICES) | split(",")) | ..style="double"' | \
@@ -68,17 +70,19 @@ endif
 
 .PHONY: latest
 latest:			## Lunch all dependent services with their latest codebase
-ifeq ($(BASE_ENABLED), true)
-	@export TMP_CONFIG_DIR=$(shell mktemp -d) && docker run -it --rm \
-		-v /var/run/docker.sock:/var/run/docker.sock \
-		-v $${TMP_CONFIG_DIR}:$${TMP_CONFIG_DIR} \
-		--name ${CONTAINER_COMPOSE_NAME}-latest \
-		${CONTAINER_COMPOSE_IMAGE_NAME}:latest /bin/bash -c " \
-			cp -r /instill-ai/base/configs/* $${TMP_CONFIG_DIR} && \
-			/bin/bash -c 'cd /instill-ai/base && make latest EDITION=local-ce:latest PROFILE=$(PROFILE) OBSERVE_ENABLED=${OBSERVE_ENABLED} OBSERVE_CONFIG_DIR_PATH=$${TMP_CONFIG_DIR}' && \
-			/bin/bash -c 'rm -r $${TMP_CONFIG_DIR}/*' \
-		" && rm -r $${TMP_CONFIG_DIR}
-endif
+	@if ! (docker compose ls -q | grep -q "instill-base"); then \
+		export TMP_CONFIG_DIR=$(shell mktemp -d) && \
+		docker run -it --rm \
+			-v /var/run/docker.sock:/var/run/docker.sock \
+			-v $${TMP_CONFIG_DIR}:$${TMP_CONFIG_DIR} \
+			--name ${CONTAINER_COMPOSE_NAME}-latest \
+			${CONTAINER_COMPOSE_IMAGE_NAME}:latest /bin/bash -c " \
+				cp -r /instill-ai/base/configs/* $${TMP_CONFIG_DIR} && \
+				/bin/bash -c 'cd /instill-ai/base && make latest EDITION=local-ce:latest PROFILE=$(PROFILE) OBSERVE_ENABLED=${OBSERVE_ENABLED} OBSERVE_CONFIG_DIR_PATH=$${TMP_CONFIG_DIR}' && \
+				/bin/bash -c 'rm -r $${TMP_CONFIG_DIR}/*' \
+			" && \
+		rm -r $${TMP_CONFIG_DIR}; \
+	fi
 ifeq (${NVIDIA_GPU_AVAILABLE}, true)
 	@docker inspect --type=image instill/tritonserver:${TRITON_SERVER_VERSION} >/dev/null 2>&1 || printf "\033[1;33mINFO:\033[0m This may take a while due to the enormous size of the Triton server image, but the image pulling process should be just a one-time effort.\n" && sleep 5
 	@cat docker-compose.nvidia.yml | yq '.services.triton_server.deploy.resources.reservations.devices[0].device_ids |= (strenv(NVIDIA_VISIBLE_DEVICES) | split(",")) | ..style="double"' | \
