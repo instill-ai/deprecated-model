@@ -2,7 +2,7 @@ version: "3.9"
 
 services:
   api_gateway_model:
-    image: ${API_GATEWAY_MODEL_IMAGE}:${API_GATEWAY_MODEL_VERSION}
+    image: ${API_GATEWAY_IMAGE}:${API_GATEWAY_VERSION}
     build:
       context: ./api-gateway
       args:
