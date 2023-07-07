@@ -22,7 +22,7 @@ RUN apt-get update && apt-get install -y \
     git \
     bash \
     make \
-    wget \    
+    wget \
     vim && rm -rf /var/lib/apt/lists/*
 
 # Install k6
@@ -73,7 +73,7 @@ RUN git clone -b v${BASE_VERSION} -c advice.detachedHead=false https://github.co
 
 WORKDIR /instill-ai/model
 
-ARG API_GATEWAY_MODEL_VERSION MODEL_BACKEND_VERSION CONTROLLER_MODEL_VERSION
-RUN git clone -b v${API_GATEWAY_MODEL_VERSION} -c advice.detachedHead=false https://github.com/instill-ai/api-gateway.git
+ARG API_GATEWAY_VERSION MODEL_BACKEND_VERSION CONTROLLER_MODEL_VERSION
+RUN git clone -b v${API_GATEWAY_VERSION} -c advice.detachedHead=false https://github.com/instill-ai/api-gateway.git
 RUN git clone -b v${MODEL_BACKEND_VERSION} -c advice.detachedHead=false https://github.com/instill-ai/model-backend.git
 RUN git clone -b v${CONTROLLER_MODEL_VERSION} -c advice.detachedHead=false https://github.com/instill-ai/controller-model.git

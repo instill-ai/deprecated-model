@@ -16,7 +16,7 @@ volumes:
 services:
   api_gateway_model:
     container_name: ${API_GATEWAY_MODEL_HOST}
-    image: ${API_GATEWAY_MODEL_IMAGE}:${API_GATEWAY_MODEL_VERSION}
+    image: ${API_GATEWAY_IMAGE}:${API_GATEWAY_VERSION}
     restart: unless-stopped
     environment:
       API_GATEWAY_PROJECT: model
