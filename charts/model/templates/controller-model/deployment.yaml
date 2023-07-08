@@ -61,6 +61,9 @@ spec:
               value: "{{ template "base.etcd" . }}"
             - name: ETCD_CLIENT_PORT
               value: "{{ template "base.etcd.clientPort" . }}"
+          volumeMounts:
+            - name: docker-image-cache
+              mountPath: "/var/lib/docker/overlay2"    
       containers:
         - name: controller-model
           image: {{ .Values.controllerModel.image.repository }}:{{ .Values.controllerModel.image.tag }}
@@ -96,6 +99,8 @@ spec:
             - name: controller-internal-certs
               mountPath: "/etc/instill-ai/model/ssl/controller"
             {{- end }}
+            - name: docker-image-cache
+              mountPath: "/var/lib/docker/overlay2"  
             {{- with .Values.controllerModel.extraVolumeMounts }}
             {{- toYaml . | nindent 12 }}
             {{- end }}
@@ -113,6 +118,8 @@ spec:
         - name: controller-internal-certs
           secret:
             secretName: {{ template "model.internalTLS.controllerModel.secretName" . }}
+        - name: docker-image-cache
+          emptyDir: {}  
         {{- with .Values.controllerModel.extraVolumes }}
         {{- toYaml . | nindent 8 }}
         {{- end }}
