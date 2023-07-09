@@ -193,7 +193,7 @@ apiGatewayModel:
   # -- The image of api-gateway
   image:
     repository: instill/api-gateway
-    tag: 0.2.8-alpha
+    tag: 0.3.0-alpha
     pullPolicy: IfNotPresent
   # -- The path of configuration file for api-gateway
   configPath: /api-gateway/config/.env
@@ -250,7 +250,7 @@ modelBackend:
   # -- The image of model-backend
   image:
     repository: instill/model-backend
-    tag: 0.16.7-alpha
+    tag: 0.16.8-alpha
     pullPolicy: IfNotPresent
   # -- The command names to be executed
   commandName:
@@ -325,7 +325,7 @@ controllerModel:
   # -- The image of controller
   image:
     repository: instill/controller-model
-    tag: 0.1.7-alpha
+    tag: 0.1.0-alpha
     pullPolicy: IfNotPresent
   # -- The command names to be executed
   commandName:

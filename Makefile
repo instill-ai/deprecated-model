@@ -53,9 +53,9 @@ all:			## Launch all services with their up-to-date release version
 			${CONTAINER_COMPOSE_IMAGE_NAME}:release /bin/bash -c " \
 				cp -r /instill-ai/base/configs/* $${TMP_CONFIG_DIR} && \
 				/bin/bash -c 'cd /instill-ai/base && make all EDITION=local-ce OBSERVE_ENABLED=${OBSERVE_ENABLED} OBSERVE_CONFIG_DIR_PATH=$${TMP_CONFIG_DIR}' && \
-				/bin/bash -c 'rm -r $${TMP_CONFIG_DIR}/*' \
+				/bin/bash -c 'rm -rf $${TMP_CONFIG_DIR}/*' \
 			" && \
-		rm -r $${TMP_CONFIG_DIR}; \
+		rm -rf $${TMP_CONFIG_DIR}; \
 	fi
 ifeq (${NVIDIA_GPU_AVAILABLE}, true)
 	@docker inspect --type=image instill/tritonserver:${TRITON_SERVER_VERSION} >/dev/null 2>&1 || printf "\033[1;33mINFO:\033[0m This may take a while due to the enormous size of the Triton server image, but the image pulling process should be just a one-time effort.\n" && sleep 5
@@ -79,9 +79,9 @@ latest:			## Lunch all dependent services with their latest codebase
 			${CONTAINER_COMPOSE_IMAGE_NAME}:latest /bin/bash -c " \
 				cp -r /instill-ai/base/configs/* $${TMP_CONFIG_DIR} && \
 				/bin/bash -c 'cd /instill-ai/base && make latest EDITION=local-ce:latest PROFILE=$(PROFILE) OBSERVE_ENABLED=${OBSERVE_ENABLED} OBSERVE_CONFIG_DIR_PATH=$${TMP_CONFIG_DIR}' && \
-				/bin/bash -c 'rm -r $${TMP_CONFIG_DIR}/*' \
+				/bin/bash -c 'rm -rf $${TMP_CONFIG_DIR}/*' \
 			" && \
-		rm -r $${TMP_CONFIG_DIR}; \
+		rm -rf $${TMP_CONFIG_DIR}; \
 	fi
 ifeq (${NVIDIA_GPU_AVAILABLE}, true)
 	@docker inspect --type=image instill/tritonserver:${TRITON_SERVER_VERSION} >/dev/null 2>&1 || printf "\033[1;33mINFO:\033[0m This may take a while due to the enormous size of the Triton server image, but the image pulling process should be just a one-time effort.\n" && sleep 5
@@ -185,6 +185,7 @@ build-latest:				## Build latest images for all model components
 .PHONY: build-release
 build-release:				## Build release images for all model components
 	@docker build --progress plain \
+		--build-arg INSTILL_BASE_VERSION=${INSTILL_BASE_VERSION} \
 		--build-arg UBUNTU_VERSION=${UBUNTU_VERSION} \
 		--build-arg GOLANG_VERSION=${GOLANG_VERSION} \
 		--build-arg K6_VERSION=${K6_VERSION} \
@@ -192,7 +193,6 @@ build-release:				## Build release images for all model components
 		--build-arg API_GATEWAY_VERSION=${API_GATEWAY_VERSION} \
 		--build-arg MODEL_BACKEND_VERSION=${MODEL_BACKEND_VERSION} \
 		--build-arg CONTROLLER_MODEL_VERSION=${CONTROLLER_MODEL_VERSION} \
-		--build-arg CONSOLE_VERSION=${CONSOLE_VERSION} \
 		--target release \
 		-t ${CONTAINER_COMPOSE_IMAGE_NAME}:release .
 	@docker run -it --rm \
@@ -205,7 +205,6 @@ build-release:				## Build release images for all model components
 			MODEL_BACKEND_VERSION=${MODEL_BACKEND_VERSION} \
 			MGMT_BACKEND_VERSION=${MGMT_BACKEND_VERSION} \
 			CONTROLLER_MODEL_VERSION=${CONTROLLER_MODEL_VERSION} \
-			CONSOLE_VERSION=${CONSOLE_VERSION} \
 			docker compose -f docker-compose.build.yml build --progress plain \
 		"
 
@@ -223,8 +222,8 @@ integration-test-latest:			## Run integration test on the latest model
 			/bin/bash -c 'cd /instill-ai/base && make build-latest BUILD_CONFIG_DIR_PATH=$${TMP_CONFIG_DIR}' && \
 			/bin/bash -c 'cd /instill-ai/base && COMPOSE_PROFILES=all EDITION=local-ce:test OBSERVE_CONFIG_DIR_PATH=$${TMP_CONFIG_DIR} docker compose -f docker-compose.yml -f docker-compose.latest.yml up -d --quiet-pull' && \
 			/bin/bash -c 'cd /instill-ai/base && COMPOSE_PROFILES=all EDITION=local-ce:test OBSERVE_CONFIG_DIR_PATH=$${TMP_CONFIG_DIR} docker compose -f docker-compose.yml -f docker-compose.latest.yml rm -f' && \
-			/bin/bash -c 'rm -r $${TMP_CONFIG_DIR}/*' \
-		" && rm -r $${TMP_CONFIG_DIR}
+			/bin/bash -c 'rm -rf $${TMP_CONFIG_DIR}/*' \
+		" && rm -rf $${TMP_CONFIG_DIR}
 	@COMPOSE_PROFILES=all EDITION=local-ce:test ITMODE_ENABLED=true docker compose -f docker-compose.yml -f docker-compose.latest.yml up -d --quiet-pull
 	@COMPOSE_PROFILES=all EDITION=local-ce:test ITMODE_ENABLED=true docker compose -f docker-compose.yml -f docker-compose.latest.yml rm -f
 	@docker run -it --rm \
@@ -250,8 +249,8 @@ integration-test-release:			## Run integration test on the release model
 			/bin/bash -c 'cd /instill-ai/base && make build-release BUILD_CONFIG_DIR_PATH=$${TMP_CONFIG_DIR}' \
 			/bin/bash -c 'cd /instill-ai/base && EDITION=local-ce:test OBSERVE_CONFIG_DIR_PATH=$${TMP_CONFIG_DIR} docker compose up -d --quiet-pull' && \
 			/bin/bash -c 'cd /instill-ai/base && EDITION=local-ce:test OBSERVE_CONFIG_DIR_PATH=$${TMP_CONFIG_DIR} docker compose rm -f' && \
-			/bin/bash -c 'rm -r $${TMP_CONFIG_DIR}/*' \
-		" && rm -r $${TMP_CONFIG_DIR}
+			/bin/bash -c 'rm -rf $${TMP_CONFIG_DIR}/*' \
+		" && rm -rf $${TMP_CONFIG_DIR}
 	@EDITION=local-ce:test ITMODE_ENABLED=true docker compose up -d --quiet-pull
 	@EDITION=local-ce:test ITMODE_ENABLED=true docker compose rm -f
 	@docker run -it --rm \
@@ -332,9 +331,7 @@ helm-integration-test-release:                       ## Run integration test on 
 				helm --kubeconfig /instill-ai/kubeconfig install base charts/base \
 					--namespace ${HELM_NAMESPACE} --create-namespace \
 					--set edition=k8s-ce:test \
-					--set apiGatewayBase.image.tag=$${API_GATEWAY_BASE_VERSION} \
-					--set mgmtBackend.image.tag=$${MGMT_BACKEND_VERSION} \
-					--set console.image.tag=$${CONSOLE_VERSION} \
+					--set apiGatewayBase.image.tag=$${API_GATEWAY_VERSION} \
 					--set tags.observability=false \
 					--set tags.prometheusStack=false' \
 		"
@@ -358,8 +355,8 @@ ifeq ($(UNAME_S),Darwin)
 		"
 else ifeq ($(UNAME_S),Linux)
 	@docker run -it --rm --network host --name ${CONTAINER_BACKEND_INTEGRATION_TEST_NAME}-helm-release ${CONTAINER_COMPOSE_IMAGE_NAME}:release /bin/bash -c " \
-			/bin/bash -c 'cd model-backend && make integration-test API_GATEWAY_MODEL_HOST=host.docker.internal API_GATEWAY_MODEL_PORT=${API_GATEWAY_MODEL_PORT}' && \
-			/bin/bash -c 'cd controller-model && make integration-test API_GATEWAY_MODEL_HOST=host.docker.internal API_GATEWAY_MODEL_PORT=${API_GATEWAY_MODEL_PORT}' \
+			/bin/bash -c 'cd model-backend && make integration-test API_GATEWAY_MODEL_HOST=localhost API_GATEWAY_MODEL_PORT=${API_GATEWAY_MODEL_PORT}' && \
+			/bin/bash -c 'cd controller-model && make integration-test API_GATEWAY_MODEL_HOST=localhost API_GATEWAY_MODEL_PORT=${API_GATEWAY_MODEL_PORT}' \
 		"
 endif
 	@helm uninstall ${HELM_RELEASE_NAME} --namespace ${HELM_NAMESPACE}

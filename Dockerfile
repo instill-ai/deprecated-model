@@ -68,8 +68,8 @@ RUN echo "Model release codebase cloned on ${CACHE_DATE}"
 
 WORKDIR /instill-ai
 
-ARG BASE_VERSION
-RUN git clone -b v${BASE_VERSION} -c advice.detachedHead=false https://github.com/instill-ai/base.git
+ARG INSTILL_BASE_VERSION
+RUN git clone -b v${INSTILL_BASE_VERSION} -c advice.detachedHead=false https://github.com/instill-ai/base.git
 
 WORKDIR /instill-ai/model
 
