@@ -4,6 +4,8 @@ metadata:
   name: {{ template "model.apiGatewayModel" . }}
 data:
   .env: |-
+    LOG_LEVEL={{ upper .Values.logLevel }}
+
     # api-gateway
     API_GATEWAY_HOST={{ template "model.apiGatewayModel" . }}
     API_GATEWAY_PORT={{ template "model.apiGatewayModel.httpPort" . }}
@@ -21,7 +23,6 @@ data:
     MODEL_BACKEND_PUBLICPORT={{ template "model.modelBackend.publicPort" . }}
 
     # influxdb
-    INFLUXDB_ENABLE={{ .Values.tags.observability }}
     INFLUXDB_HOST={{ template "base.influxdb" . }}
     INFLUXDB_PORT={{ template "base.influxdb.port" . }}
 
