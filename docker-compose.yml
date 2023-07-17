@@ -176,7 +176,7 @@ services:
     container_name: ${TRITON_SERVER_HOST}
     image: ${TRITON_SERVER_IMAGE}:${TRITON_SERVER_VERSION}
     restart: unless-stopped
-    command: tritonserver --model-store=/model-repository --model-control-mode=explicit --allow-http=true --strict-model-config=false
+    command: tritonserver --model-store=/model-repository --model-control-mode=explicit --allow-http=true
     volumes:
       - model_repository:/model-repository
       - conda_pack:/conda-pack
