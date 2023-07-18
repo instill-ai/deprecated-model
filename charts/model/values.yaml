@@ -367,7 +367,7 @@ triton:
   # -- The image of Triton
   image:
     repository: instill/tritonserver
-    tag: 22.12
+    tag: 23.04
     pullPolicy: IfNotPresent
   # -- Set the service account to be used, default if left empty
   serviceAccountName: ""

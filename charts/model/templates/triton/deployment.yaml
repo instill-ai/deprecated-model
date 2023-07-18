@@ -84,7 +84,7 @@ spec:
           {{- end }}
           command: ["/bin/bash", "-c"]
           args:
-            - tritonserver --model-store=/model-repository --model-control-mode=explicit --allow-http=true --strict-model-config=false
+            - tritonserver --model-store=/model-repository --model-control-mode=explicit --allow-http=true
           ports:
             - name: {{ ternary "https" "http" .Values.internalTLS.enabled }}
               containerPort: {{ template "model.triton.httpPort" . }}
