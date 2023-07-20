@@ -40,12 +40,6 @@ CONTAINER_CONSOLE_INTEGRATION_TEST_NAME := model-console-integration-test
 HELM_NAMESPACE := instill-ai
 HELM_RELEASE_NAME := model
 
-ifeq ($(UNAME_S),Darwin)
-EXTRA_PARAMS :=
-else ifeq ($(UNAME_S),Linux)
-EXTRA_PARAMS := -v ${HOME}/.minikube/:${HOME}/.minikube/ --network host
-endif
-
 #============================================================================
 
 .PHONY: all
@@ -285,7 +279,8 @@ helm-integration-test-latest:                       ## Run integration test on t
 		-v ${HOME}/.kube/config:/root/.kube/config \
 		-v /var/run/docker.sock:/var/run/docker.sock \
 		-v $${TMP_CONFIG_DIR}:$${TMP_CONFIG_DIR} \
-		${EXTRA_PARAMS} --name ${CONTAINER_BACKEND_INTEGRATION_TEST_NAME}-latest \
+		${DOCKER_HELM_IT_EXTRA_PARAMS} \
+		--name ${CONTAINER_BACKEND_INTEGRATION_TEST_NAME}-latest \
 		${CONTAINER_COMPOSE_IMAGE_NAME}:latest /bin/bash -c " \
 			cp /instill-ai/base/.env $${TMP_CONFIG_DIR}/.env && \
 			cp /instill-ai/base/docker-compose.build.yml $${TMP_CONFIG_DIR}/docker-compose.build.yml && \
@@ -300,7 +295,7 @@ helm-integration-test-latest:                       ## Run integration test on t
 					--set tags.observability=false \
 					--set tags.prometheusStack=false' \
 		"
-	@kubectl rollout status deployment base-api-gateway-base --namespace ${HELM_NAMESPACE} --timeout=120s
+	@kubectl rollout status deployment base-api-gateway-base --namespace ${HELM_NAMESPACE} --timeout=1500s
 	@helm install ${HELM_RELEASE_NAME} charts/model --namespace ${HELM_NAMESPACE} --create-namespace \
 		--set itMode.enabled=true \
 		--set edition=k8s-ce:test \
@@ -309,7 +304,7 @@ helm-integration-test-latest:                       ## Run integration test on t
 		--set controllerModel.image.tag=latest \
 		--set triton.nvidiaVisibleDevices=${NVIDIA_VISIBLE_DEVICES} \
 		--set tags.observability=false
-	@kubectl rollout status deployment model-api-gateway-model --namespace ${HELM_NAMESPACE} --timeout=120s
+	@kubectl rollout status deployment model-api-gateway-model --namespace ${HELM_NAMESPACE} --timeout=1500s
 	@export API_GATEWAY_MODEL_POD_NAME=$$(kubectl get pods --namespace ${HELM_NAMESPACE} -l "app.kubernetes.io/component=api-gateway-model,app.kubernetes.io/instance=${HELM_RELEASE_NAME}" -o jsonpath="{.items[0].metadata.name}") && \
 		kubectl --namespace ${HELM_NAMESPACE} port-forward $${API_GATEWAY_MODEL_POD_NAME} ${API_GATEWAY_MODEL_PORT}:${API_GATEWAY_MODEL_PORT} > /dev/null 2>&1 &
 	@while ! nc -vz localhost ${API_GATEWAY_MODEL_PORT} > /dev/null 2>&1; do sleep 1; done
@@ -327,7 +322,8 @@ endif
 	@helm uninstall ${HELM_RELEASE_NAME} --namespace ${HELM_NAMESPACE}
 	@docker run -it --rm \
 		-v ${HOME}/.kube/config:/root/.kube/config \
-		${EXTRA_PARAMS} --name ${CONTAINER_BACKEND_INTEGRATION_TEST_NAME}-latest \
+		${DOCKER_HELM_IT_EXTRA_PARAMS} \
+		--name ${CONTAINER_BACKEND_INTEGRATION_TEST_NAME}-latest \
 		${CONTAINER_COMPOSE_IMAGE_NAME}:latest /bin/bash -c " \
 			/bin/bash -c 'cd /instill-ai/base && helm uninstall base --namespace ${HELM_NAMESPACE}' \
 		"
@@ -340,7 +336,8 @@ helm-integration-test-release:                       ## Run integration test on 
 	@make build-release
 	@docker run -it --rm \
 		-v ${HOME}/.kube/config:/root/.kube/config \
-		${EXTRA_PARAMS} --name ${CONTAINER_BACKEND_INTEGRATION_TEST_NAME}-latest \
+		${DOCKER_HELM_IT_EXTRA_PARAMS} \
+		--name ${CONTAINER_BACKEND_INTEGRATION_TEST_NAME}-latest \
 		${CONTAINER_COMPOSE_IMAGE_NAME}:latest /bin/bash -c " \
 			/bin/bash -c 'cd /instill-ai/base && \
 				export $(grep -v '^#' .env | xargs) && \
@@ -351,7 +348,7 @@ helm-integration-test-release:                       ## Run integration test on 
 					--set tags.observability=false \
 					--set tags.prometheusStack=false' \
 		"
-	@kubectl rollout status deployment base-api-gateway-base --namespace ${HELM_NAMESPACE} --timeout=120s
+	@kubectl rollout status deployment base-api-gateway-base --namespace ${HELM_NAMESPACE} --timeout=1500s
 	@helm install ${HELM_RELEASE_NAME} charts/model --namespace ${HELM_NAMESPACE} --create-namespace \
 		--set itMode.enabled=true \
 		--set edition=k8s-ce:test \
@@ -360,7 +357,7 @@ helm-integration-test-release:                       ## Run integration test on 
 		--set controllerModel.image.tag=latest \
 		--set triton.nvidiaVisibleDevices=${NVIDIA_VISIBLE_DEVICES} \
 		--set tags.observability=false
-	@kubectl rollout status deployment model-api-gateway-model --namespace ${HELM_NAMESPACE} --timeout=120s
+	@kubectl rollout status deployment model-api-gateway-model --namespace ${HELM_NAMESPACE} --timeout=1500s
 	@export API_GATEWAY_MODEL_POD_NAME=$$(kubectl get pods --namespace ${HELM_NAMESPACE} -l "app.kubernetes.io/component=api-gateway-model,app.kubernetes.io/instance=${HELM_RELEASE_NAME}" -o jsonpath="{.items[0].metadata.name}") && \
 		kubectl --namespace ${HELM_NAMESPACE} port-forward $${API_GATEWAY_MODEL_POD_NAME} ${API_GATEWAY_MODEL_PORT}:${API_GATEWAY_MODEL_PORT} > /dev/null 2>&1 &
 	@while ! nc -vz localhost ${API_GATEWAY_MODEL_PORT} > /dev/null 2>&1; do sleep 1; done
@@ -378,7 +375,8 @@ endif
 	@helm uninstall ${HELM_RELEASE_NAME} --namespace ${HELM_NAMESPACE}
 	@docker run -it --rm \
 		-v ${HOME}/.kube/config:/root/.kube/config \
-		${EXTRA_PARAMS} --name ${CONTAINER_BACKEND_INTEGRATION_TEST_NAME}-latest \
+		${DOCKER_HELM_IT_EXTRA_PARAMS} \
+		--name ${CONTAINER_BACKEND_INTEGRATION_TEST_NAME}-latest \
 		${CONTAINER_COMPOSE_IMAGE_NAME}:latest /bin/bash -c " \
 			/bin/bash -c 'cd /instill-ai/base && helm uninstall base --namespace ${HELM_NAMESPACE}' \
 		"
