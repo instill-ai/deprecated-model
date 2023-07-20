@@ -187,7 +187,6 @@ build-latest:				## Build latest images for all model components
 		${CONTAINER_COMPOSE_IMAGE_NAME}:latest /bin/bash -c " \
 			API_GATEWAY_VERSION=latest \
 			MODEL_BACKEND_VERSION=latest \
-			MGMT_BACKEND_VERSION=latest \
 			CONTROLLER_MODEL_VERSION=latest \
 			docker compose -f docker-compose.build.yml build --progress plain \
 		"
@@ -213,7 +212,6 @@ build-release:				## Build release images for all model components
 		${CONTAINER_COMPOSE_IMAGE_NAME}:release /bin/bash -c " \
 			API_GATEWAY_VERSION=${API_GATEWAY_VERSION} \
 			MODEL_BACKEND_VERSION=${MODEL_BACKEND_VERSION} \
-			MGMT_BACKEND_VERSION=${MGMT_BACKEND_VERSION} \
 			CONTROLLER_MODEL_VERSION=${CONTROLLER_MODEL_VERSION} \
 			docker compose -f docker-compose.build.yml build --progress plain \
 		"
@@ -256,7 +254,7 @@ integration-test-release:			## Run integration test on the release model
 			cp /instill-ai/base/.env $${TMP_CONFIG_DIR}/.env && \
 			cp /instill-ai/base/docker-compose.build.yml $${TMP_CONFIG_DIR}/docker-compose.build.yml && \
 			cp -r /instill-ai/base/configs/influxdb $${TMP_CONFIG_DIR} && \
-			/bin/bash -c 'cd /instill-ai/base && make build-release BUILD_CONFIG_DIR_PATH=$${TMP_CONFIG_DIR}' \
+			/bin/bash -c 'cd /instill-ai/base && make build-release BUILD_CONFIG_DIR_PATH=$${TMP_CONFIG_DIR}' && \
 			/bin/bash -c 'cd /instill-ai/base && EDITION=local-ce:test OBSERVE_CONFIG_DIR_PATH=$${TMP_CONFIG_DIR} docker compose up -d --quiet-pull' && \
 			/bin/bash -c 'cd /instill-ai/base && EDITION=local-ce:test OBSERVE_CONFIG_DIR_PATH=$${TMP_CONFIG_DIR} docker compose rm -f' && \
 			/bin/bash -c 'rm -rf $${TMP_CONFIG_DIR}/*' \
