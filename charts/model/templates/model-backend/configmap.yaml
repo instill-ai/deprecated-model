@@ -17,6 +17,10 @@ data:
       itmode:
         enabled: {{ .Values.itMode.enabled }}
       maxdatasize: {{ .Values.maxDataSizeMB }}
+      workflow:
+        maxworkflowtimeout: {{ .Values.modelBackend.temporal.workflow.maxWorkflowTimeout }}
+        maxworkflowretry: {{ .Values.modelBackend.temporal.workflow.maxWorkflowRetry }}
+        maxactivityretry: {{ .Values.modelBackend.temporal.workflow.maxActivityRetry }}
       {{- if .Values.internalTLS.enabled }}
       https:
         cert: /etc/instill-ai/model/ssl/model/tls.crt

@@ -257,6 +257,10 @@ modelBackend:
     cert:
     key:
     serverName:
+    workflow:
+      maxWorkflowTimeout: 3600 # in seconds
+      maxWorkflowRetry: 3
+      maxActivityRetry: 1
   # -- Set the service account to be used, default if left empty
   serviceAccountName: ""
   # -- Mount the service account token
