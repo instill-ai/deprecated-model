@@ -22,6 +22,10 @@ data:
     MODEL_BACKEND_HOST={{ template "model.modelBackend" . }}
     MODEL_BACKEND_PUBLICPORT={{ template "model.modelBackend.publicPort" . }}
 
+    # mgmt-backend
+    MGMT_BACKEND_HOST={{ template "base.mgmtBackend" . }}
+    MGMT_BACKEND_PUBLICPORT={{ template "base.mgmtBackend.publicPort" . }}
+
     # influxdb
     INFLUXDB_HOST={{ template "base.influxdb" . }}
     INFLUXDB_PORT={{ template "base.influxdb.port" . }}
