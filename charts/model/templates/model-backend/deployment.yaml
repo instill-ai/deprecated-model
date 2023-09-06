@@ -8,6 +8,9 @@ metadata:
     app.kubernetes.io/component: model-backend
   annotations:
     rollme: {{ randAlphaNum 5 | quote }}
+    {{- with .Values.modelBackend.annotations }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
 spec:
   strategy:
     type: {{ .Values.updateStrategy.type }}

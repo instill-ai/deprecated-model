@@ -238,6 +238,8 @@ modelBackend:
     repository: instill/model-backend
     tag: 0.16.11-alpha
     pullPolicy: IfNotPresent
+  # -- Annotation for deployment
+  annotations: {}
   # -- The command names to be executed
   commandName:
     migration: model-backend-migrate
