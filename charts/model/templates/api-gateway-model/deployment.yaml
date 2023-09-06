@@ -51,6 +51,7 @@ spec:
           - >
             while [[ "$(curl -s -o /dev/null -w ''%{http_code}'' ${MODEL_BACKEND_HOST}:${MODEL_BACKEND_PORT}/v1alpha/health/model)" != "200" ]]; do echo waiting for model-backend; sleep 1; done &&
             while [[ "$(curl -s -o /dev/null -w ''%{http_code}'' ${CONTROLLER_MODEL_HOST}:${CONTROLLER_MODEL_PORT}/v1alpha/health/controller)" != "200" ]]; do echo waiting for controller-model; sleep 1; done &&
+            while [[ "$(curl -s -o /dev/null -w ''%{http_code}'' ${MGMT_BACKEND_HOST}:${MGMT_BACKEND_PORT}/v1alpha/health/mgmt)" != "200" ]]; do echo waiting for mgmt-backend; sleep 1; done &&
             while [[ "$(curl -s -o /dev/null -w ''%{http_code}'' ${INFLUXDB_HOST}:${INFLUXDB_PORT}/health)" != "200" ]]; do echo waiting for influxdb; sleep 1; done
           env:
             - name: MODEL_BACKEND_HOST
@@ -61,6 +62,10 @@ spec:
               value: "{{ template "model.controllerModel" . }}"
             - name: CONTROLLER_MODEL_PORT
               value: "{{ template "model.controllerModel.privatePort" . }}"
+            - name: MGMT_BACKEND_HOST
+              value: "{{ template "base.mgmtBackend" . }}"
+            - name: MGMT_BACKEND_PORT
+              value: "{{ template "base.mgmtBackend.publicPort" . }}"
             - name: INFLUXDB_HOST
               value: "{{ template "base.influxdb" . }}"
             - name: INFLUXDB_PORT
