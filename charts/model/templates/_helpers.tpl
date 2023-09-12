@@ -104,10 +104,6 @@ app.kubernetes.io/name: {{ include "model.name" . }}
   {{- print "base-mgmt-backend" -}}
 {{- end -}}
 
-{{- define "model.apiGatewayModel" -}}
-  {{- printf "%s-api-gateway-model" (include "model.fullname" .) -}}
-{{- end -}}
-
 {{- define "model.modelBackend" -}}
   {{- printf "%s-model-backend" (include "model.fullname" .) -}}
 {{- end -}}
@@ -134,26 +130,6 @@ app.kubernetes.io/name: {{ include "model.name" . }}
 
 {{- define "base.etcd" -}}
   {{- printf "base-etcd" -}}
-{{- end -}}
-
-{{/* api-gateway project */}}
-{{- define "model.apiGatewayModel.project" -}}
-  {{- printf "model" -}}
-{{- end -}}
-
-{{/* api-gateway-model service and container port */}}
-{{- define "model.apiGatewayModel.httpPort" -}}
-  {{- printf "9080" -}}
-{{- end -}}
-
-{{/* api-gateway-model service and container stats port */}}
-{{- define "model.apiGatewayModel.statsPort" -}}
-  {{- printf "9070" -}}
-{{- end -}}
-
-{{/* api-gateway-model service and container metrics port */}}
-{{- define "model.apiGatewayModel.metricsPort" -}}
-  {{- printf "9071" -}}
 {{- end -}}
 
 {{/* model-backend service and container public port */}}
@@ -225,14 +201,6 @@ app.kubernetes.io/name: {{ include "model.name" . }}
 
 {{- define "base.otel.port" -}}
   {{- printf "8095" -}}
-{{- end -}}
-
-{{- define "model.internalTLS.apiGatewayModel.secretName" -}}
-  {{- if eq .Values.internalTLS.certSource "secret" -}}
-    {{- .Values.internalTLS.apiGatewayModel.secretName -}}
-  {{- else -}}
-    {{- printf "%s-api-gateway-model-internal-tls" (include "model.fullname" .) -}}
-  {{- end -}}
 {{- end -}}
 
 {{- define "model.internalTLS.modelBackend.secretName" -}}

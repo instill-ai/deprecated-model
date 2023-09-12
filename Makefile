@@ -192,7 +192,6 @@ build-latest:				## Build latest images for all model components
 		-v ${BUILD_CONFIG_DIR_PATH}/docker-compose.build.yml:/instill-ai/model/docker-compose.build.yml \
 		--name ${CONTAINER_BUILD_NAME}-latest \
 		${CONTAINER_COMPOSE_IMAGE_NAME}:latest /bin/bash -c " \
-			API_GATEWAY_VERSION=latest \
 			MODEL_BACKEND_VERSION=latest \
 			CONTROLLER_MODEL_VERSION=latest \
 			docker compose -f docker-compose.build.yml build --progress plain \
@@ -206,7 +205,6 @@ build-release:				## Build release images for all model components
 		--build-arg GOLANG_VERSION=${GOLANG_VERSION} \
 		--build-arg K6_VERSION=${K6_VERSION} \
 		--build-arg CACHE_DATE="$(shell date)" \
-		--build-arg API_GATEWAY_VERSION=${API_GATEWAY_VERSION} \
 		--build-arg MODEL_BACKEND_VERSION=${MODEL_BACKEND_VERSION} \
 		--build-arg CONTROLLER_MODEL_VERSION=${CONTROLLER_MODEL_VERSION} \
 		--target release \
@@ -217,7 +215,6 @@ build-release:				## Build release images for all model components
 		-v ${BUILD_CONFIG_DIR_PATH}/docker-compose.build.yml:/instill-ai/model/docker-compose.build.yml \
 		--name ${CONTAINER_BUILD_NAME}-release \
 		${CONTAINER_COMPOSE_IMAGE_NAME}:release /bin/bash -c " \
-			API_GATEWAY_VERSION=${API_GATEWAY_VERSION} \
 			MODEL_BACKEND_VERSION=${MODEL_BACKEND_VERSION} \
 			CONTROLLER_MODEL_VERSION=${CONTROLLER_MODEL_VERSION} \
 			docker compose -f docker-compose.build.yml build --progress plain \
@@ -245,8 +242,8 @@ integration-test-latest:			## Run integration test on the latest model
 		--network instill-network \
 		--name ${CONTAINER_BACKEND_INTEGRATION_TEST_NAME}-latest \
 		${CONTAINER_COMPOSE_IMAGE_NAME}:latest /bin/bash -c " \
-			/bin/bash -c 'cd model-backend && make integration-test API_GATEWAY_MODEL_HOST=${API_GATEWAY_MODEL_HOST} API_GATEWAY_MODEL_PORT=${API_GATEWAY_MODEL_PORT}' && \
-			/bin/bash -c 'cd controller-model && make integration-test API_GATEWAY_MODEL_HOST=${API_GATEWAY_MODEL_HOST} API_GATEWAY_MODEL_PORT=${API_GATEWAY_MODEL_PORT}' \
+			/bin/bash -c 'cd model-backend && make integration-test API_GATEWAY_URL=${API_GATEWAY_HOST}:${API_GATEWAY_PORT}' && \
+			/bin/bash -c 'cd controller-model && make integration-test API_GATEWAY_URL=${API_GATEWAY_HOST}:${API_GATEWAY_PORT}' \
 		"
 	@make down
 
@@ -272,8 +269,8 @@ integration-test-release:			## Run integration test on the release model
 		--network instill-network \
 		--name ${CONTAINER_BACKEND_INTEGRATION_TEST_NAME}-release \
 		${CONTAINER_COMPOSE_IMAGE_NAME}:release /bin/bash -c " \
-			/bin/bash -c 'cd model-backend && make integration-test API_GATEWAY_MODEL_HOST=${API_GATEWAY_MODEL_HOST} API_GATEWAY_MODEL_PORT=${API_GATEWAY_MODEL_PORT}' && \
-			/bin/bash -c 'cd controller-model && make integration-test API_GATEWAY_MODEL_HOST=${API_GATEWAY_MODEL_HOST} API_GATEWAY_MODEL_PORT=${API_GATEWAY_MODEL_PORT}' \
+			/bin/bash -c 'cd model-backend && make integration-test API_GATEWAY_URL=${API_GATEWAY_HOST}:${API_GATEWAY_PORT}' && \
+			/bin/bash -c 'cd controller-model && make integration-test API_GATEWAY_URL=${API_GATEWAY_HOST}:${API_GATEWAY_PORT}' \
 		"
 	@make down
 
@@ -294,7 +291,7 @@ helm-integration-test-latest:                       ## Run integration test on t
 				helm install base charts/base \
 					--namespace ${HELM_NAMESPACE} --create-namespace \
 					--set edition=k8s-ce:test \
-					--set apiGatewayBase.image.tag=latest \
+					--set apiGateway.image.tag=latest \
 					--set mgmtBackend.image.tag=latest \
 					--set console.image.tag=latest \
 					--set tags.observability=false \
@@ -304,7 +301,6 @@ helm-integration-test-latest:                       ## Run integration test on t
 	@helm install ${HELM_RELEASE_NAME} charts/model --namespace ${HELM_NAMESPACE} --create-namespace \
 		--set itMode.enabled=true \
 		--set edition=k8s-ce:test \
-		--set apiGatewayModel.image.tag=latest \
 		--set modelBackend.image.tag=latest \
 		--set controllerModel.image.tag=latest \
 		--set triton.nvidiaVisibleDevices=${NVIDIA_VISIBLE_DEVICES} \
@@ -315,13 +311,13 @@ helm-integration-test-latest:                       ## Run integration test on t
 	@while ! nc -vz localhost ${API_GATEWAY_MODEL_PORT} > /dev/null 2>&1; do sleep 1; done
 ifeq ($(UNAME_S),Darwin)
 	@docker run -it --rm --name ${CONTAINER_BACKEND_INTEGRATION_TEST_NAME}-helm-latest ${CONTAINER_COMPOSE_IMAGE_NAME}:latest /bin/bash -c " \
-			/bin/bash -c 'cd model-backend && make integration-test API_GATEWAY_MODEL_HOST=host.docker.internal API_GATEWAY_MODEL_PORT=${API_GATEWAY_MODEL_PORT}' && \
-			/bin/bash -c 'cd controller-model && make integration-test API_GATEWAY_MODEL_HOST=host.docker.internal API_GATEWAY_MODEL_PORT=${API_GATEWAY_MODEL_PORT}' \
+			/bin/bash -c 'cd model-backend && make integration-test API_GATEWAY_URL=host.docker.internal:${API_GATEWAY_PORT}' && \
+			/bin/bash -c 'cd controller-model && make integration-test API_GATEWAY_URL=host.docker.internal:${API_GATEWAY_PORT}' \
 		"
 else ifeq ($(UNAME_S),Linux)
 	@docker run -it --rm --network host --name ${CONTAINER_BACKEND_INTEGRATION_TEST_NAME}-helm-latest ${CONTAINER_COMPOSE_IMAGE_NAME}:latest /bin/bash -c " \
-			/bin/bash -c 'cd model-backend && make integration-test API_GATEWAY_MODEL_HOST=localhost API_GATEWAY_MODEL_PORT=${API_GATEWAY_MODEL_PORT}' && \
-			/bin/bash -c 'cd controller-model && make integration-test API_GATEWAY_MODEL_HOST=localhost API_GATEWAY_MODEL_PORT=${API_GATEWAY_MODEL_PORT}' \
+			/bin/bash -c 'cd model-backend && make integration-test API_GATEWAY_URL=localhost:${API_GATEWAY_PORT}' && \
+			/bin/bash -c 'cd controller-model && make integration-test API_GATEWAY_URL=localhost:${API_GATEWAY_PORT}' \
 		"
 endif
 	@helm uninstall ${HELM_RELEASE_NAME} --namespace ${HELM_NAMESPACE}
@@ -368,13 +364,13 @@ helm-integration-test-release:                       ## Run integration test on 
 	@while ! nc -vz localhost ${API_GATEWAY_MODEL_PORT} > /dev/null 2>&1; do sleep 1; done
 ifeq ($(UNAME_S),Darwin)
 	@docker run -it --rm --name ${CONTAINER_BACKEND_INTEGRATION_TEST_NAME}-helm-release ${CONTAINER_COMPOSE_IMAGE_NAME}:release /bin/bash -c " \
-			/bin/bash -c 'cd model-backend && make integration-test API_GATEWAY_MODEL_HOST=host.docker.internal API_GATEWAY_MODEL_PORT=${API_GATEWAY_MODEL_PORT}' && \
-			/bin/bash -c 'cd controller-model && make integration-test API_GATEWAY_MODEL_HOST=host.docker.internal API_GATEWAY_MODEL_PORT=${API_GATEWAY_MODEL_PORT}' \
+			/bin/bash -c 'cd model-backend && make integration-test API_GATEWAY_URL=host.docker.internal:${API_GATEWAY_PORT}' && \
+			/bin/bash -c 'cd controller-model && make integration-test API_GATEWAY_URL=host.docker.internal:${API_GATEWAY_PORT}' \
 		"
 else ifeq ($(UNAME_S),Linux)
 	@docker run -it --rm --network host --name ${CONTAINER_BACKEND_INTEGRATION_TEST_NAME}-helm-release ${CONTAINER_COMPOSE_IMAGE_NAME}:release /bin/bash -c " \
-			/bin/bash -c 'cd model-backend && make integration-test API_GATEWAY_MODEL_HOST=localhost API_GATEWAY_MODEL_PORT=${API_GATEWAY_MODEL_PORT}' && \
-			/bin/bash -c 'cd controller-model && make integration-test API_GATEWAY_MODEL_HOST=localhost API_GATEWAY_MODEL_PORT=${API_GATEWAY_MODEL_PORT}' \
+			/bin/bash -c 'cd model-backend && make integration-test API_GATEWAY_URL=localhost:${API_GATEWAY_PORT}' && \
+			/bin/bash -c 'cd controller-model && make integration-test API_GATEWAY_URL=localhost:${API_GATEWAY_PORT}' \
 		"
 endif
 	@helm uninstall ${HELM_RELEASE_NAME} --namespace ${HELM_NAMESPACE}
