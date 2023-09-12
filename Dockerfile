@@ -53,7 +53,6 @@ RUN git clone https://github.com/instill-ai/base.git
 
 WORKDIR /instill-ai/model
 
-RUN git clone https://github.com/instill-ai/api-gateway.git
 RUN git clone https://github.com/instill-ai/model-backend.git
 RUN git clone https://github.com/instill-ai/controller-model.git
 
@@ -73,7 +72,6 @@ RUN git clone -b v${INSTILL_BASE_VERSION} -c advice.detachedHead=false https://g
 
 WORKDIR /instill-ai/model
 
-ARG API_GATEWAY_VERSION MODEL_BACKEND_VERSION CONTROLLER_MODEL_VERSION
-RUN git clone -b v${API_GATEWAY_VERSION} -c advice.detachedHead=false https://github.com/instill-ai/api-gateway.git
+ARG MODEL_BACKEND_VERSION CONTROLLER_MODEL_VERSION
 RUN git clone -b v${MODEL_BACKEND_VERSION} -c advice.detachedHead=false https://github.com/instill-ai/model-backend.git
 RUN git clone -b v${CONTROLLER_MODEL_VERSION} -c advice.detachedHead=false https://github.com/instill-ai/controller-model.git
