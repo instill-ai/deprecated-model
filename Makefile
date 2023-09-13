@@ -331,7 +331,7 @@ endif
 		${CONTAINER_COMPOSE_IMAGE_NAME}:latest /bin/bash -c " \
 			/bin/bash -c 'cd /instill-ai/base && helm uninstall base --namespace ${HELM_NAMESPACE}' \
 		"
-	@kubectl delete namespace instill-ai
+	@kubectl delete namespace ${HELM_NAMESPACE}
 	@pkill -f "port-forward"
 	@make down
 
@@ -341,14 +341,15 @@ helm-integration-test-release:                       ## Run integration test on 
 	@docker run -it --rm \
 		-v ${HOME}/.kube/config:/root/.kube/config \
 		${DOCKER_HELM_IT_EXTRA_PARAMS} \
-		--name ${CONTAINER_BACKEND_INTEGRATION_TEST_NAME}-latest \
-		${CONTAINER_COMPOSE_IMAGE_NAME}:latest /bin/bash -c " \
+		--name ${CONTAINER_BACKEND_INTEGRATION_TEST_NAME}-release \
+		${CONTAINER_COMPOSE_IMAGE_NAME}:release /bin/bash -c " \
 			/bin/bash -c 'cd /instill-ai/base && \
 				export $(grep -v '^#' .env | xargs) && \
 				helm install base charts/base \
 					--namespace ${HELM_NAMESPACE} --create-namespace \
 					--set edition=k8s-ce:test \
-					--set apiGatewayBase.image.tag=$${API_GATEWAY_VERSION} \
+					--set apiGateway.image.tag=${API_GATEWAY_VERSION} \
+					--set mgmtBackend.image.tag=${MGMT_BACKEND_VERSION} \
 					--set tags.observability=false \
 					--set tags.prometheusStack=false' \
 		"
@@ -359,9 +360,8 @@ helm-integration-test-release:                       ## Run integration test on 
 	@helm install ${HELM_RELEASE_NAME} charts/model --namespace ${HELM_NAMESPACE} --create-namespace \
 		--set itMode.enabled=true \
 		--set edition=k8s-ce:test \
-		--set apiGatewayModel.image.tag=${API_GATEWAY_VERSION} \
 		--set modelBackend.image.tag=${MODEL_BACKEND_VERSION} \
-		--set controllerModel.image.tag=latest \
+		--set controllerModel.image.tag=${CONTROLLER_MODEL_VERSION} \
 		--set triton.nvidiaVisibleDevices=${NVIDIA_VISIBLE_DEVICES} \
 		--set tags.observability=false
 	@kubectl rollout status deployment model-model-backend --namespace instill-ai --timeout=120s
@@ -383,11 +383,11 @@ endif
 	@docker run -it --rm \
 		-v ${HOME}/.kube/config:/root/.kube/config \
 		${DOCKER_HELM_IT_EXTRA_PARAMS} \
-		--name ${CONTAINER_BACKEND_INTEGRATION_TEST_NAME}-latest \
-		${CONTAINER_COMPOSE_IMAGE_NAME}:latest /bin/bash -c " \
+		--name ${CONTAINER_BACKEND_INTEGRATION_TEST_NAME}-release \
+		${CONTAINER_COMPOSE_IMAGE_NAME}:release /bin/bash -c " \
 			/bin/bash -c 'cd /instill-ai/base && helm uninstall base --namespace ${HELM_NAMESPACE}' \
 		"
-	@kubectl delete namespace instill-ai
+	@kubectl delete namespace ${HELM_NAMESPACE}
 	@pkill -f "port-forward"
 	@make down
 
