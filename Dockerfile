@@ -1,29 +1,7 @@
-ARG UBUNTU_VERSION
-FROM ubuntu:${UBUNTU_VERSION} AS base
+ARG ALPINE_VERSION
+FROM alpine:${ALPINE_VERSION} AS base
 
-ARG DEBIAN_FRONTEND=noninteractive
-RUN apt-get update && apt-get -y install \
-    ca-certificates \
-    curl \
-    gnupg \
-    lsb-release
-
-RUN mkdir -p /etc/apt/keyrings
-RUN curl -fsSL https://download.docker.com/linux/ubuntu/gpg | gpg --dearmor -o /etc/apt/keyrings/docker.gpg
-RUN echo \
-    "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu \
-    $(lsb_release -cs) stable" | tee /etc/apt/sources.list.d/docker.list > /dev/null
-
-RUN apt-get update && apt-get install -y \
-    docker-ce \
-    docker-ce-cli \
-    containerd.io \
-    docker-compose-plugin \
-    git \
-    bash \
-    make \
-    wget \
-    vim && rm -rf /var/lib/apt/lists/*
+RUN apk add --update docker docker-compose docker-cli-compose docker-cli-buildx openrc containerd git bash make wget vim curl openssl
 
 # Install k6
 ARG TARGETARCH K6_VERSION
@@ -38,10 +16,11 @@ RUN curl -LO https://storage.googleapis.com/kubernetes-release/release/$(curl -s
 RUN chmod +x ./kubectl
 RUN mv ./kubectl /usr/local/bin
 
-FROM ubuntu:${UBUNTU_VERSION} AS latest
+FROM alpine:${ALPINE_VERSION} AS latest
 
 COPY --from=base /etc /etc
 COPY --from=base /usr /usr
+COPY --from=base /lib /lib
 COPY --from=docker:dind /usr/local/bin /usr/local/bin
 
 ARG CACHE_DATE
@@ -56,10 +35,11 @@ WORKDIR /instill-ai/model
 RUN git clone https://github.com/instill-ai/model-backend.git
 RUN git clone https://github.com/instill-ai/controller-model.git
 
-FROM ubuntu:${UBUNTU_VERSION} AS release
+FROM alpine:${ALPINE_VERSION} AS release
 
 COPY --from=base /etc /etc
 COPY --from=base /usr /usr
+COPY --from=base /lib /lib
 COPY --from=docker:dind /usr/local/bin /usr/local/bin
 
 ARG CACHE_DATE
