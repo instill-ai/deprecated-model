@@ -1,0 +1,33 @@
+name: Integration Test
+
+on:
+  workflow_dispatch:
+  pull_request: # to remove!
+  release:
+    types:
+      - published
+  push:
+    branches:
+      - main
+
+jobs:
+  release:
+    if: startsWith(github.ref, 'refs/tags/v')
+    strategy:
+      fail-fast: false
+      matrix:
+        component: [model-backend, controller-model]
+    uses: instill-ai/model/.github/workflows/integration-test-component.yml@pinglin/ci-self-host # to change!
+    with:
+      component: ${{ matrix.component }}
+      target: release
+  latest:
+    # if: github.ref_name == 'main'
+    strategy:
+      fail-fast: false
+      matrix:
+        component: [model-backend, controller-model]
+    uses: instill-ai/model/.github/workflows/integration-test-component.yml@pinglin/ci-self-host # to change!
+    with:
+      component: ${{ matrix.component }}
+      target: latest

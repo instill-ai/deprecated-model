@@ -2,21 +2,15 @@ name: Make All
 
 on:
   workflow_dispatch:
-  pull_request:
+  pull_request: # to remove!
   push:
     branches:
       - main
 
 jobs:
   make-all:
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, model, dgx]
     steps:
-      # mono occupies port 8084 which conflicts with mgmt-backend
-      - name: Stop mono service
-        run: |
-          sudo kill -9 `sudo lsof -t -i:8084`
-          sudo lsof -i -P -n | grep LISTEN
-
       - name: Checkout repo
         uses: actions/checkout@v3
         with:
@@ -29,15 +23,7 @@ jobs:
 
       - name: Install k6
         run: |
-          curl https://github.com/grafana/k6/releases/download/v${{ env.K6_VERSION }}/k6-v${{ env.K6_VERSION }}-linux-amd64.tar.gz -L | tar xvz --strip-components 1 && sudo cp k6 /usr/bin
-
-      - name: Free disk space
-        run: |
-          df --human-readable
-          sudo apt clean
-          docker rmi $(docker image ls --all --quiet)
-          rm --recursive --force "$AGENT_TOOLSDIRECTORY"
-          df --human-readable
+          curl https://github.com/grafana/k6/releases/download/v${{ env.K6_VERSION }}/k6-v${{ env.K6_VERSION }}-linux-amd64.tar.gz -L | tar xvz --strip-components 1 && cp k6 /usr/local/bin
 
       - name: Checkout repo (model)
         uses: actions/checkout@v3
