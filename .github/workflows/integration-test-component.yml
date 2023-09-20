@@ -1,0 +1,46 @@
+name: Integration Test Component
+
+on:
+  workflow_call:
+    inputs:
+      component:
+        required: true
+        type: string
+      target:
+        required: true
+        type: string
+
+jobs:
+  integration-test-component:
+    runs-on: [self-hosted, model, dgx]
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+        with:
+          repository: instill-ai/model
+
+      - name: Load .env file
+        uses: cardinalby/export-env-action@v2
+        with:
+          envFile: .env
+
+      - name: Install k6
+        run: |
+          curl https://github.com/grafana/k6/releases/download/v${{ env.K6_VERSION }}/k6-v${{ env.K6_VERSION }}-linux-amd64.tar.gz -L | tar xvz --strip-components 1 && cp k6 /usr/local/bin
+
+      - name: Launch Instill Model (release)
+        if: inputs.target == 'latest'
+        run: |
+          make all EDITION=local-ce:test ITMODE_ENABLED=true
+
+      - name: Launch Instill Model (latest)
+        if: inputs.target == 'latest'
+        run: |
+          make latest PROFILE=all EDITION=local-ce:test ITMODE_ENABLED=true
+
+      - name: Run ${{ inputs.component }} integration test
+        if: inputs.target == 'latest'
+        run: |
+          git clone https://github.com/instill-ai/${{ inputs.component }}.git
+          cd ${{ inputs.component }}
+          make integration-test API_GATEWAY_URL=localhost:${API_GATEWAY_PORT}
