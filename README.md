@@ -89,7 +89,7 @@ We **strongly** appreciate your willingness to contribute to this amazing projec
 But before you move on to sending your first PR, let's get familiar of our current workflow, shall we?🙂
 
 ### Instill Core
-`Instill Core`` lays the foundation for our AI-powered ETL pipelines ecosystem, and the repo you are visiting now `Instill Model`, is one of the foundation project
+`Instill Core` lays the foundation for our AI-powered ETL pipelines ecosystem, and the repo you are visiting now `Instill Model`, is one of the foundation project
 
 you can read more about it [here](https://github.com/instill-ai/community#instill-core).
 
@@ -99,7 +99,7 @@ We have a set of standard contributing guidelines accros all open-source project
 
 Now let's get to the contributing guidelines for `Instill Model`!
 #### Prerequisites
-Please refer to [here](https://github.com/instill-ai/model#prerequisites) to make sure your system has met all the prerequisites
+Please refer to [here](#prerequisites) to make sure your system has met all the prerequisites
 #### Setting up environment
 We first clone the repo and build the `latest` images for all required components
 ```bash
@@ -108,7 +108,7 @@ $ git clone https://github.com/instill-ai/model.git && cd model
 # build all latest service components
 $ make build-latest
 ```
-Currently, if you checkout `docker-compose.build.yml`, you will notice that there are only two service components for `Instill Model`
+Currently, if you check out our `docker-compose.build.yml`, you will notice that there are only two service components for `Instill Model`
 ```yaml
 services:
   model_backend:
@@ -125,11 +125,11 @@ $ make latest PROFILE=all
 ```
 The env variable `PROFILE` is intended to specify which service component you want to develop on
 - `all`: when you set `PROFILE=all`, the whole `Instill Base` and `Instill Model` stack will be launched, meaning you want to test the system as a whole
-- `{service}`: when you set `PROFILE={service}`, as `{service}` can be `controller` or `model` now, meaning you want to develop on that particular service, and `make` command will launch the stack without that service component and all it's dependency, so later on you can freely spin up and down the dev container as you see fit.
+- `{service}`: when you set `PROFILE={service}`, as `{service}` can be `controller` or `model` now, meaning you want to develop on that particular service, and `make` command will launch the stack without that service component and all it's dependencies, so later on you can freely spin up and down the service in your dev container as you changing your codes.
 
 You can refer to `model-backend`'s [README](https://github.com/instill-ai/model-backend#local-dev) as an example to learn more
 #### Sending PRs
-When you are ready to send your wonderful contributions, we recommend you to first open the PR as `draft`, this will trigger the `integration-test` workflow we setup in [here](https://github.com/instill-ai/model/tree/main/.github/workflows), which will run our test suits on both debian/darwin architecture and with both compose/kubernetes deployment methods. After the tests are done and passed, you can now mark you PR as `open` to notify our responsible engineers to review. Making sure the tests pass before reviewing can save both entitiese a lot of time and is much appreciated!
+When you are ready to send your wonderful contributions, we recommend you to first open the PR as `draft`, this will trigger the `integration-test` workflow we setup in [here](https://github.com/instill-ai/model/tree/main/.github/workflows), which will run our test suits on both debian/darwin OS and with both compose/kubernetes deployment methods. After the tests are done and passed, you can now mark you PR as `open` to notify our responsible engineers to review. Making sure the tests pass before reviewing can save both entitiese a lot of time and is much appreciated!
 
 And that's it! At `Instill AI` we are really thankful for your efforts to make not only this project, but the whole AI industry better and more reachable for all consumers. After all we are all trying to build amazing tools to better help the communities!
 ## Community support
