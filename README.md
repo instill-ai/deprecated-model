@@ -78,6 +78,60 @@ The gRPC protocols in [protobufs](https://github.com/instill-ai/protobufs) provi
 
 For the OpenAPI documentation, access http://localhost:3001 after `make all`, or simply run `make doc`.
 
+## Contributing
+We **strongly** appreciate your willingness to contribute to this amazing project! Any form of engagement is welcome, including but not limiting to
+- Feature request
+- Documentation wording
+- Bug report
+- Roadmap suggestion
+- ...and so on! In any aspect that you think will help this project and you as a user/developer
+
+But before you move on to sending your first PR, let's get familiar of our current workflow, shall we?🙂
+
+### Instill Core
+`Instill Core`` lays the foundation for our AI-powered ETL pipelines ecosystem, and the repo you are visiting now `Instill Model`, is one of the foundation project
+
+you can read more about it [here](https://github.com/instill-ai/community#instill-core).
+
+### Contributing guidelines
+
+We have a set of standard contributing guidelines accros all open-source projects here at `Instill AI`, no matter you are contributing in the form of filing issues or writing codes. You can refer to [here](https://github.com/instill-ai/community#contributing)
+
+Now let's get to the contributing guidelines for `Instill Model`!
+#### Prerequisites
+Please refer to [here](https://github.com/instill-ai/model#prerequisites) to make sure your system has met all the prerequisites
+#### Setting up environment
+We first clone the repo and build the `latest` images for all required components
+```bash
+$ git clone https://github.com/instill-ai/model.git && cd model
+
+# build all latest service components
+$ make build-latest
+```
+Currently, if you checkout `docker-compose.build.yml`, you will notice that there are only two service components for `Instill Model`
+```yaml
+services:
+  model_backend:
+    ...
+
+  controller_model:
+    ...
+```
+But other than these two, `Instill Model` requires `Instill Base` to function, that is the reason why you will see there are a lot more services being built when you run `make build-latest`. To find out what is included in the `Instill Base`, you can check out [here](https://github.com/instill-ai/base)
+#### Launch local dev system
+After all the service components are built, we are ready to roll! Let's launch the dev system
+```bash
+$ make latest PROFILE=all
+```
+The env variable `PROFILE` is intended to specify which service component you want to develop on
+- `all`: when you set `PROFILE=all`, the whole `Instill Base` and `Instill Model` stack will be launched, meaning you want to test the system as a whole
+- `{service}`: when you set `PROFILE={service}`, as `{service}` can be `controller` or `model` now, meaning you want to develop on that particular service, and `make` command will launch the stack without that service component and all it's dependency, so later on you can freely spin up and down the dev container as you see fit.
+
+You can refer to `model-backend`'s [README](https://github.com/instill-ai/model-backend#local-dev) as an example to learn more
+#### Sending PRs
+When you are ready to send your wonderful contributions, we recommend you to first open the PR as `draft`, this will trigger the `integration-test` workflow we setup in [here](https://github.com/instill-ai/model/tree/main/.github/workflows), which will run our test suits on both debian/darwin architecture and with both compose/kubernetes deployment methods. After the tests are done and passed, you can now mark you PR as `open` to notify our responsible engineers to review. Making sure the tests pass before reviewing can save both entitiese a lot of time and is much appreciated!
+
+And that's it! At `Instill AI` we are really thankful for your efforts to make not only this project, but the whole AI industry better and more reachable for all consumers. After all we are all trying to build amazing tools to better help the communities!
 ## Community support
 
 Please refer to the [community](https://github.com/instill-ai/community) repository.
