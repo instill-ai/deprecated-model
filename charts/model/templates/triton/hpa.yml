@@ -1,0 +1,33 @@
+{{- if .Values.triton.autoscaling.enabled }}
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: {{ template "model.triton" . }}
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: {{ template "model.triton" . }}
+    labels:
+    {{- include "model.labels" . | nindent 4 }}
+    app.kubernetes.io/component: triton-inference-server
+  minReplicas: {{ .Values.triton.autoscaling.minReplicas }}
+  maxReplicas: {{ .Values.triton.autoscaling.maxReplicas }}
+  metrics:
+{{- with .Values.triton.autoscaling.targetCPUUtilizationPercentage }}
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: {{ . }}
+{{- end }}
+{{- with .Values.triton.autoscaling.targetAverageMemoryUtilization }}
+    - type: Resource
+      resource:
+        name: memory
+        target:
+          type: AverageValue
+          averageValue: {{ . }}
+{{- end }}
+{{- end }}
