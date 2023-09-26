@@ -65,11 +65,8 @@ ifeq (${NVIDIA_GPU_AVAILABLE}, true)
 	@docker inspect --type=image instill/tritonserver:${TRITON_SERVER_VERSION} >/dev/null 2>&1 || printf "\033[1;33mINFO:\033[0m This may take a while due to the enormous size of the Triton server image, but the image pulling process should be just a one-time effort.\n" && sleep 5
 	@cat docker-compose.nvidia.yml | yq '.services.triton_server.deploy.resources.reservations.devices[0].device_ids |= (strenv(NVIDIA_VISIBLE_DEVICES) | split(",")) | ..style="double"' | \
 		EDITION=$${EDITION:=local-ce} docker compose -f docker-compose.yml -f - up -d --quiet-pull
-	@cat docker-compose.nvidia.yml | yq '.services.triton_server.deploy.resources.reservations.devices[0].device_ids |= (strenv(NVIDIA_VISIBLE_DEVICES) | split(",")) | ..style="double"' | \
-		EDITION=$${EDITION:=local-ce} docker compose -f docker-compose.yml -f - rm -f
 else
 	@EDITION=$${EDITION:=local-ce} docker compose -f docker-compose.yml up -d --quiet-pull
-	@EDITION=$${EDITION:=local-ce} docker compose -f docker-compose.yml rm -f
 endif
 
 .PHONY: latest
@@ -96,11 +93,8 @@ ifeq (${NVIDIA_GPU_AVAILABLE}, true)
 	@docker inspect --type=image instill/tritonserver:${TRITON_SERVER_VERSION} >/dev/null 2>&1 || printf "\033[1;33mINFO:\033[0m This may take a while due to the enormous size of the Triton server image, but the image pulling process should be just a one-time effort.\n" && sleep 5
 	@cat docker-compose.nvidia.yml | yq '.services.triton_server.deploy.resources.reservations.devices[0].device_ids |= (strenv(NVIDIA_VISIBLE_DEVICES) | split(",")) | ..style="double"' | \
 		COMPOSE_PROFILES=$(PROFILE) EDITION=$${EDITION:=local-ce:latest} docker compose -f docker-compose.yml -f docker-compose.latest.yml -f - up -d --quiet-pull
-	@cat docker-compose.nvidia.yml | yq '.services.triton_server.deploy.resources.reservations.devices[0].device_ids |= (strenv(NVIDIA_VISIBLE_DEVICES) | split(",")) | ..style="double"' | \
-		COMPOSE_PROFILES=$(PROFILE) EDITION=$${EDITION:=local-ce:latest} docker compose -f docker-compose.yml -f docker-compose.latest.yml  -f - rm -f
 else
 	@COMPOSE_PROFILES=$(PROFILE) EDITION=$${EDITION:=local-ce:latest} docker compose -f docker-compose.yml -f docker-compose.latest.yml up -d --quiet-pull
-	@COMPOSE_PROFILES=$(PROFILE) EDITION=$${EDITION:=local-ce:latest} docker compose -f docker-compose.yml -f docker-compose.latest.yml rm -f
 endif
 
 .PHONY: logs
@@ -114,20 +108,23 @@ pull:			## Pull all service images
 
 .PHONY: stop
 stop:			## Stop all components
-	@docker compose stop
+	@EDITION= docker compose stop
+	@docker run --rm \
+		-v /var/run/docker.sock:/var/run/docker.sock \
+		--name ${CONTAINER_COMPOSE_NAME}-latest \
+		${CONTAINER_COMPOSE_IMAGE_NAME}:latest /bin/sh -c " \
+			/bin/sh -c 'cd /instill-ai/base && make stop' \
+		"
 
 .PHONY: start
-start:			## Start all stopped services
-	@docker compose start
-
-.PHONY: restart
-restart:		## Restart all services
-	@docker compose restart
-
-.PHONY: rm
-rm:				## Remove all stopped service containers
-	@docker compose rm -f
-
+start:			## Start all stopped components
+	@docker run --rm \
+		-v /var/run/docker.sock:/var/run/docker.sock \
+		--name ${CONTAINER_COMPOSE_NAME}-latest \
+		${CONTAINER_COMPOSE_IMAGE_NAME}:latest /bin/sh -c " \
+			/bin/sh -c 'cd /instill-ai/base && make start' \
+		"
+	@EDITION= docker compose start
 .PHONY: down
 down:			## Stop all services and remove all service containers and volumes
 	@docker rm -f ${CONTAINER_BUILD_NAME}-latest >/dev/null 2>&1
