@@ -11,7 +11,7 @@ on:
         type: string
 
 jobs:
-  helm-integration-test-latest:
+  helm-integration-test-latest-linux:
     if: inputs.target == 'latest'
     runs-on: ubuntu-latest
     steps:
@@ -103,7 +103,132 @@ jobs:
           cd ${{ inputs.component }}
           make integration-test API_GATEWAY_URL=localhost:${API_GATEWAY_PORT}
 
-  helm-integration-test-release:
+  helm-integration-test-latest-mac:
+    if: inputs.target == 'latest'
+    runs-on: [self-hosted,macOS,model]
+    steps:
+      - name: Set up environment
+        run: |
+          brew install make
+
+      - name: Checkout repo (model)
+        uses: actions/checkout@v3
+        with:
+          repository: instill-ai/model
+
+      - name: Load .env file
+        uses: cardinalby/export-env-action@v2
+        with:
+          envFile: .env
+
+      - name: Check if Model Helm release exists
+        id: check-model-helm-release
+        run: |
+          if helm ls -n instill-ai | grep -q 'model'; then
+            echo "Helm release 'model' found."
+            echo "release_exists=true" >> $GITHUB_OUTPUT
+          else
+            echo "Helm release 'model' not found."
+          fi
+
+      - name: Uninstall Model Helm Release
+        if: steps.check-model-helm-release.outputs.release_exists == 'true'
+        run: |
+          helm uninstall model --namespace instill-ai
+
+      - name: Install k6
+        run: |
+          brew install k6
+
+      - name: Checkout repo
+        uses: actions/checkout@v3
+        with:
+          repository: instill-ai/base
+
+      - name: Load .env file
+        uses: cardinalby/export-env-action@v2
+        with:
+          envFile: .env
+
+      - name: Check if Base Helm release exists
+        id: check-base-helm-release
+        run: |
+          if helm ls -n instill-ai | grep -q 'base'; then
+            echo "Helm release 'base' found."
+            echo "release_exists=true" >> $GITHUB_OUTPUT
+          else
+            echo "Helm release 'base' not found."
+          fi
+
+      - name: Uninstall Base Helm Release
+        if: steps.check-base-helm-release.outputs.release_exists == 'true'
+        run: |
+          helm uninstall base --namespace instill-ai
+          kubectl delete namespace instill-ai
+
+      - name: Launch Helm Instill Base (latest)
+        run: |
+          helm install base charts/base --namespace instill-ai --create-namespace \
+            --set edition=k8s-ce:test \
+            --set apiGateway.image.tag=latest \
+            --set mgmtBackend.image.tag=latest \
+            --set console.image.tag=latest \
+            --set tags.observability=false
+
+      - name: Wait for base pods up
+        run: |
+          while [[ $(kubectl get pods --namespace instill-ai -l "app.kubernetes.io/component=api-gateway,app.kubernetes.io/instance=base" -o 'jsonpath={..status.phase}') != *"Running"* ]]; do
+            echo "$(kubectl get pods --namespace instill-ai)"
+            sleep 10
+          done
+
+      - name: Port-forward of api-gateway
+        run: |
+          API_GATEWAY_POD_NAME=$(kubectl get pods --namespace instill-ai -l "app.kubernetes.io/component=api-gateway,app.kubernetes.io/instance=base" -o json | jq -r '.items[0].metadata.name')
+          kubectl --namespace instill-ai port-forward ${API_GATEWAY_POD_NAME} ${API_GATEWAY_PORT}:${API_GATEWAY_PORT} > /dev/null 2>&1 &
+          while ! nc -vz localhost ${API_GATEWAY_PORT} > /dev/null 2>&1; do sleep 1; done
+
+      - name: Checkout repo (model)
+        uses: actions/checkout@v3
+        with:
+          repository: instill-ai/model
+
+      - name: Load .env file (model)
+        uses: cardinalby/export-env-action@v2
+        with:
+          envFile: .env
+
+      - name: Launch Helm Instill Model (latest)
+        run: |
+          helm install model charts/model --namespace instill-ai --create-namespace \
+            --set itMode.enabled=true \
+            --set edition=k8s-ce:test \
+            --set modelBackend.image.tag=latest \
+            --set controllerModel.image.tag=latest \
+            --set triton.nvidiaVisibleDevices=${NVIDIA_VISIBLE_DEVICES} \
+            --set tags.observability=false
+
+      - name: Wait for rollout model deployments
+        run: |
+          kubectl rollout status deployment model-model-backend --namespace instill-ai
+          kubectl rollout status deployment model-controller-model --namespace instill-ai
+          kubectl rollout status deployment model-triton-inference-server --namespace instill-ai
+          sleep 10
+
+      - name: Run ${{ inputs.component }} integration test (latest)
+        if: inputs.target == 'latest'
+        run: |
+          git clone https://github.com/instill-ai/${{ inputs.component }}.git
+          cd ${{ inputs.component }}
+          make integration-test API_GATEWAY_URL=localhost:${API_GATEWAY_PORT}
+
+      - name: Uninstall Base and Model Helm Release
+        run: |
+          helm uninstall model --namespace instill-ai
+          helm uninstall base --namespace instill-ai
+          kubectl delete namespace instill-ai    
+
+  helm-integration-test-release-linux:
     if: inputs.target == 'release'
     runs-on: ubuntu-latest
     steps:
@@ -200,3 +325,134 @@ jobs:
           git clone -b v$COMPONENT_VERSION https://github.com/instill-ai/${{ inputs.component }}.git
           cd ${{ inputs.component }}
           make integration-test API_GATEWAY_URL=localhost:${API_GATEWAY_PORT}
+
+  helm-integration-test-release-mac:
+    if: inputs.target == 'release'
+    runs-on: [self-hosted,macOS,model]
+    steps:
+      - name: Set up environment
+        run: |
+          brew install make
+
+      - name: Checkout repo (model)
+        uses: actions/checkout@v3
+        with:
+          repository: instill-ai/model
+
+      - name: Load .env file
+        uses: cardinalby/export-env-action@v2
+        with:
+          envFile: .env
+
+      - name: Check if Model Helm release exists
+        id: check-model-helm-release
+        run: |
+          if helm ls -n instill-ai | grep -q 'model'; then
+            echo "Helm release 'model' found."
+            echo "release_exists=true" >> $GITHUB_OUTPUT
+          else
+            echo "Helm release 'model' not found."
+          fi
+
+      - name: Uninstall Model Helm Release
+        if: steps.check-model-helm-release.outputs.release_exists == 'true'
+        run: |
+          helm uninstall model --namespace instill-ai
+
+      - name: Install k6
+        run: |
+          brew install k6
+
+      - name: Checkout repo
+        uses: actions/checkout@v3
+        with:
+          repository: instill-ai/base
+
+      - name: Load .env file
+        uses: cardinalby/export-env-action@v2
+        with:
+          envFile: .env
+
+      - name: Check if Base Helm release exists
+        id: check-base-helm-release
+        run: |
+          if helm ls -n instill-ai | grep -q 'base'; then
+            echo "Helm release 'base' found."
+            echo "release_exists=true" >> $GITHUB_OUTPUT
+          else
+            echo "Helm release 'base' not found."
+          fi
+
+      - name: Uninstall Base Helm Release
+        if: steps.check-base-helm-release.outputs.release_exists == 'true'
+        run: |
+          helm uninstall base --namespace instill-ai
+          kubectl delete namespace instill-ai
+
+      - name: Launch Helm Instill Base (release)
+        run: |
+          helm install base charts/base --namespace instill-ai --create-namespace \
+            --set edition=k8s-ce:test \
+            --set apiGateway.image.tag=${API_GATEWAY_VERSION} \
+            --set mgmtBackend.image.tag=${MGMT_BACKEND_VERSION} \
+            --set console.image.tag=${CONSOLE_VERSION} \
+            --set tags.observability=false
+
+      - name: Wait for base pods up
+        run: |
+          while [[ $(kubectl get pods --namespace instill-ai -l "app.kubernetes.io/component=api-gateway,app.kubernetes.io/instance=base" -o 'jsonpath={..status.phase}') != *"Running"* ]]; do
+            echo "$(kubectl get pods --namespace instill-ai)"
+            sleep 10
+          done
+
+      - name: Port-forward of base-api-gateway
+        run: |
+          API_GATEWAY_POD_NAME=$(kubectl get pods --namespace instill-ai -l "app.kubernetes.io/component=api-gateway,app.kubernetes.io/instance=base" -o json | jq -r '.items[0].metadata.name')
+          kubectl --namespace instill-ai port-forward ${API_GATEWAY_POD_NAME} ${API_GATEWAY_PORT}:${API_GATEWAY_PORT} > /dev/null 2>&1 &
+          while ! nc -vz localhost ${API_GATEWAY_PORT} > /dev/null 2>&1; do sleep 1; done
+
+      - name: Checkout repo (model)
+        uses: actions/checkout@v3
+        with:
+          repository: instill-ai/model
+
+      - name: Load .env file (model)
+        uses: cardinalby/export-env-action@v2
+        with:
+          envFile: .env
+
+      - name: Uppercase component name
+        id: uppercase
+        run: |
+          echo "COMPONENT_NAME=$(echo ${{ inputs.component }} | tr 'a-z-' 'A-Z_')" >> $GITHUB_OUTPUT    
+
+      - name: Launch Helm Instill Model (release)
+        run: |
+          helm install model charts/model --namespace instill-ai --create-namespace \
+            --set itMode.enabled=true \
+            --set edition=k8s-ce:test \
+            --set modelBackend.image.tag=${MODEL_BACKEND_VERSION} \
+            --set controllerModel.image.tag=${CONTROLLER_MODEL_VERSION} \
+            --set triton.nvidiaVisibleDevices=${NVIDIA_VISIBLE_DEVICES} \
+            --set tags.observability=false
+
+      - name: Wait for rollout model deployments
+        run: |
+          kubectl rollout status deployment model-model-backend --namespace instill-ai
+          kubectl rollout status deployment model-controller-model --namespace instill-ai
+          kubectl rollout status deployment model-triton-inference-server --namespace instill-ai
+          sleep 10
+
+      - name: Run ${{ inputs.component }} integration test (release)
+        env:
+          COMPONENT_VERSION: ${{ env[format('{0}_VERSION', steps.uppercase.outputs.COMPONENT_NAME)] }}
+        run: |
+          git clone -b v$COMPONENT_VERSION https://github.com/instill-ai/${{ inputs.component }}.git
+          cd ${{ inputs.component }}
+          make integration-test API_GATEWAY_URL=localhost:${API_GATEWAY_PORT}
+
+      - name: Uninstall Base and Model Helm Release
+        run: |
+          helm uninstall model --namespace instill-ai
+          helm uninstall base --namespace instill-ai
+          kubectl delete namespace instill-ai     
