@@ -161,7 +161,7 @@ modelBackend:
     minReplicas:
     maxReplicas:
     targetCPUUtilizationPercentage:
-    targetMemoryUtilizationPercentage:
+    targetAverageMemoryUtilization:
   nodeSelector: {}
   tolerations: []
   affinity: {}
@@ -218,7 +218,7 @@ controllerModel:
     minReplicas:
     maxReplicas:
     targetCPUUtilizationPercentage:
-    targetMemoryUtilizationPercentage:
+    targetAverageMemoryUtilization:
   nodeSelector: {}
   tolerations: []
   affinity: {}
@@ -273,7 +273,7 @@ triton:
     minReplicas:
     maxReplicas:
     targetCPUUtilizationPercentage:
-    targetMemoryUtilizationPercentage:
+    targetAverageMemoryUtilization:
   podDisruptionBudget:
     enabled: false
     spec:
