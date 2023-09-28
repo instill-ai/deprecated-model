@@ -18,7 +18,6 @@
 
 - 📦 **[Standardised AI Task](https://www.instill.tech/docs/core-concepts/ai-task)** output formats to streamline data integration or analysis
 
-
 ## Prerequisites
 
 - **macOS or Linux** - VDP works on macOS or Linux, but does not support Windows yet.
@@ -33,11 +32,26 @@
 
 Execute the following commands to start pre-built images with all the dependencies:
 
+**The stable release version**
+
+<!-- x-release-please-start-version -->
+
+```bash
+$ git clone -b v0.2.0-alpha https://github.com/instill-ai/model.git && cd model
+
+# Launch all services
+$ make all
+```
+
+<!-- x-release-please-end -->
+
+**The latest version for development**
+
 ```bash
 $ git clone https://github.com/instill-ai/model.git && cd model
 
 # Launch all services
-$ make all
+$ make latest PROFILE=all
 ```
 
 > **Note**
@@ -70,7 +84,7 @@ Note: The `GitHub-DVC` source in the table means importing a model into VDP from
 
 📔 **Documentation**
 
- Please check out the [documentation](https://www.instill.tech/docs?utm_source=github&utm_medium=banner&utm_campaign=vdp_readme) website.
+Please check out the [documentation](https://www.instill.tech/docs?utm_source=github&utm_medium=banner&utm_campaign=vdp_readme) website.
 
 📘 **API Reference**
 
@@ -81,7 +95,6 @@ For the OpenAPI documentation, access http://localhost:3001 after `make all`, or
 ## Contributing
 
 Please refer to the [Contributing Guidelines](./.github/CONTRIBUTING.md) for more details.
-
 
 ## Community support
 

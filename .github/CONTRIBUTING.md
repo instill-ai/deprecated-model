@@ -1,6 +1,7 @@
 # Contributing Guidelines
 
 We appreciate your contribution to this amazing project! Any form of engagement is welcome, including but not limiting to
+
 - feature request
 - documentation wording
 - bug report
@@ -21,6 +22,19 @@ Please refer to [here](../README.md#prerequisites) to make sure your environment
 
 Clone the repo and launch the `latest` version of the codebase for all dependencies:
 
+There are two configurable env variable you can set here
+
+```bash
+# Enable this to replace any model created and deployed with a dummy model
+# which just take whatever the inference input and output it.
+# You need to enable this to run integration-test
+ITMODE_ENABLED=
+# Enable this to deploy a list of predefined model here:
+# https://raw.githubusercontent.com/instill-ai/vdp/main/model-hub/model_hub_cpu.json
+# Normally this is used for deployment with kubernetes
+INITMODEL_ENABLED=
+```
+
 ```bash
 $ git clone https://github.com/instill-ai/model.git && cd model
 
@@ -29,6 +43,7 @@ $ make latest PROFILE=all
 ```
 
 The env variable `PROFILE` is intended to specify which service component you want to develop on
+
 - `all`
 
   When you set `PROFILE=all`, the whole `Instill Base` and `Instill Model` stack will be launched, meaning you want to test the system as a whole
@@ -40,6 +55,7 @@ The env variable `PROFILE` is intended to specify which service component you wa
 ### Tear down the local dev system
 
 Simply run:
+
 ```bash
 $ make down
 ```
