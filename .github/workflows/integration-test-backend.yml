@@ -10,6 +10,10 @@ on:
         required: true
         type: string
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref || github.run_id }}
+  cancel-in-progress: true
+
 jobs:
   integration-test-latest-linux:
     if: inputs.target == 'latest'
@@ -100,7 +104,7 @@ jobs:
 
   integration-test-latest-mac:
     if: inputs.target == 'latest'
-    runs-on: [self-hosted,macOS,model]
+    runs-on: [self-hosted, macOS, model]
     steps:
       - name: Set up environment
         run: |
@@ -299,7 +303,7 @@ jobs:
 
   integration-test-release-mac:
     if: inputs.target == 'release'
-    runs-on: [self-hosted,macOS,model]
+    runs-on: [self-hosted, macOS, model]
     steps:
       - name: Set up environment
         run: |
