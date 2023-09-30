@@ -94,7 +94,7 @@ modelBackend:
   # -- The image of model-backend
   image:
     repository: instill/model-backend
-    tag: 0.17.0-alpha
+    tag: 0.17.1-alpha
     pullPolicy: IfNotPresent
   # -- Annotation for deployment
   annotations: {}
@@ -174,7 +174,7 @@ controllerModel:
   # -- The image of controller
   image:
     repository: instill/controller-model
-    tag: 0.2.2-alpha
+    tag: 0.2.3-alpha
     pullPolicy: IfNotPresent
   # -- The command names to be executed
   commandName:
