@@ -130,7 +130,7 @@ modelBackend:
   # -- The model initialization configuration
   initModel:
     enabled: false
-    path: https://raw.githubusercontent.com/instill-ai/vdp/main/model-hub/model_hub_cpu.json
+    path: https://raw.githubusercontent.com/instill-ai/model/main/model-hub/model_hub_cpu.json
   # -- Add extra env variables
   extraEnv: []
   # -- Mount external volumes
