@@ -88,5 +88,45 @@
       "repository": "instill-ai/model-llama2-7b-dvc",
       "tag": "fp16-7b-vllm-p80-1gpu"
     }
+  },
+  {
+    "id": "mpt-7b",
+    "description": "Mpt-7b, from mosaicml, is trained to generate text based on your prompts.",
+    "task": "TASK_TEXT_GENERATION",
+    "model_definition": "model-definitions/github",
+    "configuration": {
+      "repository": "instill-ai/model-mpt-7b-dvc",
+      "tag": "fp16-7b-vllm-p80-1gpu"
+    }
+  },
+  {
+    "id": "mistral-7b",
+    "description": "Mistral-7b, from mistralai, is trained to generate text based on your prompts.",
+    "task": "TASK_TEXT_GENERATION",
+    "model_definition": "model-definitions/github",
+    "configuration": {
+      "repository": "instill-ai/model-mistral-7b-dvc",
+      "tag": "fp16-7b-vllm-p80-1gpu"
+    }
+  },
+  {
+    "id": "codellama-7b",
+    "description": "Codellama-7b, from meta, is trained to generate text based on your prompts.",
+    "task": "TASK_TEXT_GENERATION",
+    "model_definition": "model-definitions/github",
+    "configuration": {
+      "repository": "instill-ai/model-codellama-7b-dvc",
+      "tag": "fp16-7b-vllm-p80-1gpu"
+    }
+  },
+  {
+    "id": "llama2-13b-chat",
+    "description": "Llama2-13b-chat, from meta, is trained to generate text based on your prompts.",
+    "task": "TASK_TEXT_GENERATION",
+    "model_definition": "model-definitions/github",
+    "configuration": {
+      "repository": "instill-ai/model-llama2-13b-chat-dvc",
+      "tag": "fp16-7b-vllm-p80-1gpu"
+    }
   }
 ]
