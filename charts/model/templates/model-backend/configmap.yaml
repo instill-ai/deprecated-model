@@ -29,11 +29,11 @@ data:
     log:
       external: {{ .Values.tags.observability }}
       otelcollector:
-        host: {{ template "base.otel" . }}
-        port: {{ template "base.otel.port" . }}
+        host: {{ template "core.otel" . }}
+        port: {{ template "core.otel.port" . }}
     mgmtbackend:
-      host: {{ template "base.mgmtBackend" . }}
-      privateport: {{ template "base.mgmtBackend.privatePort" . }}
+      host: {{ template "core.mgmtBackend" . }}
+      privateport: {{ template "core.mgmtBackend.privatePort" . }}
       {{- if .Values.internalTLS.enabled }}
       https:
         cert: /etc/instill-ai/model/ssl/mgmt/tls.crt
@@ -51,10 +51,10 @@ data:
       grpcuri: {{ include "model.triton" . }}:{{ include "model.triton.grpcPort" . }}
       modelstore: /model-repository
     database:
-      username: {{ default (include "base.database.username" .) .Values.database.username }}
-      password: {{ default (include "base.database.rawPassword" .) .Values.database.password }}
-      host: {{ default (include "base.database.host" .) .Values.database.host }}
-      port: {{ default (include "base.database.port" .) .Values.database.port }}
+      username: {{ default (include "core.database.username" .) .Values.database.username }}
+      password: {{ default (include "core.database.rawPassword" .) .Values.database.password }}
+      host: {{ default (include "core.database.host" .) .Values.database.host }}
+      port: {{ default (include "core.database.port" .) .Values.database.port }}
       name: model
       version: {{ .Values.modelBackend.dbVersion }}
       timezone: Etc/UTC
@@ -65,7 +65,7 @@ data:
     cache:
       redis:
         redisoptions:
-          addr: {{ default (include "base.redis.addr" .) .Values.redis.addr }}
+          addr: {{ default (include "core.redis.addr" .) .Values.redis.addr }}
     maxbatchsizelimitation:
       unspecified: 2
       classification: 16
@@ -76,7 +76,7 @@ data:
       semanticsegmentation: 8
       textgeneration: 1
     temporal:
-      hostport: {{ default (printf "%s-frontend-headless:%s" (include "base.temporal" .) (include "base.temporal.frontend.grpcPort" .)) .Values.modelBackend.temporal.hostPort }}
+      hostport: {{ default (printf "%s-frontend-headless:%s" (include "core.temporal" .) (include "core.temporal.frontend.grpcPort" .)) .Values.modelBackend.temporal.hostPort }}
       namespace: {{ default "model-backend" .Values.modelBackend.temporal.namespace }}
       ca: {{ default "" .Values.modelBackend.temporal.ca }}
       cert: {{ default "" .Values.modelBackend.temporal.cert }}

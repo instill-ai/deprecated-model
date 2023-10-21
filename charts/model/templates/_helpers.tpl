@@ -77,31 +77,31 @@ app.kubernetes.io/name: {{ include "model.name" . }}
   {{- end -}}
 {{- end -}}
 
-{{- define "base.database.host" -}}
-    {{- template "base.database" . -}}
+{{- define "core.database.host" -}}
+    {{- template "core.database" . -}}
 {{- end -}}
 
-{{- define "base.database.port" -}}
+{{- define "core.database.port" -}}
     {{- print "5432" -}}
 {{- end -}}
 
-{{- define "base.database.username" -}}
+{{- define "core.database.username" -}}
     {{- print "postgres" -}}
 {{- end -}}
 
-{{- define "base.database.rawPassword" -}}
+{{- define "core.database.rawPassword" -}}
     {{- print "password" -}}
 {{- end -}}
 
 /*host:port*/
-{{- define "base.redis.addr" -}}
+{{- define "core.redis.addr" -}}
   {{- with .Values.redis -}}
-    {{- default (printf "%s:6379" (include "base.redis" $ )) .addr -}}
+    {{- default (printf "%s:6379" (include "core.redis" $ )) .addr -}}
   {{- end -}}
 {{- end -}}
 
-{{- define "base.mgmtBackend" -}}
-  {{- print "base-mgmt-backend" -}}
+{{- define "core.mgmtBackend" -}}
+  {{- print "core-mgmt-backend" -}}
 {{- end -}}
 
 {{- define "model.modelBackend" -}}
@@ -116,20 +116,20 @@ app.kubernetes.io/name: {{ include "model.name" . }}
   {{- printf "%s-triton-inference-server" (include "model.fullname" .) -}}
 {{- end -}}
 
-{{- define "base.database" -}}
-  {{- print "base-database" -}}
+{{- define "core.database" -}}
+  {{- print "core-database" -}}
 {{- end -}}
 
-{{- define "base.redis" -}}
-  {{- print "base-redis" -}}
+{{- define "core.redis" -}}
+  {{- print "core-redis" -}}
 {{- end -}}
 
-{{- define "base.temporal" -}}
-  {{- printf "base-temporal" -}}
+{{- define "core.temporal" -}}
+  {{- printf "core-temporal" -}}
 {{- end -}}
 
-{{- define "base.etcd" -}}
-  {{- printf "base-etcd" -}}
+{{- define "core.etcd" -}}
+  {{- printf "core-etcd" -}}
 {{- end -}}
 
 {{/* model-backend service and container public port */}}
@@ -148,12 +148,12 @@ app.kubernetes.io/name: {{ include "model.name" . }}
 {{- end -}}
 
 {{/* mgmt-backend service and container public port */}}
-{{- define "base.mgmtBackend.publicPort" -}}
+{{- define "core.mgmtBackend.publicPort" -}}
   {{- printf "8084" -}}
 {{- end -}}
 
 {{/* mgmt-backend service and container private port */}}
-{{- define "base.mgmtBackend.privatePort" -}}
+{{- define "core.mgmtBackend.privatePort" -}}
   {{- printf "3084" -}}
 {{- end -}}
 
@@ -170,36 +170,36 @@ app.kubernetes.io/name: {{ include "model.name" . }}
 {{- end -}}
 
 {{/* temporal container frontend gRPC port */}}
-{{- define "base.temporal.frontend.grpcPort" -}}
+{{- define "core.temporal.frontend.grpcPort" -}}
   {{- printf "7233" -}}
 {{- end -}}
 
 {{/* etcd port */}}
-{{- define "base.etcd.clientPort" -}}
+{{- define "core.etcd.clientPort" -}}
   {{- printf "2379" -}}
 {{- end -}}
 
-{{- define "base.influxdb" -}}
-  {{- printf "base-influxdb2" -}}
+{{- define "core.influxdb" -}}
+  {{- printf "core-influxdb2" -}}
 {{- end -}}
 
-{{- define "base.influxdb.port" -}}
+{{- define "core.influxdb.port" -}}
   {{- printf "8086" -}}
 {{- end -}}
 
-{{- define "base.jaeger" -}}
-  {{- printf "base-jaeger-collector" -}}
+{{- define "core.jaeger" -}}
+  {{- printf "core-jaeger-collector" -}}
 {{- end -}}
 
-{{- define "base.jaeger.port" -}}
+{{- define "core.jaeger.port" -}}
   {{- printf "14268" -}}
 {{- end -}}
 
-{{- define "base.otel" -}}
-  {{- printf "base-opentelemetry-collector" -}}
+{{- define "core.otel" -}}
+  {{- printf "core-opentelemetry-collector" -}}
 {{- end -}}
 
-{{- define "base.otel.port" -}}
+{{- define "core.otel.port" -}}
   {{- printf "8095" -}}
 {{- end -}}
 
