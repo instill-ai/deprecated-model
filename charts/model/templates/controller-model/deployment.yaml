@@ -58,9 +58,9 @@ spec:
             - name: MODEL_BACKEND_PORT
               value: "{{ template "model.modelBackend.publicPort" . }}"
             - name: ETCD_HOST
-              value: "{{ template "base.etcd" . }}"
+              value: "{{ template "core.etcd" . }}"
             - name: ETCD_CLIENT_PORT
-              value: "{{ template "base.etcd.clientPort" . }}"
+              value: "{{ template "core.etcd.clientPort" . }}"
       containers:
         - name: controller-model
           image: {{ .Values.controllerModel.image.repository }}:{{ .Values.controllerModel.image.tag }}

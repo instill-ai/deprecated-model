@@ -46,7 +46,7 @@ The env variable `PROFILE` is intended to specify which service component you wa
 
 - `all`
 
-  When you set `PROFILE=all`, the whole `Instill Base` and `Instill Model` stack will be launched, meaning you want to test the system as a whole
+  When you set `PROFILE=all`, the whole `Instill Core` and `Instill Model` stack will be launched, meaning you want to test the system as a whole
 
 - `{service}`
 

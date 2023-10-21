@@ -95,7 +95,7 @@ jobs:
           yq ".appVersion=\"$appVersion\"" -i charts/model/Chart.yaml
       - name: Generate helm-doc
         run: |
-          helm-docs charts/base
+          helm-docs charts/core
       - name: Import GPG Key
         uses: crazy-max/ghaction-import-gpg@v5
         with:
@@ -108,6 +108,6 @@ jobs:
         run: |
           if [[ `git status --porcelain` ]]; then
             git add charts
-            git commit -S -m "chore(helm): bump up chart and app version" -m "triggered by commit: https://github.com/instill-ai/base/commit/${{ needs.release-please.outputs.SHA }}"
+            git commit -S -m "chore(helm): bump up chart and app version" -m "triggered by commit: https://github.com/instill-ai/core/commit/${{ needs.release-please.outputs.SHA }}"
             git push
           fi

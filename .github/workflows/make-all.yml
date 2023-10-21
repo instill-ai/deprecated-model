@@ -74,7 +74,7 @@ jobs:
 
       - name: Probe to model services healthcheck endpoint
         run: |
-          curl -s -o /dev/null -w ''%{http_code}'\n' http://localhost:8080/base/v1alpha/health/mgmt
+          curl -s -o /dev/null -w ''%{http_code}'\n' http://localhost:8080/core/v1alpha/health/mgmt
           curl -s -o /dev/null -w ''%{http_code}'\n' http://localhost:8080/model/v1alpha/health/model
 
       - name: Tear down Instill Model (release)

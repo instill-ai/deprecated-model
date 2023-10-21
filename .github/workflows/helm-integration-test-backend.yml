@@ -37,35 +37,35 @@ jobs:
       - name: Start Minikube
         run: minikube start --cpus 2 --memory 6096
 
-      - name: Checkout repo (base)
+      - name: Checkout repo (core)
         uses: actions/checkout@v3
         with:
-          repository: instill-ai/base
+          repository: instill-ai/core
 
-      - name: Load .env file (base)
+      - name: Load .env file (core)
         uses: cardinalby/export-env-action@v2
         with:
           envFile: .env
 
-      - name: Launch Helm Instill Base (latest)
+      - name: Launch Helm Instill Core (latest)
         run: |
-          helm install base charts/base --namespace instill-ai --create-namespace \
+          helm install core charts/core --namespace instill-ai --create-namespace \
             --set edition=k8s-ce:test \
             --set apiGateway.image.tag=latest \
             --set mgmtBackend.image.tag=latest \
             --set console.image.tag=latest \
             --set tags.observability=false
 
-      - name: Wait for base pods up
+      - name: Wait for core pods up
         run: |
-          while [[ $(kubectl get pods --namespace instill-ai -l "app.kubernetes.io/component=api-gateway,app.kubernetes.io/instance=base" -o 'jsonpath={..status.phase}') != *"Running"* ]]; do
+          while [[ $(kubectl get pods --namespace instill-ai -l "app.kubernetes.io/component=api-gateway,app.kubernetes.io/instance=core" -o 'jsonpath={..status.phase}') != *"Running"* ]]; do
             echo "$(kubectl get pods --namespace instill-ai)"
             sleep 10
           done
 
       - name: Port-forward of api-gateway
         run: |
-          API_GATEWAY_POD_NAME=$(kubectl get pods --namespace instill-ai -l "app.kubernetes.io/component=api-gateway,app.kubernetes.io/instance=base" -o json | jq -r '.items[0].metadata.name')
+          API_GATEWAY_POD_NAME=$(kubectl get pods --namespace instill-ai -l "app.kubernetes.io/component=api-gateway,app.kubernetes.io/instance=core" -o json | jq -r '.items[0].metadata.name')
           kubectl --namespace instill-ai port-forward ${API_GATEWAY_POD_NAME} ${API_GATEWAY_PORT}:${API_GATEWAY_PORT} > /dev/null 2>&1 &
           while ! nc -vz localhost ${API_GATEWAY_PORT} > /dev/null 2>&1; do sleep 1; done
 
@@ -147,48 +147,48 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v3
         with:
-          repository: instill-ai/base
+          repository: instill-ai/core
 
       - name: Load .env file
         uses: cardinalby/export-env-action@v2
         with:
           envFile: .env
 
-      - name: Check if Base Helm release exists
-        id: check-base-helm-release
+      - name: Check if Core Helm release exists
+        id: check-core-helm-release
         run: |
-          if helm ls -n instill-ai | grep -q 'base'; then
-            echo "Helm release 'base' found."
+          if helm ls -n instill-ai | grep -q 'core'; then
+            echo "Helm release 'core' found."
             echo "release_exists=true" >> $GITHUB_OUTPUT
           else
-            echo "Helm release 'base' not found."
+            echo "Helm release 'core' not found."
           fi
 
-      - name: Uninstall Base Helm Release
-        if: steps.check-base-helm-release.outputs.release_exists == 'true'
+      - name: Uninstall Core Helm Release
+        if: steps.check-core-helm-release.outputs.release_exists == 'true'
         run: |
-          helm uninstall base --namespace instill-ai
+          helm uninstall core --namespace instill-ai
           kubectl delete namespace instill-ai
 
-      - name: Launch Helm Instill Base (latest)
+      - name: Launch Helm Instill Core (latest)
         run: |
-          helm install base charts/base --namespace instill-ai --create-namespace \
+          helm install core charts/core --namespace instill-ai --create-namespace \
             --set edition=k8s-ce:test \
             --set apiGateway.image.tag=latest \
             --set mgmtBackend.image.tag=latest \
             --set console.image.tag=latest \
             --set tags.observability=false
 
-      - name: Wait for base pods up
+      - name: Wait for core pods up
         run: |
-          while [[ $(kubectl get pods --namespace instill-ai -l "app.kubernetes.io/component=api-gateway,app.kubernetes.io/instance=base" -o 'jsonpath={..status.phase}') != *"Running"* ]]; do
+          while [[ $(kubectl get pods --namespace instill-ai -l "app.kubernetes.io/component=api-gateway,app.kubernetes.io/instance=core" -o 'jsonpath={..status.phase}') != *"Running"* ]]; do
             echo "$(kubectl get pods --namespace instill-ai)"
             sleep 10
           done
 
       - name: Port-forward of api-gateway
         run: |
-          API_GATEWAY_POD_NAME=$(kubectl get pods --namespace instill-ai -l "app.kubernetes.io/component=api-gateway,app.kubernetes.io/instance=base" -o json | jq -r '.items[0].metadata.name')
+          API_GATEWAY_POD_NAME=$(kubectl get pods --namespace instill-ai -l "app.kubernetes.io/component=api-gateway,app.kubernetes.io/instance=core" -o json | jq -r '.items[0].metadata.name')
           kubectl --namespace instill-ai port-forward ${API_GATEWAY_POD_NAME} ${API_GATEWAY_PORT}:${API_GATEWAY_PORT} > /dev/null 2>&1 &
           while ! nc -vz localhost ${API_GATEWAY_PORT} > /dev/null 2>&1; do sleep 1; done
 
@@ -226,10 +226,10 @@ jobs:
           cd ${{ inputs.component }}
           make integration-test API_GATEWAY_URL=localhost:${API_GATEWAY_PORT}
 
-      - name: Uninstall Base and Model Helm Release
+      - name: Uninstall Core and Model Helm Release
         run: |
           helm uninstall model --namespace instill-ai
-          helm uninstall base --namespace instill-ai
+          helm uninstall core --namespace instill-ai
           kubectl delete namespace instill-ai
 
   helm-integration-test-release-linux:
@@ -262,35 +262,35 @@ jobs:
       - name: Start Minikube
         run: minikube start --cpus 2 --memory 6096
 
-      - name: Checkout repo (base)
+      - name: Checkout repo (core)
         uses: actions/checkout@v3
         with:
-          repository: instill-ai/base
+          repository: instill-ai/core
 
-      - name: Load .env file (base)
+      - name: Load .env file (core)
         uses: cardinalby/export-env-action@v2
         with:
           envFile: .env
 
-      - name: Launch Helm Instill Base (release)
+      - name: Launch Helm Instill Core (release)
         run: |
-          helm install base charts/base --namespace instill-ai --create-namespace \
+          helm install core charts/core --namespace instill-ai --create-namespace \
             --set edition=k8s-ce:test \
             --set apiGateway.image.tag=${API_GATEWAY_VERSION} \
             --set mgmtBackend.image.tag=${MGMT_BACKEND_VERSION} \
             --set console.image.tag=${CONSOLE_VERSION} \
             --set tags.observability=false
 
-      - name: Wait for base pods up
+      - name: Wait for core pods up
         run: |
-          while [[ $(kubectl get pods --namespace instill-ai -l "app.kubernetes.io/component=api-gateway,app.kubernetes.io/instance=base" -o 'jsonpath={..status.phase}') != *"Running"* ]]; do
+          while [[ $(kubectl get pods --namespace instill-ai -l "app.kubernetes.io/component=api-gateway,app.kubernetes.io/instance=core" -o 'jsonpath={..status.phase}') != *"Running"* ]]; do
             echo "$(kubectl get pods --namespace instill-ai)"
             sleep 10
           done
 
       - name: Port-forward of api-gateway
         run: |
-          API_GATEWAY_POD_NAME=$(kubectl get pods --namespace instill-ai -l "app.kubernetes.io/component=api-gateway,app.kubernetes.io/instance=base" -o json | jq -r '.items[0].metadata.name')
+          API_GATEWAY_POD_NAME=$(kubectl get pods --namespace instill-ai -l "app.kubernetes.io/component=api-gateway,app.kubernetes.io/instance=core" -o json | jq -r '.items[0].metadata.name')
           kubectl --namespace instill-ai port-forward ${API_GATEWAY_POD_NAME} ${API_GATEWAY_PORT}:${API_GATEWAY_PORT} > /dev/null 2>&1 &
           while ! nc -vz localhost ${API_GATEWAY_PORT} > /dev/null 2>&1; do sleep 1; done
 
@@ -378,48 +378,48 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v3
         with:
-          repository: instill-ai/base
+          repository: instill-ai/core
 
       - name: Load .env file
         uses: cardinalby/export-env-action@v2
         with:
           envFile: .env
 
-      - name: Check if Base Helm release exists
-        id: check-base-helm-release
+      - name: Check if Core Helm release exists
+        id: check-core-helm-release
         run: |
-          if helm ls -n instill-ai | grep -q 'base'; then
-            echo "Helm release 'base' found."
+          if helm ls -n instill-ai | grep -q 'core'; then
+            echo "Helm release 'core' found."
             echo "release_exists=true" >> $GITHUB_OUTPUT
           else
-            echo "Helm release 'base' not found."
+            echo "Helm release 'core' not found."
           fi
 
-      - name: Uninstall Base Helm Release
-        if: steps.check-base-helm-release.outputs.release_exists == 'true'
+      - name: Uninstall Core Helm Release
+        if: steps.check-core-helm-release.outputs.release_exists == 'true'
         run: |
-          helm uninstall base --namespace instill-ai
+          helm uninstall core --namespace instill-ai
           kubectl delete namespace instill-ai
 
-      - name: Launch Helm Instill Base (release)
+      - name: Launch Helm Instill Core (release)
         run: |
-          helm install base charts/base --namespace instill-ai --create-namespace \
+          helm install core charts/core --namespace instill-ai --create-namespace \
             --set edition=k8s-ce:test \
             --set apiGateway.image.tag=${API_GATEWAY_VERSION} \
             --set mgmtBackend.image.tag=${MGMT_BACKEND_VERSION} \
             --set console.image.tag=${CONSOLE_VERSION} \
             --set tags.observability=false
 
-      - name: Wait for base pods up
+      - name: Wait for core pods up
         run: |
-          while [[ $(kubectl get pods --namespace instill-ai -l "app.kubernetes.io/component=api-gateway,app.kubernetes.io/instance=base" -o 'jsonpath={..status.phase}') != *"Running"* ]]; do
+          while [[ $(kubectl get pods --namespace instill-ai -l "app.kubernetes.io/component=api-gateway,app.kubernetes.io/instance=core" -o 'jsonpath={..status.phase}') != *"Running"* ]]; do
             echo "$(kubectl get pods --namespace instill-ai)"
             sleep 10
           done
 
-      - name: Port-forward of base-api-gateway
+      - name: Port-forward of core-api-gateway
         run: |
-          API_GATEWAY_POD_NAME=$(kubectl get pods --namespace instill-ai -l "app.kubernetes.io/component=api-gateway,app.kubernetes.io/instance=base" -o json | jq -r '.items[0].metadata.name')
+          API_GATEWAY_POD_NAME=$(kubectl get pods --namespace instill-ai -l "app.kubernetes.io/component=api-gateway,app.kubernetes.io/instance=core" -o json | jq -r '.items[0].metadata.name')
           kubectl --namespace instill-ai port-forward ${API_GATEWAY_POD_NAME} ${API_GATEWAY_PORT}:${API_GATEWAY_PORT} > /dev/null 2>&1 &
           while ! nc -vz localhost ${API_GATEWAY_PORT} > /dev/null 2>&1; do sleep 1; done
 
@@ -463,8 +463,8 @@ jobs:
           cd ${{ inputs.component }}
           make integration-test API_GATEWAY_URL=localhost:${API_GATEWAY_PORT}
 
-      - name: Uninstall Base and Model Helm Release
+      - name: Uninstall Core and Model Helm Release
         run: |
           helm uninstall model --namespace instill-ai
-          helm uninstall base --namespace instill-ai
+          helm uninstall core --namespace instill-ai
           kubectl delete namespace instill-ai
