@@ -130,7 +130,7 @@ modelBackend:
   # -- The model initialization configuration
   initModel:
     enabled: false
-    path: https://raw.githubusercontent.com/instill-ai/vdp/main/model-hub/model_hub_cpu.json
+    path: https://raw.githubusercontent.com/instill-ai/model/main/model-hub/model_hub_cpu.json
   # -- Add extra env variables
   extraEnv: []
   # -- Mount external volumes
@@ -231,7 +231,7 @@ triton:
   # -- The image of Triton
   image:
     repository: instill/tritonserver
-    tag: 23.04
+    tag: 23.04-vllm
     pullPolicy: IfNotPresent
   # -- Set the service account to be used, default if left empty
   serviceAccountName: ""
@@ -283,7 +283,7 @@ triton:
   condaEnv:
     image:
       repository: instill/triton-conda-env
-      tag: 0.3.1-alpha
+      tag: 0.4.0-alpha
       pullPolicy: IfNotPresent
   shmSizeLimit: 2Gi
   gpu:
