@@ -50,43 +50,13 @@
     }
   },
   {
-    "id": "lraspp",
-    "description": "A semantic segmentation model based on MobileNetV3 from the OpenMMLab semantic segmentation toolbox and benchmark.",
-    "task": "TASK_SEMANTIC_SEGMENTATION",
-    "model_definition": "model-definitions/github",
-    "configuration": {
-      "repository": "instill-ai/model-semantic-segmentation-dvc",
-      "tag": "v1.0-gpu"
-    }
-  },
-  {
-    "id": "stable-diffusion-1-5-fp16-txt2img",
-    "description": "Stable Diffusion v2 generates high quality images based on text prompts.",
-    "task": "TASK_TEXT_TO_IMAGE",
-    "model_definition": "model-definitions/github",
-    "configuration": {
-      "repository": "instill-ai/model-diffusion-dvc",
-      "tag": "v1.5-fp16-gpu0"
-    }
-  },
-  {
-    "id": "gpt-2",
-    "description": "GPT-2, from OpenAI, is trained to generate text based on your prompts.",
-    "task": "TASK_TEXT_GENERATION",
-    "model_definition": "model-definitions/github",
-    "configuration": {
-      "repository": "instill-ai/model-gpt2-megatron-dvc",
-      "tag": "fp32-345m-1-gpu"
-    }
-  },
-  {
     "id": "llama2-7b",
     "description": "Llama2-7b, from meta, is trained to generate text based on your prompts.",
     "task": "TASK_TEXT_GENERATION",
     "model_definition": "model-definitions/github",
     "configuration": {
       "repository": "instill-ai/model-llama2-7b-dvc",
-      "tag": "fp16-7b-vllm-p80-1gpu"
+      "tag": "fp16-7b-vllm-3gpu-a100"
     }
   },
   {
@@ -96,7 +66,7 @@
     "model_definition": "model-definitions/github",
     "configuration": {
       "repository": "instill-ai/model-mpt-7b-dvc",
-      "tag": "fp16-7b-vllm-p80-1gpu"
+      "tag": "fp16-7b-vllm-3gpu-a100"
     }
   },
   {
@@ -106,7 +76,7 @@
     "model_definition": "model-definitions/github",
     "configuration": {
       "repository": "instill-ai/model-mistral-7b-dvc",
-      "tag": "fp16-7b-vllm-p80-1gpu"
+      "tag": "fp16-7b-vllm-3gpu-a100"
     }
   },
   {
@@ -116,7 +86,7 @@
     "model_definition": "model-definitions/github",
     "configuration": {
       "repository": "instill-ai/model-codellama-7b-dvc",
-      "tag": "fp16-7b-vllm-p80-1gpu"
+      "tag": "fp16-7b-vllm-3gpu-a100"
     }
   },
   {
@@ -126,7 +96,7 @@
     "model_definition": "model-definitions/github",
     "configuration": {
       "repository": "instill-ai/model-llama2-13b-chat-dvc",
-      "tag": "fp16-7b-vllm-p80-1gpu"
+      "tag": "fp16-7b-vllm-3gpu-a100"
     }
   }
 ]
