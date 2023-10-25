@@ -56,7 +56,7 @@
     "model_definition": "model-definitions/github",
     "configuration": {
       "repository": "instill-ai/model-llama2-7b-dvc",
-      "tag": "fp16-7b-vllm-3gpu-a100"
+      "tag": "fp16-7b-vllm-a100"
     }
   },
   {
@@ -66,7 +66,7 @@
     "model_definition": "model-definitions/github",
     "configuration": {
       "repository": "instill-ai/model-mpt-7b-dvc",
-      "tag": "fp16-7b-vllm-3gpu-a100"
+      "tag": "fp16-7b-vllm-a100"
     }
   },
   {
@@ -76,27 +76,7 @@
     "model_definition": "model-definitions/github",
     "configuration": {
       "repository": "instill-ai/model-mistral-7b-dvc",
-      "tag": "fp16-7b-vllm-3gpu-a100"
-    }
-  },
-  {
-    "id": "codellama-7b",
-    "description": "Codellama-7b, from meta, is trained to generate text based on your prompts.",
-    "task": "TASK_TEXT_GENERATION",
-    "model_definition": "model-definitions/github",
-    "configuration": {
-      "repository": "instill-ai/model-codellama-7b-dvc",
-      "tag": "fp16-7b-vllm-3gpu-a100"
-    }
-  },
-  {
-    "id": "llama2-13b-chat",
-    "description": "Llama2-13b-chat, from meta, is trained to generate text based on your prompts.",
-    "task": "TASK_TEXT_GENERATION",
-    "model_definition": "model-definitions/github",
-    "configuration": {
-      "repository": "instill-ai/model-llama2-13b-chat-dvc",
-      "tag": "fp16-7b-vllm-3gpu-a100"
+      "tag": "fp16-7b-vllm-a100"
     }
   }
 ]
