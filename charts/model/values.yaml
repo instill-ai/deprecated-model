@@ -75,7 +75,7 @@ persistence:
       storageClass: ""
       subPath: ""
       accessMode: ReadWriteOnce
-      size: 50Gi
+      size: 80Gi
       annotations: {}
     condaPack:
       existingClaim: ""
