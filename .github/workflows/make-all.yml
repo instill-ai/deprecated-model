@@ -2,11 +2,6 @@ name: Make All
 
 on:
   workflow_dispatch:
-  push:
-    branches:
-      - release-please--branches--main
-    tags:
-      - v*
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref || github.run_id }}
