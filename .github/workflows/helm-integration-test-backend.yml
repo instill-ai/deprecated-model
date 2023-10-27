@@ -26,14 +26,22 @@ jobs:
           sudo kill -9 `sudo lsof -t -i:8084`
           sudo lsof -i -P -n | grep LISTEN
 
-      - name: Free disk space
+      - name: Pre Free Disk Space (Ubuntu)
         run: |
-          mkdir /tmp/test
           df --human-readable
           sudo apt clean
-          docker rmi $(docker image ls --all --quiet)
           rm --recursive --force "$AGENT_TOOLSDIRECTORY"
-          df --human-readable
+
+      - name: Free Disk Space (Ubuntu)
+        uses: jlumbroso/free-disk-space@main
+        with:
+          tool-cache: false
+          android: true
+          dotnet: true
+          haskell: true
+          large-packages: false
+          docker-images: true
+          swap-storage: true
 
       - name: Start Minikube
         run: minikube start --cpus 2 --memory 6096
