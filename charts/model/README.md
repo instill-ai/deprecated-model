@@ -1,6 +1,6 @@
 # model
 
-![Version: 0.1.7-alpha](https://img.shields.io/badge/Version-0.1.7--alpha-informational?style=flat-square) ![AppVersion: 0.2.2-alpha](https://img.shields.io/badge/AppVersion-0.2.2--alpha-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square)
+![Version: 0.1.8-alpha](https://img.shields.io/badge/Version-0.1.8--alpha-informational?style=flat-square) ![AppVersion: 0.3.0-alpha](https://img.shields.io/badge/AppVersion-0.3.0--alpha-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square)
 
 The Helm chart of Instill Model
 
