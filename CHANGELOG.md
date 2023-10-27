@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.0-alpha](https://github.com/instill-ai/model/compare/v0.2.2-alpha...v0.3.0-alpha) (2023-10-27)
+
+
+### Miscellaneous Chores
+
+* **release:** release v0.3.0-alpha ([6ddf5e6](https://github.com/instill-ai/model/commit/6ddf5e638426d88fcb625331df10842753f35cfd))
+
 ## [0.2.2-alpha](https://github.com/instill-ai/model/compare/v0.2.1-alpha...v0.2.2-alpha) (2023-10-13)
 
 
