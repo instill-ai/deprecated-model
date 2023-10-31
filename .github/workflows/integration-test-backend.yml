@@ -188,6 +188,13 @@ jobs:
           EDITION=local-ce:test \
           docker compose -f docker-compose.yml -f docker-compose.latest.yml rm -f
 
+      - name: Run ${{ inputs.component }} integration test (latest)
+        if: inputs.target == 'latest'
+        run: |
+          git clone https://github.com/instill-ai/${{ inputs.component }}.git
+          cd ${{ inputs.component }}
+          make integration-test API_GATEWAY_URL=localhost:${API_GATEWAY_PORT}    
+
       - name: Make down model
         run: |
           docker rm -f model-build-latest >/dev/null 2>&1
