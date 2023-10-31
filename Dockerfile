@@ -32,7 +32,7 @@ RUN git clone https://github.com/instill-ai/core.git
 
 WORKDIR /instill-ai/model
 
-RUN git clone -b ray-poc https://github.com/instill-ai/model-backend.git
+RUN git clone -b heiru/ins-2480-support-ray-model-import-along-with-triton https://github.com/instill-ai/model-backend.git
 RUN git clone https://github.com/instill-ai/controller-model.git
 
 FROM alpine:${ALPINE_VERSION} AS release
