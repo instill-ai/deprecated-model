@@ -90,7 +90,7 @@ services:
       - ${CONTROLLER_MODEL_PRIVATEPORT}:${CONTROLLER_MODEL_PRIVATEPORT}
 
   triton_conda_env:
-    image: instill/triton-conda-env:latest-${TRITON_CONDA_ENV_PLATFORM}
+    image: instill/triton-conda-env:latest-${MODEL_SERVING_PLATFORM}
 
   triton_server:
     ports:
