@@ -9,7 +9,7 @@ concurrency:
 
 jobs:
   make-all:
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, on-prem, dgx]
     steps:
       # mono occupies port 8084 which conflicts with mgmt-backend
       - name: Stop mono service
@@ -26,27 +26,6 @@ jobs:
         uses: cardinalby/export-env-action@v2
         with:
           envFile: .env
-
-      - name: Install k6
-        run: |
-          curl https://github.com/grafana/k6/releases/download/v${{ env.K6_VERSION }}/k6-v${{ env.K6_VERSION }}-linux-amd64.tar.gz -L | tar xvz --strip-components 1 && sudo cp k6 /usr/bin
-
-      - name: Pre Free Disk Space (Ubuntu)
-        run: |
-          df --human-readable
-          sudo apt clean
-          rm --recursive --force "$AGENT_TOOLSDIRECTORY"
-
-      - name: Free Disk Space (Ubuntu)
-        uses: jlumbroso/free-disk-space@main
-        with:
-          tool-cache: false
-          android: true
-          dotnet: true
-          haskell: true
-          large-packages: false
-          docker-images: true
-          swap-storage: true
 
       - name: Checkout repo (model)
         uses: actions/checkout@v3
