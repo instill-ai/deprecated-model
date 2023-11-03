@@ -9,3 +9,12 @@ services:
             - driver: nvidia
               device_ids: []
               capabilities: [gpu]
+
+  ray_server:
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              device_ids: []
+              capabilities: [gpu]

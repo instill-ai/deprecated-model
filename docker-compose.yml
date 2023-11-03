@@ -107,6 +107,7 @@ services:
     entrypoint: ./model-backend
     depends_on:
       - triton_server
+      - ray_server
       - model_backend_worker
 
   model_backend_init_model:
@@ -141,7 +142,7 @@ services:
 
   triton_conda_env:
     container_name: triton-conda-env
-    image: instill/triton-conda-env:${TRITON_CONDA_ENV_VERSION}-${TRITON_CONDA_ENV_PLATFORM}
+    image: instill/triton-conda-env:${TRITON_CONDA_ENV_VERSION}-${MODEL_SERVING_PLATFORM}
     volumes:
       - conda_pack:/conda-pack
 
@@ -163,6 +164,24 @@ services:
       stack: 67108864
     depends_on:
       - triton_conda_env
+
+  ray_server:
+    container_name: ${RAY_SERVER_HOST}
+    image: ${RAY_SERVER_IMAGE}:${RAY_SERVER_VERSION}-${MODEL_SERVING_PLATFORM}
+    restart: unless-stopped
+    environment:
+      - RAY_ADDRESS=0.0.0.0:6379
+      - RAY_REDIS_ADDRESS=redis:6379
+    entrypoint: ["/bin/bash", "-c"]
+    command: |
+      'ray start --head --node-ip-address=0.0.0.0 --dashboard-host=0.0.0.0 --metrics-export-port ${RAY_SERVER_PROMETHEUS_PORT} --disable-usage-stats &&
+      serve start --http-host=0.0.0.0 --grpc-port ${RAY_SERVER_SERVE_GRPC_PORT} --grpc-servicer-functions ray_pb2_grpc.add_RayServiceServicer_to_server &&
+      tail -f /dev/null'
+    volumes:
+      - model_repository:/model-repository
+    shm_size: 4gb
+    ports:
+      - ${RAY_SERVER_DASHBOARD_PORT}:${RAY_SERVER_DASHBOARD_PORT}
 
   temporal_admin_tools_model:
     container_name: temporal-admin-tools-model

@@ -8,25 +8,25 @@ export
 
 # NVIDIA_GPU_AVAILABLE:
 # 	The env variable NVIDIA_GPU_AVAILABLE is set to true if NVIDIA GPU is available. Otherwise, it will be set to false.
-# TRITON_CONDA_ENV_PLATFORM:
-# 	By default, the env variable TRITON_CONDA_ENV_PLATFORM is set to cpu, if NVIDIA GPU is available, it will be set to gpu.
-# 	Specify the env variable TRITON_CONDA_ENV_PLATFORM to override the default value.
+# MODEL_SERVING_PLATFORM:
+# 	By default, the env variable MODEL_SERVING_PLATFORM is set to cpu, if NVIDIA GPU is available, it will be set to gpu.
+# 	Specify the env variable MODEL_SERVING_PLATFORM to override the default value.
 # NVIDIA_VISIBLE_DEVICES:
 # 	By default, the env variable NVIDIA_VISIBLE_DEVICES is set to all if NVIDIA GPU is available. Otherwise, it is unset.
 #	Specify the env variable NVIDIA_VISIBLE_DEVICES to override the default value.
-TRITON_CONDA_ENV_PLATFORM := ${TRITON_CONDA_ENV_PLATFORM}
+MODEL_SERVING_PLATFORM := ${MODEL_SERVING_PLATFORM}
 NVIDIA_VISIBLE_DEVICES := ${NVIDIA_VISIBLE_DEVICES}
 ifeq ($(shell nvidia-smi 2>/dev/null 1>&2; echo $$?),0)
 	NVIDIA_GPU_AVAILABLE := true
-	ifndef TRITON_CONDA_ENV_PLATFORM
-		TRITON_CONDA_ENV_PLATFORM := gpu
+	ifndef MODEL_SERVING_PLATFORM
+		MODEL_SERVING_PLATFORM := gpu
 	endif
 	ifndef NVIDIA_VISIBLE_DEVICES
 		NVIDIA_VISIBLE_DEVICES := all
 	endif
 else
 	NVIDIA_GPU_AVAILABLE := false
-	TRITON_CONDA_ENV_PLATFORM := cpu
+	MODEL_SERVING_PLATFORM := cpu
 endif
 
 UNAME_S := $(shell uname -s)

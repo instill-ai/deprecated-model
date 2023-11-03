@@ -121,6 +121,17 @@ spec:
               value: "{{ template "model.triton" . }}"
             - name: TRITON_SERVER_HTTP_PORT
               value: "{{ template "model.triton.httpPort" . }}"
+        - name: wait-for-ray-server
+          image: curlimages/curl:8.00.1
+          command: ['sh', '-c']
+          args:
+          - >
+            while [[ "$(curl -s -o /dev/null -w ''%{http_code}'' ${RAY_SERVER_HOST}:${RAY_SERVER_SERVE_PORT}/-/routes)" != "200" ]]; do echo waiting for ray-server; sleep 1; done
+          env:
+            - name: RAY_SERVER_HOST
+              value: "{{ template "model.ray" . }}"
+            - name: RAY_SERVER_SERVE_PORT
+              value: "{{ template "model.ray.servePort" . }}"
         - name: chmod-model-repostiroy
           securityContext:
             runAsUser: 0

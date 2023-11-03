@@ -90,7 +90,7 @@ jobs:
         run: |
           EDITION=local-ce:test \
           ITMODE_ENABLED=true \
-          TRITON_CONDA_ENV_PLATFORM=cpu \
+          MODEL_SERVING_PLATFORM=cpu \
           COMPOSE_PROFILES=all \
           docker compose -f docker-compose.yml -f docker-compose.latest.yml up -d --quiet-pull
           EDITION=local-ce:test \
@@ -182,7 +182,7 @@ jobs:
         run: |
           EDITION=local-ce:test \
           ITMODE_ENABLED=true \
-          TRITON_CONDA_ENV_PLATFORM=cpu \
+          MODEL_SERVING_PLATFORM=cpu \
           COMPOSE_PROFILES=all \
           docker compose -f docker-compose.yml -f docker-compose.latest.yml up -d --quiet-pull
           EDITION=local-ce:test \
@@ -302,7 +302,7 @@ jobs:
         run: |
           EDITION=local-ce:test \
           ITMODE_ENABLED=true \
-          TRITON_CONDA_ENV_PLATFORM=cpu \
+          MODEL_SERVING_PLATFORM=cpu \
           docker compose up -d --quiet-pull
           EDITION=local-ce:test \
           docker compose rm -f
@@ -393,7 +393,7 @@ jobs:
         run: |
           EDITION=local-ce:test \
           ITMODE_ENABLED=true \
-          TRITON_CONDA_ENV_PLATFORM=cpu \
+          MODEL_SERVING_PLATFORM=cpu \
           docker compose up -d --quiet-pull
           EDITION=local-ce:test \
           docker compose rm -f

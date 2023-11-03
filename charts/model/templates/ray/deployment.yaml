@@ -1,0 +1,132 @@
+{{- $modelRepository := .Values.persistence.persistentVolumeClaim.modelRepository -}}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ template "model.ray" . }}
+  labels:
+    {{- include "model.labels" . | nindent 4 }}
+    app.kubernetes.io/component: ray-server
+spec:
+  strategy:
+    type: {{ .Values.updateStrategy.type }}
+    {{- if eq .Values.updateStrategy.type "Recreate" }}
+    rollingUpdate: null
+    {{- end }}
+  {{- if not .Values.ray.autoscaling.enabled }}
+  replicas: {{ .Values.ray.replicaCount }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "model.matchLabels" . | nindent 6 }}
+      app.kubernetes.io/component: ray-server
+  template:
+    metadata:
+      labels:
+        {{- include "model.matchLabels" . | nindent 8 }}
+        app.kubernetes.io/component: ray-server
+      annotations:
+        {{- with .Values.ray.podAnnotations }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+    spec:
+      securityContext:
+        runAsUser: 1000
+        runAsGroup: 1000
+      {{- if .Values.ray.serviceAccountName }}
+      serviceAccountName: {{ .Values.ray.serviceAccountName }}
+      {{- end }}
+      automountServiceAccountToken: {{ .Values.ray.automountServiceAccountToken | default false }}
+      terminationGracePeriodSeconds: 120
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      containers:
+        - name: ray-server
+          image: {{ .Values.ray.image.repository }}:{{ .Values.ray.image.tag }}-{{ ternary "gpu" "cpu" .Values.ray.gpu.enabled }}
+          imagePullPolicy: {{ .Values.triton.image.pullPolicy }}
+          livenessProbe:
+            httpGet:
+              path: /v2/health/live
+              scheme: {{ ternary "https" "http" .Values.internalTLS.enabled | upper }}
+              port: {{ ternary "https" "http" .Values.internalTLS.enabled }}
+            initialDelaySeconds: 5
+            failureThreshold: 1
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /v2/health/ready
+              scheme: {{ ternary "https" "http" .Values.internalTLS.enabled | upper }}
+              port: {{ ternary "https" "http" .Values.internalTLS.enabled }}
+            initialDelaySeconds: 5
+            failureThreshold: 1
+            periodSeconds: 10
+          {{- if .Values.ray.gpu.enabled }}
+          resources:
+            limits:
+              nvidia.com/gpu: {{ .Values.ray.gpu.num }}
+          {{- end }}
+          command:
+            - /bin/bash
+            - -c
+            - |
+              ray start --head --node-ip-address=0.0.0.0 --dashboard-host=0.0.0.0 --metrics-export-port ${RAY_SERVER_PROMETHEUS_PORT} --disable-usage-stats
+              serve start --http-host=0.0.0.0 --grpc-port 9000 --grpc-servicer-functions ray_pb2_grpc.add_RayServiceServicer_to_server
+              tail -f /dev/null
+          ports:
+            - name: client
+              containerPort: {{ template "model.ray.clientPort" . }}
+              protocol: TCP
+            - name: dashboard
+              containerPort: {{ template "model.ray.dashboardPort" . }}
+              protocol: TCP
+            - name: gcs
+              containerPort: {{ template "model.ray.gcsPort" . }}
+              protocol: TCP
+            - name: serve
+              containerPort: {{ template "model.ray.servePort" . }}
+              protocol: TCP
+            - name: serve-grpc
+              containerPort: {{ template "model.ray.serveGrpcPort" . }}
+              protocol: TCP
+            - name: prometheus
+              containerPort: {{ template "model.ray.prometheusPort" . }}
+              protocol: TCP
+          volumeMounts:
+            - mountPath: /dev/shm
+              name: shm-volume
+            - name: model-repository
+              mountPath: /model-repository
+            {{- if .Values.ray.extraEnv }}
+            {{- toYaml .Values.ray.extraEnv | nindent 12 }}
+            {{- end }}
+        {{- with $.Values.ray.sidecarContainers }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+      volumes:
+        - name: shm-volume
+          emptyDir:
+            medium: Memory
+            sizeLimit: {{ .Values.ray.shmSizeLimit }}
+        - name: model-repository
+        {{- if not .Values.persistence.enabled }}
+          emptyDir: {}
+        {{- else if $modelRepository.existingClaim }}
+          persistentVolumeClaim:
+            claimName: {{ $modelRepository.existingClaim }}
+        {{- else }}
+          persistentVolumeClaim:
+            claimName: model-repository-data-volume
+        {{- end }}
+      {{- with .Values.modelBackend.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.ray.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.modelBackend.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

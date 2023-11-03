@@ -116,6 +116,10 @@ app.kubernetes.io/name: {{ include "model.name" . }}
   {{- printf "%s-triton-inference-server" (include "model.fullname" .) -}}
 {{- end -}}
 
+{{- define "model.ray" -}}
+  {{- printf "%s-ray-server" (include "model.fullname" .) -}}
+{{- end -}}
+
 {{- define "core.database" -}}
   {{- print "core-database" -}}
 {{- end -}}
@@ -167,6 +171,30 @@ app.kubernetes.io/name: {{ include "model.name" . }}
 
 {{- define "model.triton.metricsPort" -}}
   {{- printf "8002" -}}
+{{- end -}}
+
+{{- define "model.ray.clientPort" -}}
+  {{- printf "10001" -}}
+{{- end -}}
+
+{{- define "model.ray.dashboardPort" -}}
+  {{- printf "8265" -}}
+{{- end -}}
+
+{{- define "model.ray.gcsPort" -}}
+  {{- printf "6379" -}}
+{{- end -}}
+
+{{- define "model.ray.servePort" -}}
+  {{- printf "8000" -}}
+{{- end -}}
+
+{{- define "model.ray.serveGrpcPort" -}}
+  {{- printf "9000" -}}
+{{- end -}}
+
+{{- define "model.ray.prometheusPort" -}}
+  {{- printf "8079" -}}
 {{- end -}}
 
 {{/* temporal container frontend gRPC port */}}
