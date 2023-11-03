@@ -179,6 +179,10 @@ services:
       tail -f /dev/null'
     volumes:
       - model_repository:/model-repository
+    healthcheck:
+      test: ["CMD", "ray", "status"]
+      timeout: 20s
+      retries: 10
     shm_size: 4gb
     ports:
       - ${RAY_SERVER_DASHBOARD_PORT}:${RAY_SERVER_DASHBOARD_PORT}

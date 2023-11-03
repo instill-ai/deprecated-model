@@ -99,10 +99,12 @@ jobs:
             --set edition=k8s-ce:test \
             --set modelBackend.image.tag=latest \
             --set controllerModel.image.tag=latest \
+            --set ray.image.tag=latest \
             --set triton.nvidiaVisibleDevices=${NVIDIA_VISIBLE_DEVICES} \
+            --set ray.platform=cpu \
             --set tags.observability=false
 
-      - name: Wait for triton pods up
+      - name: Wait for model deployment
         run: |
           while [[ $(kubectl get pods --namespace instill-ai -l "app.kubernetes.io/component=controller-model,app.kubernetes.io/instance=model" -o 'jsonpath={..status.phase}') != *"Running"* ]]; do
             echo "$(kubectl get pods --namespace instill-ai)"
@@ -119,7 +121,7 @@ jobs:
   helm-integration-test-latest-mac:
     if: inputs.target == 'latest' && github.ref == 'refs/heads/main'
     runs-on: [self-hosted, macOS, model]
-    timeout-minutes: 20
+    timeout-minutes: 30
     steps:
       - name: Set up environment
         run: |
@@ -219,16 +221,17 @@ jobs:
             --set edition=k8s-ce:test \
             --set modelBackend.image.tag=latest \
             --set controllerModel.image.tag=latest \
+            --set ray.image.tag=latest \
             --set triton.nvidiaVisibleDevices=${NVIDIA_VISIBLE_DEVICES} \
             --set ray.platform=arm \
             --set tags.observability=false
 
-      - name: Wait for rollout model deployments
+      - name: Wait for model deployment
         run: |
-          kubectl rollout status deployment model-model-backend --namespace instill-ai
-          kubectl rollout status deployment model-controller-model --namespace instill-ai
-          kubectl rollout status deployment model-triton-inference-server --namespace instill-ai
-          sleep 10
+          while [[ $(kubectl get pods --namespace instill-ai -l "app.kubernetes.io/component=controller-model,app.kubernetes.io/instance=model" -o 'jsonpath={..status.phase}') != *"Running"* ]]; do
+            echo "$(kubectl get pods --namespace instill-ai)"
+            sleep 10
+          done
 
       - name: Run ${{ inputs.component }} integration test (latest)
         if: inputs.target == 'latest'
@@ -332,10 +335,12 @@ jobs:
             --set edition=k8s-ce:test \
             --set modelBackend.image.tag=${MODEL_BACKEND_VERSION} \
             --set controllerModel.image.tag=latest \
+            --set ray.image.tag=${RAY_SERVER_VERSION} \
             --set triton.nvidiaVisibleDevices=${NVIDIA_VISIBLE_DEVICES} \
+            --set ray.platform=cpu \
             --set tags.observability=false
 
-      - name: Wait for triton pods up
+      - name: Wait for model deployment
         run: |
           while [[ $(kubectl get pods --namespace instill-ai -l "app.kubernetes.io/component=controller-model,app.kubernetes.io/instance=model" -o 'jsonpath={..status.phase}') != *"Running"* ]]; do
             echo "$(kubectl get pods --namespace instill-ai)"
@@ -353,7 +358,7 @@ jobs:
   helm-integration-test-release-mac:
     if: inputs.target == 'release'
     runs-on: [self-hosted, macOS, model]
-    timeout-minutes: 20
+    timeout-minutes: 30
     steps:
       - name: Set up environment
         run: |
@@ -421,7 +426,6 @@ jobs:
             --set apiGateway.image.tag=${API_GATEWAY_VERSION} \
             --set mgmtBackend.image.tag=${MGMT_BACKEND_VERSION} \
             --set console.image.tag=${CONSOLE_VERSION} \
-            --set ray.platform=arm \
             --set tags.observability=false
 
       - name: Wait for core pods up
@@ -459,15 +463,17 @@ jobs:
             --set edition=k8s-ce:test \
             --set modelBackend.image.tag=${MODEL_BACKEND_VERSION} \
             --set controllerModel.image.tag=${CONTROLLER_MODEL_VERSION} \
+            --set ray.image.tag=${RAY_SERVER_VERSION} \
             --set triton.nvidiaVisibleDevices=${NVIDIA_VISIBLE_DEVICES} \
+            --set ray.platform=arm \
             --set tags.observability=false
 
-      - name: Wait for rollout model deployments
+      - name: Wait for model deployment
         run: |
-          kubectl rollout status deployment model-model-backend --namespace instill-ai
-          kubectl rollout status deployment model-controller-model --namespace instill-ai
-          kubectl rollout status deployment model-triton-inference-server --namespace instill-ai
-          sleep 10
+          while [[ $(kubectl get pods --namespace instill-ai -l "app.kubernetes.io/component=controller-model,app.kubernetes.io/instance=model" -o 'jsonpath={..status.phase}') != *"Running"* ]]; do
+            echo "$(kubectl get pods --namespace instill-ai)"
+            sleep 10
+          done
 
       - name: Run ${{ inputs.component }} integration test (release)
         env:
