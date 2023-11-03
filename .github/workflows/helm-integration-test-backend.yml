@@ -220,6 +220,7 @@ jobs:
             --set modelBackend.image.tag=latest \
             --set controllerModel.image.tag=latest \
             --set triton.nvidiaVisibleDevices=${NVIDIA_VISIBLE_DEVICES} \
+            --set ray.platform=arm \
             --set tags.observability=false
 
       - name: Wait for rollout model deployments
@@ -420,6 +421,7 @@ jobs:
             --set apiGateway.image.tag=${API_GATEWAY_VERSION} \
             --set mgmtBackend.image.tag=${MGMT_BACKEND_VERSION} \
             --set console.image.tag=${CONSOLE_VERSION} \
+            --set ray.platform=arm \
             --set tags.observability=false
 
       - name: Wait for core pods up

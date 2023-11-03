@@ -142,7 +142,7 @@ services:
 
   triton_conda_env:
     container_name: triton-conda-env
-    image: instill/triton-conda-env:${TRITON_CONDA_ENV_VERSION}-${MODEL_SERVING_PLATFORM}
+    image: instill/triton-conda-env:${TRITON_CONDA_ENV_VERSION}-${TRITON_CONDA_ENV_PLATFORM}
     volumes:
       - conda_pack:/conda-pack
 
@@ -167,7 +167,7 @@ services:
 
   ray_server:
     container_name: ${RAY_SERVER_HOST}
-    image: ${RAY_SERVER_IMAGE}:${RAY_SERVER_VERSION}-${MODEL_SERVING_PLATFORM}
+    image: ${RAY_SERVER_IMAGE}:${RAY_SERVER_VERSION}-${RAY_PLATFORM}
     restart: unless-stopped
     environment:
       - RAY_ADDRESS=0.0.0.0:6379

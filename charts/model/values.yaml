@@ -353,6 +353,7 @@ ray:
   gpu:
     enabled: false
     num:
+  platform: cpu
 database:
   # -- The host of database
   host:

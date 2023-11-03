@@ -90,7 +90,8 @@ jobs:
         run: |
           EDITION=local-ce:test \
           ITMODE_ENABLED=true \
-          MODEL_SERVING_PLATFORM=cpu \
+          TRITON_CONDA_ENV_PLATFORM=cpu \
+          RAY_PLATFORM=cpu \
           COMPOSE_PROFILES=all \
           docker compose -f docker-compose.yml -f docker-compose.latest.yml up -d --quiet-pull
           EDITION=local-ce:test \
@@ -182,7 +183,8 @@ jobs:
         run: |
           EDITION=local-ce:test \
           ITMODE_ENABLED=true \
-          MODEL_SERVING_PLATFORM=cpu \
+          TRITON_CONDA_ENV_PLATFORM=cpu \
+          RAY_PLATFORM=arm \
           COMPOSE_PROFILES=all \
           docker compose -f docker-compose.yml -f docker-compose.latest.yml up -d --quiet-pull
           EDITION=local-ce:test \
@@ -193,7 +195,7 @@ jobs:
         run: |
           git clone https://github.com/instill-ai/${{ inputs.component }}.git
           cd ${{ inputs.component }}
-          make integration-test API_GATEWAY_URL=localhost:${API_GATEWAY_PORT}    
+          make integration-test API_GATEWAY_URL=localhost:${API_GATEWAY_PORT}
 
       - name: Make down model
         run: |
@@ -302,7 +304,8 @@ jobs:
         run: |
           EDITION=local-ce:test \
           ITMODE_ENABLED=true \
-          MODEL_SERVING_PLATFORM=cpu \
+          TRITON_CONDA_ENV_PLATFORM=cpu \
+          RAY_PLATFORM=cpu \
           docker compose up -d --quiet-pull
           EDITION=local-ce:test \
           docker compose rm -f
@@ -393,7 +396,8 @@ jobs:
         run: |
           EDITION=local-ce:test \
           ITMODE_ENABLED=true \
-          MODEL_SERVING_PLATFORM=cpu \
+          TRITON_CONDA_ENV_PLATFORM=cpu \
+          RAY_PLATFORM=arm \
           docker compose up -d --quiet-pull
           EDITION=local-ce:test \
           docker compose rm -f

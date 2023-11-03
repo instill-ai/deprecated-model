@@ -8,28 +8,34 @@ export
 
 # NVIDIA_GPU_AVAILABLE:
 # 	The env variable NVIDIA_GPU_AVAILABLE is set to true if NVIDIA GPU is available. Otherwise, it will be set to false.
-# MODEL_SERVING_PLATFORM:
-# 	By default, the env variable MODEL_SERVING_PLATFORM is set to cpu, if NVIDIA GPU is available, it will be set to gpu.
-# 	Specify the env variable MODEL_SERVING_PLATFORM to override the default value.
+# TRITON_CONDA_ENV_PLATFORM:
+# 	By default, the env variable TRITON_CONDA_ENV_PLATFORM is set to cpu, if NVIDIA GPU is available, it will be set to gpu.
+# 	Specify the env variable TRITON_CONDA_ENV_PLATFORM to override the default value.
 # NVIDIA_VISIBLE_DEVICES:
 # 	By default, the env variable NVIDIA_VISIBLE_DEVICES is set to all if NVIDIA GPU is available. Otherwise, it is unset.
 #	Specify the env variable NVIDIA_VISIBLE_DEVICES to override the default value.
-MODEL_SERVING_PLATFORM := ${MODEL_SERVING_PLATFORM}
+TRITON_CONDA_ENV_PLATFORM := ${TRITON_CONDA_ENV_PLATFORM}
 NVIDIA_VISIBLE_DEVICES := ${NVIDIA_VISIBLE_DEVICES}
 ifeq ($(shell nvidia-smi 2>/dev/null 1>&2; echo $$?),0)
 	NVIDIA_GPU_AVAILABLE := true
-	ifndef MODEL_SERVING_PLATFORM
-		MODEL_SERVING_PLATFORM := gpu
+	ifndef TRITON_CONDA_ENV_PLATFORM
+		TRITON_CONDA_ENV_PLATFORM := gpu
 	endif
 	ifndef NVIDIA_VISIBLE_DEVICES
 		NVIDIA_VISIBLE_DEVICES := all
 	endif
 else
 	NVIDIA_GPU_AVAILABLE := false
-	MODEL_SERVING_PLATFORM := cpu
+	TRITON_CONDA_ENV_PLATFORM := cpu
 endif
 
 UNAME_S := $(shell uname -s)
+
+ifeq ($(UNAME_S),Darwin)
+	RAY_PLATFORM := arm
+else
+	RAY_PLATFORM := ${TRITON_CONDA_ENV_PLATFORM}
+endif
 
 INSTILL_MODEL_VERSION := $(shell git tag --sort=committerdate | grep -E '[0-9]' | tail -1 | cut -b 2-)
 
@@ -275,7 +281,7 @@ helm-integration-test-latest:                       ## Run integration test on t
 					--set tags.prometheusStack=false' \
 			/bin/sh -c 'rm -rf $${TMP_CONFIG_DIR}/*' \
 		" && rm -rf $${TMP_CONFIG_DIR}
-	@kubectl rollout status deployment core-api-gateway --namespace ${HELM_NAMESPACE} --timeout=120s
+	@kubectl rollout status deployment core-api-gateway --namespace ${HELM_NAMESPACE} --timeout=360s
 	@export API_GATEWAY_POD_NAME=$$(kubectl get pods --namespace ${HELM_NAMESPACE} -l "app.kubernetes.io/component=api-gateway,app.kubernetes.io/instance=core" -o jsonpath="{.items[0].metadata.name}") && \
 		kubectl --namespace ${HELM_NAMESPACE} port-forward $${API_GATEWAY_POD_NAME} ${API_GATEWAY_PORT}:${API_GATEWAY_PORT} > /dev/null 2>&1 &
 	@while ! nc -vz localhost ${API_GATEWAY_PORT} > /dev/null 2>&1; do sleep 1; done
@@ -285,13 +291,15 @@ helm-integration-test-latest:                       ## Run integration test on t
 		--set modelBackend.image.tag=latest \
 		--set controllerModel.image.tag=latest \
 		--set triton.nvidiaVisibleDevices=${NVIDIA_VISIBLE_DEVICES} \
+		--set ray.platform=${RAY_PLATFORM} \
 		--set tags.observability=false
-	@kubectl rollout status deployment model-model-backend --namespace instill-ai --timeout=120s
-	@kubectl rollout status deployment model-controller-model --namespace instill-ai --timeout=180s
-	@kubectl rollout status deployment model-triton-inference-server --namespace instill-ai --timeout=180s
+	@kubectl rollout status deployment model-model-backend --namespace instill-ai --timeout=360s
+	@kubectl rollout status deployment model-controller-model --namespace instill-ai --timeout=360s
+	@kubectl rollout status deployment model-triton-inference-server --namespace instill-ai --timeout=360s
+	@kubectl rollout status deployment model-ray-server --namespace instill-ai --timeout=360s
 	@sleep 10
 ifeq ($(UNAME_S),Darwin)
-	@docker run -t ----name ${CONTAINER_BACKEND_INTEGRATION_TEST_NAME}-helm-latest ${CONTAINER_COMPOSE_IMAGE_NAME}:latest /bin/sh -c " \
+	@docker run -t --name ${CONTAINER_BACKEND_INTEGRATION_TEST_NAME}-helm-latest ${CONTAINER_COMPOSE_IMAGE_NAME}:latest /bin/sh -c " \
 			/bin/sh -c 'cd model-backend && make integration-test API_GATEWAY_URL=host.docker.internal:${API_GATEWAY_PORT}' && \
 			/bin/sh -c 'cd controller-model && make integration-test API_GATEWAY_URL=host.docker.internal:${API_GATEWAY_PORT}' \
 		"
@@ -331,7 +339,7 @@ helm-integration-test-release:                       ## Run integration test on 
 					--set tags.observability=false \
 					--set tags.prometheusStack=false' \
 		"
-	@kubectl rollout status deployment core-api-gateway --namespace ${HELM_NAMESPACE} --timeout=120s
+	@kubectl rollout status deployment core-api-gateway --namespace ${HELM_NAMESPACE} --timeout=360s
 	@export API_GATEWAY_POD_NAME=$$(kubectl get pods --namespace ${HELM_NAMESPACE} -l "app.kubernetes.io/component=api-gateway,app.kubernetes.io/instance=core" -o jsonpath="{.items[0].metadata.name}") && \
 		kubectl --namespace ${HELM_NAMESPACE} port-forward $${API_GATEWAY_POD_NAME} ${API_GATEWAY_PORT}:${API_GATEWAY_PORT} > /dev/null 2>&1 &
 	@while ! nc -vz localhost ${API_GATEWAY_PORT} > /dev/null 2>&1; do sleep 1; done
@@ -340,11 +348,14 @@ helm-integration-test-release:                       ## Run integration test on 
 		--set edition=k8s-ce:test \
 		--set modelBackend.image.tag=${MODEL_BACKEND_VERSION} \
 		--set controllerModel.image.tag=${CONTROLLER_MODEL_VERSION} \
+		--set ray.image.tag=${RAY_SERVER_VERSION} \
 		--set triton.nvidiaVisibleDevices=${NVIDIA_VISIBLE_DEVICES} \
+		--set ray.platform=${RAY_PLATFORM} \
 		--set tags.observability=false
-	@kubectl rollout status deployment model-model-backend --namespace instill-ai --timeout=120s
-	@kubectl rollout status deployment model-controller-model --namespace instill-ai --timeout=180s
-	@kubectl rollout status deployment model-triton-inference-server --namespace instill-ai --timeout=180s
+	@kubectl rollout status deployment model-model-backend --namespace instill-ai --timeout=360s
+	@kubectl rollout status deployment model-controller-model --namespace instill-ai --timeout=360s
+	@kubectl rollout status deployment model-triton-inference-server --namespace instill-ai --timeout=360s
+	@kubectl rollout status deployment model-ray-server --namespace instill-ai --timeout=360s
 	@sleep 10
 ifeq ($(UNAME_S),Darwin)
 	@docker run --rm --name ${CONTAINER_BACKEND_INTEGRATION_TEST_NAME}-helm-release ${CONTAINER_COMPOSE_IMAGE_NAME}:${INSTILL_MODEL_VERSION} /bin/sh -c " \

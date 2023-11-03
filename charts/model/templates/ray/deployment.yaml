@@ -43,21 +43,21 @@ spec:
       {{- end }}
       containers:
         - name: ray-server
-          image: {{ .Values.ray.image.repository }}:{{ .Values.ray.image.tag }}-{{ ternary "gpu" "cpu" .Values.ray.gpu.enabled }}
+          image: {{ .Values.ray.image.repository }}:{{ .Values.ray.image.tag }}-{{ .Values.ray.platform }}
           imagePullPolicy: {{ .Values.triton.image.pullPolicy }}
           livenessProbe:
             httpGet:
-              path: /v2/health/live
+              path: /-/routes
               scheme: {{ ternary "https" "http" .Values.internalTLS.enabled | upper }}
-              port: {{ ternary "https" "http" .Values.internalTLS.enabled }}
+              port: {{ template "model.ray.servePort" . }}
             initialDelaySeconds: 5
             failureThreshold: 1
             periodSeconds: 10
           readinessProbe:
             httpGet:
-              path: /v2/health/ready
+              path: /-/routes
               scheme: {{ ternary "https" "http" .Values.internalTLS.enabled | upper }}
-              port: {{ ternary "https" "http" .Values.internalTLS.enabled }}
+              port: {{ template "model.ray.servePort" . }}
             initialDelaySeconds: 5
             failureThreshold: 1
             periodSeconds: 10
@@ -70,8 +70,8 @@ spec:
             - /bin/bash
             - -c
             - |
-              ray start --head --node-ip-address=0.0.0.0 --dashboard-host=0.0.0.0 --metrics-export-port ${RAY_SERVER_PROMETHEUS_PORT} --disable-usage-stats
-              serve start --http-host=0.0.0.0 --grpc-port 9000 --grpc-servicer-functions ray_pb2_grpc.add_RayServiceServicer_to_server
+              ray start --head --node-ip-address=0.0.0.0 --dashboard-host=0.0.0.0 --metrics-export-port {{ template "model.ray.prometheusPort" . }} --disable-usage-stats
+              serve start --http-host=0.0.0.0 --grpc-port {{ template "model.ray.serveGrpcPort" . }} --grpc-servicer-functions ray_pb2_grpc.add_RayServiceServicer_to_server
               tail -f /dev/null
           ports:
             - name: client
