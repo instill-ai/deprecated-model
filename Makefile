@@ -31,7 +31,13 @@ endif
 
 UNAME_S := $(shell uname -s)
 
-ifeq ($(UNAME_S),Darwin)
+ifeq ($(shell uname -p),arm)
+	RAY_PLATFORM := arm
+else ifeq ($(shell uname -m),aarch64)
+	RAY_PLATFORM := arm
+else ifeq ($(shell uname -m),arm64)
+	RAY_PLATFORM := arm
+else ifeq ($(shell uname -s),Darwin)
 	RAY_PLATFORM := arm
 else
 	RAY_PLATFORM := ${TRITON_CONDA_ENV_PLATFORM}

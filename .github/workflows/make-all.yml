@@ -18,7 +18,7 @@ jobs:
           sudo lsof -i -P -n | grep LISTEN
 
       - name: Checkout repo
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           repository: instill-ai/model
 
@@ -49,7 +49,7 @@ jobs:
           swap-storage: true
 
       - name: Checkout repo (model)
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           repository: instill-ai/model
 
