@@ -107,7 +107,6 @@ services:
     entrypoint: ./model-backend
     depends_on:
       - triton_server
-      - ray_server
       - model_backend_worker
 
   model_backend_init_model:
@@ -186,6 +185,8 @@ services:
     shm_size: 4gb
     ports:
       - ${RAY_SERVER_DASHBOARD_PORT}:${RAY_SERVER_DASHBOARD_PORT}
+    profiles:
+      - experimental
 
   temporal_admin_tools_model:
     container_name: temporal-admin-tools-model

@@ -27,7 +27,7 @@ jobs:
           sudo lsof -i -P -n | grep LISTEN
 
       - name: Checkout repo
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           repository: instill-ai/model
 
@@ -58,7 +58,7 @@ jobs:
           swap-storage: true
 
       - name: Checkout repo (core)
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           repository: instill-ai/core
 
@@ -77,7 +77,7 @@ jobs:
           docker compose -f docker-compose.yml -f docker-compose.latest.yml rm -f
 
       - name: Checkout repo (model)
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           repository: instill-ai/model
 
@@ -118,7 +118,7 @@ jobs:
           brew install make
 
       - name: Checkout repo
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           repository: instill-ai/model
 
@@ -140,7 +140,7 @@ jobs:
           brew install k6
 
       - name: Checkout repo
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           repository: instill-ai/core
 
@@ -170,7 +170,7 @@ jobs:
           docker compose -f docker-compose.yml -f docker-compose.latest.yml rm -f
 
       - name: Checkout repo (model)
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           repository: instill-ai/model
 
@@ -206,7 +206,7 @@ jobs:
           EDITION=NULL docker compose down -v
 
       - name: Checkout repo
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           repository: instill-ai/core
 
@@ -233,7 +233,7 @@ jobs:
           sudo lsof -i -P -n | grep LISTEN
 
       - name: Checkout repo
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           repository: instill-ai/model
 
@@ -269,7 +269,7 @@ jobs:
           swap-storage: true
 
       - name: Checkout repo (core)
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           repository: instill-ai/core
 
@@ -286,7 +286,7 @@ jobs:
           docker compose rm -f
 
       - name: Checkout repo (model)
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           repository: instill-ai/model
 
@@ -328,7 +328,7 @@ jobs:
           brew install make
 
       - name: Checkout repo
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           repository: instill-ai/model
 
@@ -350,7 +350,7 @@ jobs:
           brew install k6
 
       - name: Checkout repo
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           repository: instill-ai/core
 
@@ -378,7 +378,7 @@ jobs:
           docker compose rm -f
 
       - name: Checkout repo (model)
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           repository: instill-ai/model
 
@@ -419,7 +419,7 @@ jobs:
           EDITION=NULL docker compose down -v
 
       - name: Checkout repo
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           repository: instill-ai/core
 

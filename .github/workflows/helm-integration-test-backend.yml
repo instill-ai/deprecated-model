@@ -47,7 +47,7 @@ jobs:
         run: minikube start --cpus 2 --memory 6096
 
       - name: Checkout repo (core)
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           repository: instill-ai/core
 
@@ -79,7 +79,7 @@ jobs:
           while ! nc -vz localhost ${API_GATEWAY_PORT} > /dev/null 2>&1; do sleep 1; done
 
       - name: Checkout repo (model)
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           repository: instill-ai/model
 
@@ -128,7 +128,7 @@ jobs:
           brew install make
 
       - name: Checkout repo (model)
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           repository: instill-ai/model
 
@@ -157,7 +157,7 @@ jobs:
           brew install k6
 
       - name: Checkout repo
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           repository: instill-ai/core
 
@@ -205,7 +205,7 @@ jobs:
           while ! nc -vz localhost ${API_GATEWAY_PORT} > /dev/null 2>&1; do sleep 1; done
 
       - name: Checkout repo (model)
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           repository: instill-ai/model
 
@@ -278,7 +278,7 @@ jobs:
         run: minikube start --cpus 2 --memory 6096
 
       - name: Checkout repo (core)
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           repository: instill-ai/core
 
@@ -310,7 +310,7 @@ jobs:
           while ! nc -vz localhost ${API_GATEWAY_PORT} > /dev/null 2>&1; do sleep 1; done
 
       - name: Checkout repo (model)
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           repository: instill-ai/model
 
@@ -365,7 +365,7 @@ jobs:
           brew install make
 
       - name: Checkout repo (model)
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           repository: instill-ai/model
 
@@ -394,7 +394,7 @@ jobs:
           brew install k6
 
       - name: Checkout repo
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           repository: instill-ai/core
 
@@ -442,7 +442,7 @@ jobs:
           while ! nc -vz localhost ${API_GATEWAY_PORT} > /dev/null 2>&1; do sleep 1; done
 
       - name: Checkout repo (model)
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           repository: instill-ai/model
 
