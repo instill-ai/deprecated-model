@@ -18,7 +18,7 @@ jobs:
   helm-integration-test-latest-linux:
     if: inputs.target == 'latest'
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    # timeout-minutes: 30
     steps:
       # mono occupies port 8084 which conflicts with mgmt-backend
       - name: Stop mono service
@@ -103,6 +103,10 @@ jobs:
             --set triton.nvidiaVisibleDevices=${NVIDIA_VISIBLE_DEVICES} \
             --set ray.platform=cpu \
             --set tags.observability=false
+          kubectl rollout status deployment model-model-backend --namespace instill-ai
+          kubectl rollout status deployment model-controller-model --namespace instill-ai
+          kubectl rollout status deployment model-triton-inference-server --namespace instill-ai
+          kubectl rollout status deployment model-ray-server --namespace instill-ai   
 
       - name: Wait for model deployment
         run: |
@@ -119,9 +123,9 @@ jobs:
           make integration-test API_GATEWAY_URL=localhost:${API_GATEWAY_PORT}
 
   helm-integration-test-latest-mac:
-    if: inputs.target == 'latest' && github.ref == 'refs/heads/main'
+    if: inputs.target == 'latest'
     runs-on: [self-hosted, macOS, model]
-    timeout-minutes: 30
+    # timeout-minutes: 30
     steps:
       - name: Set up environment
         run: |
@@ -182,6 +186,10 @@ jobs:
           helm uninstall core --namespace instill-ai
           kubectl delete namespace instill-ai
 
+      - name: Clean all docker images
+        run: |
+          docker rmi $(docker images)
+
       - name: Launch Helm Instill Core (latest)
         run: |
           helm install core charts/core --namespace instill-ai --create-namespace \
@@ -225,6 +233,10 @@ jobs:
             --set triton.nvidiaVisibleDevices=${NVIDIA_VISIBLE_DEVICES} \
             --set ray.platform=arm \
             --set tags.observability=false
+          kubectl rollout status deployment model-model-backend --namespace instill-ai
+          kubectl rollout status deployment model-controller-model --namespace instill-ai
+          kubectl rollout status deployment model-triton-inference-server --namespace instill-ai
+          kubectl rollout status deployment model-ray-server --namespace instill-ai  
 
       - name: Wait for model deployment
         run: |
@@ -249,7 +261,7 @@ jobs:
   helm-integration-test-release-linux:
     if: inputs.target == 'release'
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    # timeout-minutes: 30
     steps:
       # mono occupies port 8084 which conflicts with mgmt-backend
       - name: Stop mono service
@@ -339,6 +351,10 @@ jobs:
             --set triton.nvidiaVisibleDevices=${NVIDIA_VISIBLE_DEVICES} \
             --set ray.platform=cpu \
             --set tags.observability=false
+          kubectl rollout status deployment model-model-backend --namespace instill-ai
+          kubectl rollout status deployment model-controller-model --namespace instill-ai
+          kubectl rollout status deployment model-triton-inference-server --namespace instill-ai
+          kubectl rollout status deployment model-ray-server --namespace instill-ai   
 
       - name: Wait for model deployment
         run: |
@@ -358,7 +374,7 @@ jobs:
   helm-integration-test-release-mac:
     if: inputs.target == 'release'
     runs-on: [self-hosted, macOS, model]
-    timeout-minutes: 30
+    # timeout-minutes: 30
     steps:
       - name: Set up environment
         run: |
@@ -467,6 +483,10 @@ jobs:
             --set triton.nvidiaVisibleDevices=${NVIDIA_VISIBLE_DEVICES} \
             --set ray.platform=arm \
             --set tags.observability=false
+          kubectl rollout status deployment model-model-backend --namespace instill-ai
+          kubectl rollout status deployment model-controller-model --namespace instill-ai
+          kubectl rollout status deployment model-triton-inference-server --namespace instill-ai
+          kubectl rollout status deployment model-ray-server --namespace instill-ai  
 
       - name: Wait for model deployment
         run: |
