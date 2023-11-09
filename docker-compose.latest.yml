@@ -99,7 +99,6 @@ services:
   ray_server:
     image: ${RAY_SERVER_IMAGE}:latest-${RAY_PLATFORM}
     profiles:
-      - all
       - model
     ports:
       - ${RAY_SERVER_CLIENT_PORT}:${RAY_SERVER_CLIENT_PORT}

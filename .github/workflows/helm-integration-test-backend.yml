@@ -18,7 +18,7 @@ jobs:
   helm-integration-test-latest-linux:
     if: inputs.target == 'latest'
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 40
     steps:
       # mono occupies port 8084 which conflicts with mgmt-backend
       - name: Stop mono service
