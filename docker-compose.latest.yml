@@ -98,7 +98,6 @@ services:
 
   ray_server:
     profiles:
-      - all
       - model
     ports:
       - ${RAY_SERVER_CLIENT_PORT}:${RAY_SERVER_CLIENT_PORT}
