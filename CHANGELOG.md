@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.4.0-alpha](https://github.com/instill-ai/model/compare/v0.3.0-alpha...v0.4.0-alpha) (2023-11-13)
+
+
+### Features
+
+* **ray:** add ray as model serving service ([#55](https://github.com/instill-ai/model/issues/55)) ([dd093fc](https://github.com/instill-ai/model/commit/dd093fc0b0bf620b862f51e181c32388c8f441aa))
+
+
+### Miscellaneous Chores
+
+* **release:** release v0.4.0-alpha ([1072545](https://github.com/instill-ai/model/commit/1072545af5dd34d39e37c77e90df1b21d0d27c73))
+
 ## [0.3.0-alpha](https://github.com/instill-ai/model/compare/v0.2.2-alpha...v0.3.0-alpha) (2023-10-27)
 
 
