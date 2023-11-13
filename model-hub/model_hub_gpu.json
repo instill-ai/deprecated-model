@@ -70,8 +70,8 @@
     }
   },
   {
-    "id": "llava2-7b",
-    "description": "Llava2-7b, from liuhaotian, is trained to generate text based on your prompts with miltimodal input.",
+    "id": "llava-7b",
+    "description": "LLaVa-7b, from liuhaotian, is trained to generate text based on your prompts with miltimodal input.",
     "task": "TASK_TEXT_GENERATION",
     "model_definition": "model-definitions/github",
     "configuration": {
