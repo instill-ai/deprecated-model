@@ -97,6 +97,7 @@ services:
       - ${TRITON_SERVER_PORT}:8001
 
   ray_server:
+    image: ${RAY_SERVER_IMAGE}:latest-${RAY_PLATFORM}
     profiles:
       - all
       - model
