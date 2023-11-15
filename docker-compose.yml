@@ -8,6 +8,8 @@ networks:
 volumes:
   conda_pack:
     name: conda-pack
+  ray_conda:
+    name: ray-conda
   model_repository:
     name: model-repository
   model_cache:
@@ -94,6 +96,7 @@ services:
     volumes:
       - model_repository:/model-repository
       - model_cache:/.cache
+      - ray_conda:/ray-conda
     healthcheck:
       test:
         [
@@ -178,6 +181,7 @@ services:
       tail -f /dev/null'
     volumes:
       - model_repository:/model-repository
+      - ray_conda:/ray-conda
     healthcheck:
       test: ["CMD", "ray", "status"]
       timeout: 20s
