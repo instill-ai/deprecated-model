@@ -84,6 +84,13 @@ persistence:
       accessMode: ReadWriteOnce
       size: 10Gi
       annotations: {}
+    rayConda:
+      existingClaim: ""
+      storageClass: ""
+      subPath: ""
+      accessMode: ReadWriteOnce
+      size: 20Gi
+      annotations: {}
 # -- The usage collector configuration
 usage:
   enabled: true

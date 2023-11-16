@@ -51,7 +51,7 @@ data:
       grpcuri: {{ include "model.triton" . }}:{{ include "model.triton.grpcPort" . }}
       modelstore: /model-repository
     rayserver:
-      grpcuri: {{ include "model.ray" . }}-raycluster:{{ include "model.ray.serveGrpcPort" . }}
+      grpcuri: {{ include "model.ray" . }}:{{ include "model.ray.serveGrpcPort" . }}
       modelstore: /model-repository
     database:
       username: {{ default (include "core.database.username" .) .Values.database.username }}
