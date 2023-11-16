@@ -1,0 +1,6 @@
+dependencies:
+- name: kuberay-operator
+  repository: https://ray-project.github.io/kuberay-helm/
+  version: 1.0.0
+digest: sha256:687bfc40486b8054262884a5148f23d6375ff5925ae22b03834c10bb1acb918a
+generated: "2023-11-16T00:26:44.444775+08:00"

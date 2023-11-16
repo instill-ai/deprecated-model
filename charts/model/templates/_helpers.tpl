@@ -116,8 +116,16 @@ app.kubernetes.io/name: {{ include "model.name" . }}
   {{- printf "%s-triton-inference-server" (include "model.fullname" .) -}}
 {{- end -}}
 
+{{- define "model.kuberay-operator" -}}
+  {{- printf "%s-kuberay-operator" (include "model.fullname" .) -}}
+{{- end -}}
+
+{{- define "model.ray-service" -}}
+  {{- printf "%s-ray" (include "model.fullname" .) -}}
+{{- end -}}
+
 {{- define "model.ray" -}}
-  {{- printf "%s-ray-server" (include "model.fullname" .) -}}
+  {{- printf "%s-ray-raycluster-head-svc" (include "model.fullname" .) -}}
 {{- end -}}
 
 {{- define "core.database" -}}

@@ -1,4 +1,4 @@
-## -- Provide a name in place of vdp
+## -- Provide a name in place of Model
 nameOverride: ""
 ## -- Override the deployment namespace
 namespaceOverride: ""
@@ -13,7 +13,7 @@ logLevel: info
 # -- Enable development mode
 # if edition is "k8s-ce:dev", console will be launched with CODE_ENV=development. Otherwise, CODE_ENV=production
 edition: k8s-ce
-# -- The maximum data payload to VDP cluster (MB)
+# -- The maximum data payload to Model cluster (MB)
 maxDataSizeMB: 12
 # -- Set true to enable integration test mode
 # The model-backend will use dummy models
@@ -22,7 +22,7 @@ itMode:
   enabled: false
 # -- Use this set to assign a list of default pullSecrets
 imagePullSecrets:
-# -- The internal TLS used for VDP components secure communicating. In order to enable https
+# -- The internal TLS used for Model components secure communicating. In order to enable https
 # in each components tls cert files need to provided in advance.
 internalTLS:
   # If internal TLS enabled
@@ -289,6 +289,15 @@ triton:
   gpu:
     enabled: false
     num:
+kuberay-operator:
+  fullnameOverride: ""
+  watchNamespace:
+  - "instill-ai"
+rayService:
+  image:
+    repository: instill/rayserver
+    version: "2.8.0"
+    tag: latest-arm
 database:
   # -- The host of database
   host:
