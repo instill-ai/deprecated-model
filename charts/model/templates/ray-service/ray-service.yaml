@@ -1,3 +1,4 @@
+{{- $modelRepository := .Values.persistence.persistentVolumeClaim.modelRepository -}}
 {{- $rayConda := .Values.persistence.persistentVolumeClaim.rayConda -}}
 apiVersion: ray.io/v1
 # kind: RayService
@@ -16,7 +17,7 @@ spec:
   #       grpc_servicer_functions:
   #           - ray_pb2_grpc.add_RayServiceServicer_to_server
   # rayClusterConfig:
-  rayVersion: {{ .Values.rayService.image.version }} # should match the Ray version in the image of the containers
+  rayVersion: {{ .Values.rayService.image.version }}
   ## raycluster autoscaling config
   enableInTreeAutoscaling: true
   autoscalerOptions:
@@ -28,11 +29,7 @@ spec:
       requests:
         cpu: "1"
         memory: "1000Mi"
-  ######################headGroupSpecs#################################
   headGroupSpec:
-    # The `rayStartParams` are used to configure the `ray start` command.
-    # See https://github.com/ray-project/kuberay/blob/master/docs/guidance/rayStartParams.md for the default settings of `rayStartParams` in KubeRay.
-    # See https://docs.ray.io/en/latest/cluster/cli.html#ray-start for all available options in `rayStartParams`.
     rayStartParams:
       num-cpus: "0"
       disable-usage-stats: "true"
@@ -48,14 +45,14 @@ spec:
             resources:
               limits:
                 cpu: "0"
-                memory: 2Gi
+                memory: 8Gi
               requests:
                 cpu: "0"
-                memory: 2Gi
+                memory: 8Gi
             ports:
               - containerPort: 6379
                 name: gcs-server
-              - containerPort: 8265 # Ray dashboard
+              - containerPort: 8265
                 name: dashboard
               - containerPort: 10001
                 name: client
@@ -64,15 +61,10 @@ spec:
               - containerPort: 9000
                 name: serve-grpc
   workerGroupSpecs:
-    # the pod replicas in this group typed worker
     - replicas: 1
       minReplicas: 1
       maxReplicas: 5
-      # logical group name, for this called small-group, also can be functional
       groupName: cpu-group
-      # The `rayStartParams` are used to configure the `ray start` command.
-      # See https://github.com/ray-project/kuberay/blob/master/docs/guidance/rayStartParams.md for the default settings of `rayStartParams` in KubeRay.
-      # See https://docs.ray.io/en/latest/cluster/cli.html#ray-start for all available options in `rayStartParams`.
       rayStartParams:
           disable-usage-stats: "true"
       #pod template
@@ -88,6 +80,16 @@ spec:
             {{- else }}
               persistentVolumeClaim:
                 claimName: ray-conda-data-volume
+            {{- end }}
+            - name: model-repository
+            {{- if not .Values.persistence.enabled }}
+              emptyDir: {}
+            {{- else if $modelRepository.existingClaim }}
+              persistentVolumeClaim:
+                claimName: {{ $modelRepository.existingClaim }}
+            {{- else }}
+              persistentVolumeClaim:
+                claimName: model-repository-data-volume
             {{- end }}
             - name: cp-conda-env-configmap
               configMap:
@@ -109,13 +111,15 @@ spec:
               resources:
                 limits:
                   cpu: "2"
-                  memory: "2Gi"
+                  memory: "4Gi"
                 requests:
                   cpu: "2"
-                  memory: "2Gi"
+                  memory: "4Gi"
               volumeMounts:
                 - mountPath: /ray-conda-pack
                   name: ray-conda
+                - mountPath: /model-repository
+                  name: model-repository
                 - mountPath: /home/ray/script
                   name: cp-conda-env-configmap
 ---
