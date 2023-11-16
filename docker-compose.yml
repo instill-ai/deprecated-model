@@ -62,6 +62,7 @@ services:
     volumes:
       - model_repository:/model-repository
       - model_cache:/.cache
+      - ray_conda:/ray-conda
     entrypoint: ./model-backend-worker
     depends_on:
       model_backend_init:
@@ -181,7 +182,7 @@ services:
       tail -f /dev/null'
     volumes:
       - model_repository:/model-repository
-      - ray_conda:/ray-conda
+      - ray_conda:/home/ray/anaconda3/
     healthcheck:
       test: ["CMD", "ray", "status"]
       timeout: 20s
@@ -189,8 +190,6 @@ services:
     shm_size: 4gb
     ports:
       - ${RAY_SERVER_DASHBOARD_PORT}:${RAY_SERVER_DASHBOARD_PORT}
-    profiles:
-      - experimental
 
   temporal_admin_tools_model:
     container_name: temporal-admin-tools-model
