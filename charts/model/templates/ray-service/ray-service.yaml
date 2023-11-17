@@ -1,54 +1,49 @@
 {{- $modelRepository := .Values.persistence.persistentVolumeClaim.modelRepository -}}
 {{- $rayConda := .Values.persistence.persistentVolumeClaim.rayConda -}}
 apiVersion: ray.io/v1
-# kind: RayService
 kind: RayCluster
 metadata:
   name: {{ template "model.ray-service" . }}
   # annotations:
   #   ray.io/ft-enabled: "true"
 spec:
-  # serviceUnhealthySecondThreshold: 900 # Config for the health check threshold for Ray Serve applications. Default value is 900.
-  # deploymentUnhealthySecondThreshold: 300 # Config for the health check threshold for Ray dashboard agent. Default value is 300.
-  # serveConfigV2: |
-  #   applications: []
-  #   grpc_options:
-  #       port: 9000
-  #       grpc_servicer_functions:
-  #           - ray_pb2_grpc.add_RayServiceServicer_to_server
-  # rayClusterConfig:
   rayVersion: {{ .Values.rayService.image.version }}
   ## raycluster autoscaling config
   enableInTreeAutoscaling: true
   autoscalerOptions:
     upscalingMode: Default
+    # idleTimeoutSeconds is the number of seconds to wait before scaling down a worker pod which is not using Ray resources.
+    idleTimeoutSeconds: 60
+    imagePullPolicy: IfNotPresent
+    securityContext: {}
+    env: []
+    envFrom: []
     resources:
       limits:
-        cpu: "1"
-        memory: "1000Mi"
+        cpu: "500m"
+        memory: "512Mi"
       requests:
-        cpu: "1"
-        memory: "1000Mi"
+        cpu: "500m"
+        memory: "512Mi"
   headGroupSpec:
     rayStartParams:
       num-cpus: "0"
       disable-usage-stats: "true"
-    #pod template
     template:
       spec:
-        # env:
-            #   - name: RAY_REDIS_ADDRESS
-            #     value: {{ template "core.redis.addr" . }}
         containers:
           - name: ray-head
             image: {{ .Values.rayService.image.repository }}:{{ .Values.rayService.image.tag }}
             resources:
               limits:
-                cpu: "0"
-                memory: 8Gi
+                cpu: "2"
+                memory: "4Gi"
               requests:
-                cpu: "0"
-                memory: 8Gi
+                cpu: "2"
+                memory: "4Gi"
+            # env:
+            #   - name: RAY_REDIS_ADDRESS
+            #     {{ template "core.redis.addr" . }}
             ports:
               - containerPort: 6379
                 name: gcs-server
@@ -60,6 +55,10 @@ spec:
                 name: serve
               - containerPort: 9000
                 name: serve-grpc
+            lifecycle:
+              preStop:
+                exec:
+                  command: ["/bin/sh","-c","ray stop"]
   workerGroupSpecs:
     - replicas: 1
       minReplicas: 1
@@ -102,12 +101,18 @@ spec:
             - name: ray-worker
               image: {{ .Values.rayService.image.repository }}:{{ .Values.rayService.image.tag }}
               lifecycle:
-                preStop:
-                  exec:
-                    command: ["/bin/sh","-c","ray stop"]
                 postStart:
                   exec:
                     command: ["/bin/sh","-c","/home/ray/script/cp_conda_env_and_start_ray_serve.sh"]
+                preStop:
+                  exec:
+                    command: ["/bin/sh","-c","ray stop"]
+              # TODO: determine how big the head node should be
+              # Optimal resource allocation will depend on our Kubernetes infrastructure and might
+              # require some experimentation.
+              # Setting requests=limits is recommended with Ray. K8s limits are used for Ray-internal
+              # resource accounting. K8s requests are not used by Ray.
+              # this also apply to the workerGroup
               resources:
                 limits:
                   cpu: "2"
