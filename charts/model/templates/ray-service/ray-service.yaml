@@ -34,13 +34,10 @@ spec:
         containers:
           - name: ray-head
             image: {{ .Values.rayService.image.repository }}:{{ .Values.rayService.image.tag }}
+            {{- if .Values.rayService.headGroupSpec.resources }}
             resources:
-              limits:
-                cpu: "2"
-                memory: "4Gi"
-              requests:
-                cpu: "2"
-                memory: "4Gi"
+              {{- toYaml .Values.rayService.headGroupSpec.resources | nindent 14 }}
+            {{- end }}
             # env:
             #   - name: RAY_REDIS_ADDRESS
             #     {{ template "core.redis.addr" . }}
@@ -60,9 +57,9 @@ spec:
                 exec:
                   command: ["/bin/sh","-c","ray stop"]
   workerGroupSpecs:
-    - replicas: 1
-      minReplicas: 1
-      maxReplicas: 5
+    - replicas: {{ .Values.rayService.workerGroupSpecs.replicas }}
+      minReplicas: {{ .Values.rayService.workerGroupSpecs.minReplicas }}
+      maxReplicas: {{ .Values.rayService.workerGroupSpecs.maxReplicas }}
       groupName: cpu-group
       rayStartParams:
           disable-usage-stats: "true"
@@ -113,13 +110,10 @@ spec:
               # Setting requests=limits is recommended with Ray. K8s limits are used for Ray-internal
               # resource accounting. K8s requests are not used by Ray.
               # this also apply to the workerGroup
+              {{- if .Values.rayService.workerGroupSpecs.resources }}
               resources:
-                limits:
-                  cpu: "2"
-                  memory: "4Gi"
-                requests:
-                  cpu: "2"
-                  memory: "4Gi"
+                {{- toYaml .Values.rayService.workerGroupSpecs.resources | nindent 16 }}
+              {{- end }}
               volumeMounts:
                 - mountPath: /ray-conda-pack
                   name: ray-conda

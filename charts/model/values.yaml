@@ -305,6 +305,25 @@ rayService:
     repository: instill/rayserver
     version: "2.8.0"
     tag: latest-arm
+  headGroupSpec:
+    resources:
+      limits:
+        cpu: "2"
+        memory: "4Gi"
+      requests:
+        cpu: "2"
+        memory: "4Gi"
+  workerGroupSpecs:
+    replicas: 1
+    minReplicas: 1
+    maxReplicas: 5
+    resources:
+      limits:
+        cpu: "2"
+        memory: "4Gi"
+      requests:
+        cpu: "2"
+        memory: "4Gi"
 database:
   # -- The host of database
   host:
