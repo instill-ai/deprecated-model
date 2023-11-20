@@ -313,6 +313,7 @@ rayService:
       requests:
         cpu: "2"
         memory: "4Gi"
+    affinity: {}
   workerGroupSpecs:
     replicas: 1
     minReplicas: 1
@@ -324,6 +325,7 @@ rayService:
       requests:
         cpu: "2"
         memory: "4Gi"
+    affinity: {}
 database:
   # -- The host of database
   host:
