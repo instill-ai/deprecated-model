@@ -50,8 +50,8 @@
     }
   },
   {
-    "id": "llama2-7b",
-    "description": "Llama2-7b, from meta, is trained to generate text based on your prompts.",
+    "id": "llama-7b",
+    "description": "Llama-7b, from meta, is trained to generate text based on your prompts.",
     "task": "TASK_TEXT_GENERATION",
     "model_definition": "model-definitions/github",
     "configuration": {
@@ -65,7 +65,7 @@
     "task": "TASK_TEXT_GENERATION",
     "model_definition": "model-definitions/github",
     "configuration": {
-      "repository": "instill-ai/model-llama2-13b-chat-dvc",
+      "repository": "instill-ai/model-llama2-7b-chat-dvc",
       "tag": "fp16-7b-vllm-a100"
     }
   },
@@ -75,7 +75,7 @@
     "task": "TASK_TEXT_GENERATION",
     "model_definition": "model-definitions/github",
     "configuration": {
-      "repository": "instill-ai/model-llava-13b-dvc",
+      "repository": "instill-ai/model-llava-7b-dvc",
       "tag": "fp16-7b-tf-a100"
     }
   },
@@ -90,6 +90,16 @@
     }
   },
   {
+    "id": "zephyr-7b",
+    "description": "Zephyr-7b, from Huggingface, is trained to generate text based on your prompts.",
+    "task": "TASK_TEXT_GENERATION",
+    "model_definition": "model-definitions/github",
+    "configuration": {
+      "repository": "instill-ai/model-zephyr-7b-dvc",
+      "tag": "fp32-cpu"
+    }
+  },
+  {
     "id": "mistral-7b",
     "description": "Mistral-7b, from mistralai, is trained to generate text based on your prompts.",
     "task": "TASK_TEXT_GENERATION",
@@ -97,6 +107,26 @@
     "configuration": {
       "repository": "instill-ai/model-mistral-7b-dvc",
       "tag": "fp16-7b-vllm-a100"
+    }
+  },
+  {
+    "id": "stable-diffusion-xl",
+    "description": "Stable-Diffusion-XL, from StabilityAI, is trained to generate image based on your prompts.",
+    "task": "TASK_TEXT_TO_IMAGE",
+    "model_definition": "model-definitions/github",
+    "configuration": {
+      "repository": "instill-ai/model-diffusion-xl-dvc",
+      "tag": "fp16-gpu1-a100"
+    }
+  },
+  {
+    "id": "controlnet-canny",
+    "description": "ControlNet-Canny Version, from Lvmin, is trained to generate image based on your prompts and images.",
+    "task": "TASK_TEXT_TO_IMAGE",
+    "model_definition": "model-definitions/github",
+    "configuration": {
+      "repository": "instill-ai/model-controlnet-dvc",
+      "tag": "fp16-gpu1-a100"
     }
   }
 ]
