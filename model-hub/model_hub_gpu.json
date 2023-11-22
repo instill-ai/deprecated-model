@@ -50,8 +50,8 @@
     }
   },
   {
-    "id": "llama-7b",
-    "description": "Llama-7b, from meta, is trained to generate text based on your prompts.",
+    "id": "llama2-7b",
+    "description": "Llama2-7b, from meta, is trained to generate text based on your prompts.",
     "task": "TASK_TEXT_GENERATION",
     "model_definition": "model-definitions/github",
     "configuration": {
