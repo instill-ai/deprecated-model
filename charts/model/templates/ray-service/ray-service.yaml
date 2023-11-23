@@ -18,19 +18,20 @@ spec:
     securityContext: {}
     env: []
     envFrom: []
+    {{- if .Values.rayService.spec.autoscalerOptions.resources }}
     resources:
-      limits:
-        cpu: "500m"
-        memory: "512Mi"
-      requests:
-        cpu: "500m"
-        memory: "512Mi"
+      {{- toYaml .Values.rayService.spec.autoscalerOptions.resources | nindent 6 }}
+    {{- end }}
   headGroupSpec:
     rayStartParams:
       num-cpus: "0"
       disable-usage-stats: "true"
     template:
       spec:
+        {{- with .Values.rayService.headGroupSpec.nodeSelector }}
+        nodeSelector:
+          {{- toYaml . | nindent 10 }}
+        {{- end }}
         {{- with .Values.rayService.headGroupSpec.affinity }}
         affinity:
           {{- toYaml . | nindent 10 }}
@@ -60,23 +61,28 @@ spec:
               preStop:
                 exec:
                   command: ["/bin/sh","-c","ray stop"]
+  {{- range $workerGroupSpecs := .Values.rayService.workerGroupSpecs }}
   workerGroupSpecs:
-    - replicas: {{ .Values.rayService.workerGroupSpecs.replicas }}
-      minReplicas: {{ .Values.rayService.workerGroupSpecs.minReplicas }}
-      maxReplicas: {{ .Values.rayService.workerGroupSpecs.maxReplicas }}
-      groupName: cpu-group
+    - replicas: {{ $workerGroupSpecs.replicas }}
+      minReplicas: {{ $workerGroupSpecs.minReplicas }}
+      maxReplicas: {{ $workerGroupSpecs.maxReplicas }}
+      groupName: {{ $workerGroupSpecs.groupName }}
       rayStartParams:
           disable-usage-stats: "true"
       #pod template
       template:
         spec:
-          {{- with .Values.rayService.workerGroupSpecs.affinity }}
+          {{- with $workerGroupSpecs.nodeSelector }}
+          nodeSelector:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with $workerGroupSpecs.affinity }}
           affinity:
             {{- toYaml . | nindent 12 }}
           {{- end }}
           volumes:
             - name: ray-conda
-            {{- if not .Values.persistence.enabled }}
+            {{- if not $.Values.persistence.enabled }}
               emptyDir: {}
             {{- else if $rayConda.existingClaim }}
               persistentVolumeClaim:
@@ -86,7 +92,7 @@ spec:
                 claimName: ray-conda-data-volume
             {{- end }}
             - name: model-repository
-            {{- if not .Values.persistence.enabled }}
+            {{- if not $.Values.persistence.enabled }}
               emptyDir: {}
             {{- else if $modelRepository.existingClaim }}
               persistentVolumeClaim:
@@ -104,7 +110,7 @@ spec:
                     path: cp_conda_env_and_start_ray_serve.sh
           containers:
             - name: ray-worker
-              image: {{ .Values.rayService.image.repository }}:{{ .Values.rayService.image.tag }}
+              image: {{ $.Values.rayService.image.repository }}:{{ $.Values.rayService.image.tag }}
               lifecycle:
                 postStart:
                   exec:
@@ -118,17 +124,21 @@ spec:
               # Setting requests=limits is recommended with Ray. K8s limits are used for Ray-internal
               # resource accounting. K8s requests are not used by Ray.
               # this also apply to the workerGroup
-              {{- if .Values.rayService.workerGroupSpecs.resources }}
+              {{- if $workerGroupSpecs.gpuWorkerGroup.enabled }}
               resources:
-                {{- toYaml .Values.rayService.workerGroupSpecs.resources | nindent 16 }}
+                {{- toYaml $workerGroupSpecs.gpuWorkerGroup.resources | nindent 16 }}
+              {{- else }}
+              resources:
+                {{- toYaml $workerGroupSpecs.resources | nindent 16 }}
               {{- end }}
               volumeMounts:
                 - mountPath: /ray-conda-pack
                   name: ray-conda
-                - mountPath: /model-repository
-                  name: model-repository
                 - mountPath: /home/ray/script
                   name: cp-conda-env-configmap
+                - mountPath: /model-repository
+                  name: model-repository
+  {{- end }}
 ---
 apiVersion: v1
 kind: ConfigMap

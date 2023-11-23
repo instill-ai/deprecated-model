@@ -301,10 +301,19 @@ kuberay-operator:
   watchNamespace:
   - "instill-ai"
 rayService:
+  spec:
+    autoscalerOptions:
+      resources:
+        limits:
+          cpu: "500m"
+          memory: "512Mi"
+        requests:
+          cpu: "500m"
+          memory: "512Mi"
   image:
-    repository: instill/rayserver
+    repository: instill/ray
     version: "2.8.0"
-    tag: latest-arm
+    tag: latest-gpu
   headGroupSpec:
     resources:
       limits:
@@ -314,18 +323,32 @@ rayService:
         cpu: "2"
         memory: "4Gi"
     affinity: {}
+    nodeSelector: {}
   workerGroupSpecs:
-    replicas: 1
-    minReplicas: 1
-    maxReplicas: 5
-    resources:
-      limits:
-        cpu: "2"
-        memory: "4Gi"
-      requests:
-        cpu: "2"
-        memory: "4Gi"
-    affinity: {}
+    - replicas: 1
+      minReplicas: 1
+      maxReplicas: 5
+      groupName: "cpu-group"
+      gpuWorkerGroup:
+        enabled: false
+        resources:
+          limits:
+            cpu: "2"
+            memory: "4Gi"
+            nvidia.com/gpu: 1
+          requests:
+            cpu: "2"
+            memory: "4Gi"
+            nvidia.com/gpu: 1
+      resources:
+        limits:
+          cpu: "2"
+          memory: "4Gi"
+        requests:
+          cpu: "2"
+          memory: "4Gi"
+      affinity: {}
+      nodeSelector: {}
 database:
   # -- The host of database
   host:
