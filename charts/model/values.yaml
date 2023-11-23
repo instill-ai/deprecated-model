@@ -332,14 +332,7 @@ rayService:
       gpuWorkerGroup:
         enabled: false
         resources:
-          limits:
-            cpu: "2"
-            memory: "4Gi"
-            nvidia.com/gpu: 1
-          requests:
-            cpu: "2"
-            memory: "4Gi"
-            nvidia.com/gpu: 1
+          nvidia.com/gpu: 1
       resources:
         limits:
           cpu: "2"
@@ -349,6 +342,7 @@ rayService:
           memory: "4Gi"
       affinity: {}
       nodeSelector: {}
+    # add more worker groups under here
 database:
   # -- The host of database
   host:

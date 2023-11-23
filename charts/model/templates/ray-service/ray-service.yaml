@@ -61,8 +61,8 @@ spec:
               preStop:
                 exec:
                   command: ["/bin/sh","-c","ray stop"]
-  {{- range $workerGroupSpecs := .Values.rayService.workerGroupSpecs }}
   workerGroupSpecs:
+  {{- range $workerGroupSpecs := .Values.rayService.workerGroupSpecs }}
     - replicas: {{ $workerGroupSpecs.replicas }}
       minReplicas: {{ $workerGroupSpecs.minReplicas }}
       maxReplicas: {{ $workerGroupSpecs.maxReplicas }}
@@ -124,13 +124,11 @@ spec:
               # Setting requests=limits is recommended with Ray. K8s limits are used for Ray-internal
               # resource accounting. K8s requests are not used by Ray.
               # this also apply to the workerGroup
-              {{- if $workerGroupSpecs.gpuWorkerGroup.enabled }}
-              resources:
-                {{- toYaml $workerGroupSpecs.gpuWorkerGroup.resources | nindent 16 }}
-              {{- else }}
               resources:
                 {{- toYaml $workerGroupSpecs.resources | nindent 16 }}
-              {{- end }}
+                {{- if $workerGroupSpecs.gpuWorkerGroup.enabled }}
+                  {{- toYaml $workerGroupSpecs.gpuWorkerGroup.resources | nindent 16 }}
+                {{- end }}
               volumeMounts:
                 - mountPath: /ray-conda-pack
                   name: ray-conda
