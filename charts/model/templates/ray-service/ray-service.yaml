@@ -25,6 +25,7 @@ spec:
   headGroupSpec:
     rayStartParams:
       num-cpus: "0"
+      num-gpus: "0"
       disable-usage-stats: "true"
     template:
       spec:
@@ -68,7 +69,7 @@ spec:
       maxReplicas: {{ $workerGroupSpecs.maxReplicas }}
       groupName: {{ $workerGroupSpecs.groupName }}
       rayStartParams:
-          disable-usage-stats: "true"
+        disable-usage-stats: "true"
       #pod template
       template:
         spec:
@@ -125,6 +126,11 @@ spec:
               # resource accounting. K8s requests are not used by Ray.
               # this also apply to the workerGroup
               resources:
+                {{- toYaml $workerGroupSpecs.resources | nindent 16 }}
+                {{- if $workerGroupSpecs.gpuWorkerGroup.enabled }}
+                  {{- toYaml $workerGroupSpecs.gpuWorkerGroup.resources | nindent 16 }}
+                {{- end }}
+              limits:
                 {{- toYaml $workerGroupSpecs.resources | nindent 16 }}
                 {{- if $workerGroupSpecs.gpuWorkerGroup.enabled }}
                   {{- toYaml $workerGroupSpecs.gpuWorkerGroup.resources | nindent 16 }}
