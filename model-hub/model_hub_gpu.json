@@ -6,7 +6,7 @@
     "model_definition": "model-definitions/github",
     "configuration": {
       "repository": "instill-ai/model-mobilenetv2-dvc",
-      "tag": "v1.0-gpu"
+      "tag": "v1.0-ray-gpu"
     }
   },
   {
@@ -16,7 +16,7 @@
     "model_definition": "model-definitions/github",
     "configuration": {
       "repository": "instill-ai/model-yolov7-dvc",
-      "tag": "v1.0-gpu"
+      "tag": "v1.0-ray-gpu"
     }
   },
   {
@@ -37,6 +37,16 @@
     "configuration": {
       "repository": "instill-ai/model-instance-segmentation-dvc",
       "tag": "v1.0-gpu"
+    }
+  },
+  {
+    "id": "yolov7-stomata",
+    "description": "This model is specialized to detect and segment stomata, based on Yolov7",
+    "task": "TASK_INSTANCE_SEGMENTATION",
+    "model_definition": "model-definitions/github",
+    "configuration": {
+      "repository": "instill-ai/model-instance-segmentation-dvc",
+      "tag": "v1.0-ray-gpu"
     }
   },
   {
