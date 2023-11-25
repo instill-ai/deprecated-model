@@ -4,36 +4,18 @@ services:
   model_backend_migrate:
     profiles:
       - all
-      - api-gateway
-      - mgmt
-      - console
-      - pipeline
-      - connector
-      - controller-vdp
       - controller-model
     image: ${MODEL_BACKEND_IMAGE}:latest
 
   model_backend_init:
     profiles:
       - all
-      - api-gateway
-      - mgmt
-      - console
-      - pipeline
-      - connector
-      - controller-vdp
       - controller-model
     image: ${MODEL_BACKEND_IMAGE}:latest
 
   model_backend_worker:
     profiles:
       - all
-      - api-gateway
-      - mgmt
-      - console
-      - pipeline
-      - connector
-      - controller-vdp
       - controller-model
     image: ${MODEL_BACKEND_IMAGE}:latest
     environment:
@@ -42,12 +24,6 @@ services:
   model_backend:
     profiles:
       - all
-      - api-gateway
-      - mgmt
-      - console
-      - pipeline
-      - connector
-      - controller-vdp
       - controller-model
     image: ${MODEL_BACKEND_IMAGE}:latest
     environment:
@@ -60,12 +36,6 @@ services:
   model_backend_init_model:
     profiles:
       - all
-      - api-gateway
-      - mgmt
-      - console
-      - pipeline
-      - connector
-      - controller-vdp
       - controller-model
     image: ${MODEL_BACKEND_IMAGE}:latest
     environment:
@@ -75,12 +45,6 @@ services:
   controller_model:
     profiles:
       - all
-      - api-gateway
-      - mgmt
-      - console
-      - pipeline
-      - connector
-      - controller-vdp
       - model
     image: ${CONTROLLER_MODEL_IMAGE}:latest
     environment:
@@ -98,9 +62,6 @@ services:
 
   ray_server:
     image: ${RAY_SERVER_IMAGE}:latest-${RAY_PLATFORM}
-    profiles:
-      - all
-      - model
     ports:
       - ${RAY_SERVER_CLIENT_PORT}:${RAY_SERVER_CLIENT_PORT}
       - ${RAY_SERVER_DASHBOARD_PORT}:${RAY_SERVER_DASHBOARD_PORT}

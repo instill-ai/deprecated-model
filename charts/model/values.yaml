@@ -1,4 +1,4 @@
-## -- Provide a name in place of vdp
+## -- Provide a name in place of Model
 nameOverride: ""
 ## -- Override the deployment namespace
 namespaceOverride: ""
@@ -13,7 +13,7 @@ logLevel: info
 # -- Enable development mode
 # if edition is "k8s-ce:dev", console will be launched with CODE_ENV=development. Otherwise, CODE_ENV=production
 edition: k8s-ce
-# -- The maximum data payload to VDP cluster (MB)
+# -- The maximum data payload to Model cluster (MB)
 maxDataSizeMB: 12
 # -- Set true to enable integration test mode
 # The model-backend will use dummy models
@@ -22,7 +22,7 @@ itMode:
   enabled: false
 # -- Use this set to assign a list of default pullSecrets
 imagePullSecrets:
-# -- The internal TLS used for VDP components secure communicating. In order to enable https
+# -- The internal TLS used for Model components secure communicating. In order to enable https
 # in each components tls cert files need to provided in advance.
 internalTLS:
   # If internal TLS enabled
@@ -58,13 +58,6 @@ internalTLS:
     crt: ""
     # Content of triton's TLS key file, only available when `certSource` is "manual"
     key: ""
-  ray:
-    # secret name for ray's tls certs, only available when `certSource` is "secret"
-    secretName: ""
-    # Content of ray's TLS key file, only available when `certSource` is "manual"
-    crt: ""
-    # Content of ray's TLS key file, only available when `certSource` is "manual"
-    key: ""
 # -- The persistence is enabled by default and a default StorageClass
 # is needed in the k8s cluster to provision volumes dynamically.
 # Specify another StorageClass in the "storageClass" or set "existingClaim"
@@ -90,6 +83,13 @@ persistence:
       subPath: ""
       accessMode: ReadWriteOnce
       size: 10Gi
+      annotations: {}
+    rayConda:
+      existingClaim: ""
+      storageClass: ""
+      subPath: ""
+      accessMode: ReadWriteOnce
+      size: 20Gi
       annotations: {}
 # -- The usage collector configuration
 usage:
@@ -296,64 +296,60 @@ triton:
   gpu:
     enabled: false
     num:
-ray:
-  # -- The image of Ray
+kuberay-operator:
+  fullnameOverride: ""
+  watchNamespace:
+  - "instill-ai"
+rayService:
+  spec:
+    autoscalerOptions:
+      resources:
+        limits:
+          cpu: "500m"
+          memory: "512Mi"
+        requests:
+          cpu: "500m"
+          memory: "512Mi"
   image:
-    repository: instill/rayserver
-    tag: latest
-    pullPolicy: IfNotPresent
-  # -- Set the service account to be used, default if left empty
-  serviceAccountName: ""
-  # -- Mount the service account token
-  automountServiceAccountToken: false
-  # -- The number of replica for Ray
-  replicaCount: 1
-  # -- Add extra env variables
-  extraEnv: []
-  # -- Mount external volumes
-  # For example, mount a secret containing Certificate root CA to verify database
-  # TLS connection.
-  extraVolumes: []
-  # - name: my-volume
-  #   secret:
-  #     secretName: my-secret
-  extraVolumeMounts: []
-  # - name: my-volume
-  #   mountPath: /etc/secrets/my-secret
-  #   readOnly: true
-  # -- Add extra init containers
-  extraInitContainers: []
-  # extraInitContainers:
-  #  - name: ...
-  #    image: ...
-  # -- Add extra sidecar containers
-  sidecarContainers: {}
-  # -- Additional deployment annotations
-  podAnnotations: {}
-  # -- Additional service annotations
-  serviceAnnotations: {}
-  # -- The pod resource
-  resources: {}
-  nodeSelector: {}
-  tolerations: []
-  affinity: {}
-  autoscaling:
-    enabled: false
-    minReplicas:
-    maxReplicas:
-    targetCPUUtilizationPercentage:
-    targetAverageMemoryUtilization:
-  podDisruptionBudget:
-    enabled: false
-    spec:
-      minAvailable:
-      maxUnavailable:
-  nvidiaVisibleDevices: all
-  shmSizeLimit: 4Gi
-  gpu:
-    enabled: false
-    num:
-  platform: cpu
+    repository: instill/ray
+    version: "2.8.0"
+    tag: latest-gpu
+  headGroupSpec:
+    resources:
+      limits:
+        cpu: "2"
+        memory: "4Gi"
+      requests:
+        cpu: "2"
+        memory: "4Gi"
+    affinity: {}
+    nodeSelector: {}
+  workerGroupSpecs:
+    - replicas: 1
+      minReplicas: 1
+      maxReplicas: 5
+      groupName: "cpu-group"
+      gpuWorkerGroup:
+        enabled: false
+        resources:
+          limits:
+            cpu: "2"
+            memory: "4Gi"
+            nvidia.com/gpu: 1
+          requests:
+            cpu: "2"
+            memory: "4Gi"
+            nvidia.com/gpu: 1
+      resources:
+        limits:
+          cpu: "2"
+          memory: "4Gi"
+        requests:
+          cpu: "2"
+          memory: "4Gi"
+      affinity: {}
+      nodeSelector: {}
+    # add more worker groups under here
 database:
   # -- The host of database
   host:

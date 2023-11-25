@@ -60,4 +60,32 @@ spec:
     {{- end }}
   {{- end }}
 {{- end }}
+{{- $rayConda := .Values.persistence.persistentVolumeClaim.rayConda -}}
+{{- if not $rayConda.existingClaim }}
+---
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: ray-conda-data-volume
+  annotations:
+  {{- range $key, $value := $rayConda.annotations }}
+    {{ $key }}: {{ $value | quote }}
+  {{- end }}
+  labels:
+    {{- include "model.labels" . | nindent 4 }}
+    app.kubernetes.io/component: model-backend
+spec:
+  accessModes:
+    - {{ $rayConda.accessMode }}
+  resources:
+    requests:
+      storage: {{ $rayConda.size }}
+  {{- if $rayConda.storageClass }}
+    {{- if eq "-" $rayConda.storageClass }}
+  storageClassName: ""
+    {{- else }}
+  storageClassName: {{ $rayConda.storageClass }}
+    {{- end }}
+  {{- end }}
+{{- end }}
 {{- end }}
