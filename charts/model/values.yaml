@@ -332,7 +332,14 @@ rayService:
       gpuWorkerGroup:
         enabled: false
         resources:
-          nvidia.com/gpu: 1
+          limits:
+            cpu: "2"
+            memory: "4Gi"
+            nvidia.com/gpu: 1
+          requests:
+            cpu: "2"
+            memory: "4Gi"
+            nvidia.com/gpu: 1
       resources:
         limits:
           cpu: "2"

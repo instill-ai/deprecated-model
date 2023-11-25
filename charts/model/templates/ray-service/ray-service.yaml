@@ -142,15 +142,11 @@ spec:
               # resource accounting. K8s requests are not used by Ray.
               # this also apply to the workerGroup
               resources:
+              {{- if $workerGroupSpecs.gpuWorkerGroup.enabled }}
+                {{- toYaml $workerGroupSpecs.gpuWorkerGroup.resources | nindent 16 }}
+              {{- else }}
                 {{- toYaml $workerGroupSpecs.resources | nindent 16 }}
-                {{- if $workerGroupSpecs.gpuWorkerGroup.enabled }}
-                  {{- toYaml $workerGroupSpecs.gpuWorkerGroup.resources | nindent 16 }}
-                {{- end }}
-              limits:
-                {{- toYaml $workerGroupSpecs.resources | nindent 16 }}
-                {{- if $workerGroupSpecs.gpuWorkerGroup.enabled }}
-                  {{- toYaml $workerGroupSpecs.gpuWorkerGroup.resources | nindent 16 }}
-                {{- end }}
+              {{- end }}
               volumeMounts:
                 - mountPath: /home/ray/script
                   name: start-ray-serve-configmap
