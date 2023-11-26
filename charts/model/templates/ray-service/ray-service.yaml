@@ -173,6 +173,7 @@ data:
         fi
     done
 
+    sudo chown -R 1000:100 /ray-conda-pack
     cp -r /home/ray/anaconda3/* /ray-conda-pack
 
     echo "INFO: Conda env copying done"
