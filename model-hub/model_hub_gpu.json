@@ -41,12 +41,12 @@
   },
   {
     "id": "yolov7-stomata",
-    "description": "This model is specialized to detect and segment stomata, based on Yolov7",
+    "description": "The instance segmentation model based on Yolov7, fine-tuned on the custom dataset with 337 images and 1 object class 'stomata'.",
     "task": "TASK_INSTANCE_SEGMENTATION",
     "model_definition": "model-definitions/github",
     "configuration": {
-      "repository": "instill-ai/model-instance-segmentation-dvc",
-      "tag": "v1.0-ray-gpu"
+      "repository": "instill-ai/model-stomata-instance-segmentation-dvc",
+      "tag": "yolov7-mask-ray-gpu"
     }
   },
   {
