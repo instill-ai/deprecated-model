@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.5.0-alpha](https://github.com/instill-ai/model/compare/v0.4.0-alpha...v0.5.0-alpha) (2023-11-28)
+
+
+### Features
+
+* **helm:** add kuberay and raycluster ([#64](https://github.com/instill-ai/model/issues/64)) ([08da3d6](https://github.com/instill-ai/model/commit/08da3d6200f28caab3b3c9b1d810daa29c43a852))
+
+
+### Miscellaneous Chores
+
+* **release:** release v0.5.0-alpha ([cd6bfa5](https://github.com/instill-ai/model/commit/cd6bfa5537d019f8bfa856cc882f224d001faf9b))
+
 ## [0.4.0-alpha](https://github.com/instill-ai/model/compare/v0.3.0-alpha...v0.4.0-alpha) (2023-11-13)
 
 
