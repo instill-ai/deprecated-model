@@ -14,7 +14,7 @@ spec:
     upscalingMode: Default
     # idleTimeoutSeconds is the number of seconds to wait before scaling down a worker pod which is not using Ray resources.
     idleTimeoutSeconds: 60
-    imagePullPolicy: IfNotPresent
+    imagePullPolicy: Always
     securityContext: {}
     env: []
     envFrom: []
@@ -58,6 +58,7 @@ spec:
         containers:
           - name: ray-head
             image: {{ .Values.rayService.image.repository }}:{{ .Values.rayService.image.tag }}
+            imagePullPolicy: Always
             {{- if .Values.rayService.headGroupSpec.resources }}
             resources:
               {{- toYaml .Values.rayService.headGroupSpec.resources | nindent 14 }}
@@ -128,6 +129,7 @@ spec:
           containers:
             - name: ray-worker
               image: {{ $.Values.rayService.image.repository }}:{{ $.Values.rayService.image.tag }}
+              imagePullPolicy: Always
               lifecycle:
                 postStart:
                   exec:
