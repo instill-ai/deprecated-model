@@ -299,7 +299,7 @@ triton:
 kuberay-operator:
   fullnameOverride: ""
   watchNamespace:
-  - "instill-ai"
+    - "instill-ai"
 rayService:
   spec:
     autoscalerOptions:
@@ -313,7 +313,7 @@ rayService:
   image:
     repository: instill/ray
     version: "2.8.0"
-    tag: 0.2.0-alpha-arm
+    tag: 0.2.0-alpha-cpu
   headGroupSpec:
     resources:
       limits:
