@@ -1,6 +1,6 @@
 # model
 
-![Version: 0.1.9-alpha](https://img.shields.io/badge/Version-0.1.9--alpha-informational?style=flat-square) ![AppVersion: 0.4.0-alpha](https://img.shields.io/badge/AppVersion-0.4.0--alpha-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square)
+![Version: 0.1.10-alpha](https://img.shields.io/badge/Version-0.1.10--alpha-informational?style=flat-square) ![AppVersion: 0.5.0-alpha](https://img.shields.io/badge/AppVersion-0.5.0--alpha-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square)
 
 The Helm chart of Instill Model
 
@@ -8,6 +8,7 @@ The Helm chart of Instill Model
 
 | Repository | Name | Version |
 |------------|------|---------|
+| https://ray-project.github.io/kuberay-helm/ | kuberay-operator | 1.0.0 |
 
 ## Install
 

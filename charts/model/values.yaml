@@ -101,7 +101,7 @@ modelBackend:
   # -- The image of model-backend
   image:
     repository: instill/model-backend
-    tag: 0.19.0-alpha
+    tag: 0.20.0-alpha
     pullPolicy: IfNotPresent
   # -- Annotation for deployment
   annotations: {}
@@ -181,7 +181,7 @@ controllerModel:
   # -- The image of controller
   image:
     repository: instill/controller-model
-    tag: 0.2.6-alpha
+    tag: 0.2.7-alpha
     pullPolicy: IfNotPresent
   # -- The command names to be executed
   commandName:
@@ -349,7 +349,7 @@ rayService:
           memory: "4Gi"
       affinity: {}
       nodeSelector: {}
-    # add more worker groups under here
+      # add more worker groups under here
 database:
   # -- The host of database
   host:
