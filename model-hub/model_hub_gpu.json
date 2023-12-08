@@ -56,7 +56,7 @@
     "model_definition": "model-definitions/github",
     "configuration": {
       "repository": "instill-ai/model-llama2-7b-dvc",
-      "tag": "fp32-7b-hf-tf-cpu-v2"
+      "tag": "fp32-7b-hf-tf-cpu-v2-dvc2_34"
     }
   },
   {
@@ -66,7 +66,7 @@
     "model_definition": "model-definitions/github",
     "configuration": {
       "repository": "instill-ai/model-llama2-7b-chat-dvc",
-      "tag": "fp16-7b-vllm-gpu0-a100"
+      "tag": "fp16-7b-vllm-gpu0-a100-dvc2_34"
     }
   },
   {
@@ -76,7 +76,7 @@
     "model_definition": "model-definitions/github",
     "configuration": {
       "repository": "instill-ai/model-llava-7b-dvc",
-      "tag": "fp16-7b-tf-gpu0-a100"
+      "tag": "fp16-7b-tf-gpu0-a100-dvc2_34"
     }
   },
   {
@@ -86,7 +86,7 @@
     "model_definition": "model-definitions/github",
     "configuration": {
       "repository": "instill-ai/model-zephyr-7b-dvc",
-      "tag": "fp32-cpu"
+      "tag": "fp32-cpu-dvc2_30"
     }
   },
   {
@@ -96,7 +96,7 @@
     "model_definition": "model-definitions/github",
     "configuration": {
       "repository": "instill-ai/model-diffusion-xl-dvc",
-      "tag": "fp16-gpu1-a100"
+      "tag": "fp16-gpu1-a100-dvc2_30"
     }
   },
   {
@@ -106,7 +106,7 @@
     "model_definition": "model-definitions/github",
     "configuration": {
       "repository": "instill-ai/model-controlnet-dvc",
-      "tag": "fp16-gpu1-a100"
+      "tag": "fp16-gpu1-a100-dvc2_30"
     }
   }
 ]
