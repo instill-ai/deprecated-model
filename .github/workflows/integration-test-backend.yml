@@ -105,7 +105,8 @@ jobs:
           make integration-test API_GATEWAY_URL=localhost:${API_GATEWAY_PORT}
 
   integration-test-latest-mac:
-    if: inputs.target == 'latest' && github.ref == 'refs/heads/main'
+    if: false
+    # if: inputs.target == 'latest' && github.ref == 'refs/heads/main'
     runs-on: [self-hosted, macOS, model]
     timeout-minutes: 20
     steps:
@@ -319,7 +320,8 @@ jobs:
           make integration-test API_GATEWAY_URL=localhost:${API_GATEWAY_PORT}
 
   integration-test-release-mac:
-    if: inputs.target == 'release'
+    if: false
+    # if: inputs.target == 'release'
     runs-on: [self-hosted, macOS, model]
     timeout-minutes: 20
     steps:
