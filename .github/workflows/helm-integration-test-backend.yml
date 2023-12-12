@@ -44,7 +44,7 @@ jobs:
           swap-storage: true
 
       - name: Start Minikube
-        run: minikube start --cpus 2 --memory 6096
+        run: minikube start --cpus 2 --memory 7G
 
       - name: Checkout repo (core)
         uses: actions/checkout@v4
@@ -99,9 +99,8 @@ jobs:
             --set edition=k8s-ce:test \
             --set modelBackend.image.tag=latest \
             --set controllerModel.image.tag=latest \
-            --set ray.image.tag=latest \
             --set triton.nvidiaVisibleDevices=${NVIDIA_VISIBLE_DEVICES} \
-            --set ray.platform=cpu \
+            --set rayService.image.tag=latest-cpu \
             --set tags.observability=false
 
       - name: Wait for model deployment
@@ -222,9 +221,8 @@ jobs:
             --set edition=k8s-ce:test \
             --set modelBackend.image.tag=latest \
             --set controllerModel.image.tag=latest \
-            --set ray.image.tag=latest \
             --set triton.nvidiaVisibleDevices=${NVIDIA_VISIBLE_DEVICES} \
-            --set ray.platform=arm \
+            --set rayService.image.tag=latest-arm \
             --set tags.observability=false
 
       - name: Wait for model deployment
@@ -336,9 +334,8 @@ jobs:
             --set edition=k8s-ce:test \
             --set modelBackend.image.tag=${MODEL_BACKEND_VERSION} \
             --set controllerModel.image.tag=latest \
-            --set ray.image.tag=${RAY_SERVER_VERSION} \
             --set triton.nvidiaVisibleDevices=${NVIDIA_VISIBLE_DEVICES} \
-            --set ray.platform=cpu \
+            --set rayService.image.tag=${RAY_SERVER_VERSION}-cpu \
             --set tags.observability=false
 
       - name: Wait for model deployment
@@ -465,9 +462,8 @@ jobs:
             --set edition=k8s-ce:test \
             --set modelBackend.image.tag=${MODEL_BACKEND_VERSION} \
             --set controllerModel.image.tag=${CONTROLLER_MODEL_VERSION} \
-            --set ray.image.tag=${RAY_SERVER_VERSION} \
             --set triton.nvidiaVisibleDevices=${NVIDIA_VISIBLE_DEVICES} \
-            --set ray.platform=arm \
+            --set rayService.image.tag=${RAY_SERVER_VERSION}-cpu \
             --set tags.observability=false
 
       - name: Wait for model deployment
