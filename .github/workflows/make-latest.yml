@@ -73,7 +73,7 @@ jobs:
 
       - name: Curl to model services healthcheck endpoint
         run: |
-          curl -s -o /dev/null -w ''%{http_code}'\n' http://localhost:8080/core/v1alpha/health/mgmt
+          curl -s -o /dev/null -w ''%{http_code}'\n' http://localhost:8080/core/v1beta/health/mgmt
           curl -s -o /dev/null -w ''%{http_code}'\n' http://localhost:8080/model/v1alpha/health/model
           curl -s -o /dev/null -w ''%{http_code}'\n' http://localhost:3086/v1alpha/health/controller
 

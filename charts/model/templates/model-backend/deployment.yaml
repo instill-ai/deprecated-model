@@ -105,7 +105,7 @@ spec:
           command: ['sh', '-c']
           args:
           - >
-            while [[ "$(curl -s -o /dev/null -w ''%{http_code}'' ${MGMT_BACKEND_HOST}:${MGMT_BACKEND_PORT}/v1alpha/health/mgmt)" != "200" ]]; do echo waiting for mgmt-backend; sleep 1; done
+            while [[ "$(curl -s -o /dev/null -w ''%{http_code}'' ${MGMT_BACKEND_HOST}:${MGMT_BACKEND_PORT}/v1beta/health/mgmt)" != "200" ]]; do echo waiting for mgmt-backend; sleep 1; done
           env:
             - name: MGMT_BACKEND_HOST
               value: "{{ template "core.mgmtBackend" . }}"
