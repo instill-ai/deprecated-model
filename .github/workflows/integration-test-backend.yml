@@ -95,6 +95,8 @@ jobs:
           COMPOSE_PROFILES=all \
           docker compose -f docker-compose.yml -f docker-compose.latest.yml up -d --quiet-pull
           EDITION=local-ce:test \
+          TRITON_CONDA_ENV_PLATFORM=cpu \
+          RAY_PLATFORM=cpu \
           docker compose -f docker-compose.yml -f docker-compose.latest.yml rm -f
 
       - name: Run ${{ inputs.component }} integration test (latest)
@@ -189,6 +191,8 @@ jobs:
           COMPOSE_PROFILES=all \
           docker compose -f docker-compose.yml -f docker-compose.latest.yml up -d --quiet-pull
           EDITION=local-ce:test \
+          TRITON_CONDA_ENV_PLATFORM=cpu \
+          RAY_PLATFORM=arm \
           docker compose -f docker-compose.yml -f docker-compose.latest.yml rm -f
 
       - name: Run ${{ inputs.component }} integration test (latest)
@@ -309,6 +313,8 @@ jobs:
           RAY_PLATFORM=cpu \
           docker compose up -d --quiet-pull
           EDITION=local-ce:test \
+          TRITON_CONDA_ENV_PLATFORM=cpu \
+          RAY_PLATFORM=cpu \
           docker compose rm -f
 
       - name: Run ${{ inputs.component }} integration test (release)
@@ -402,6 +408,8 @@ jobs:
           RAY_PLATFORM=arm \
           docker compose up -d --quiet-pull
           EDITION=local-ce:test \
+          TRITON_CONDA_ENV_PLATFORM=cpu \
+          RAY_PLATFORM=arm \
           docker compose rm -f
 
       - name: Run ${{ inputs.component }} integration test (release)
