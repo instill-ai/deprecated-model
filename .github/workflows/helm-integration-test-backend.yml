@@ -63,7 +63,8 @@ jobs:
             --set apiGateway.image.tag=latest \
             --set mgmtBackend.image.tag=latest \
             --set console.image.tag=latest \
-            --set tags.observability=false
+            --set tags.observability=false \
+            --set tags.prometheusStack=false
 
       - name: Wait for core pods up
         run: |

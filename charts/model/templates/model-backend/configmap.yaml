@@ -69,6 +69,9 @@ data:
       redis:
         redisoptions:
           addr: {{ default (include "core.redis.addr" .) .Values.redis.addr }}
+      model:
+        enabled: {{ .Values.modelBackend.cache.enabled }}
+        cache_dir: /model-repository/.cache/models
     maxbatchsizelimitation:
       unspecified: 2
       classification: 16
