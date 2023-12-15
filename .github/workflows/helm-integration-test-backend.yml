@@ -360,9 +360,22 @@ jobs:
             --set itMode.enabled=true \
             --set edition=k8s-ce:test \
             --set modelBackend.image.tag=${MODEL_BACKEND_VERSION} \
-            --set controllerModel.image.tag=latest \
+            --set controllerModel.image.tag=${CONTROLLER_MODEL_VERSION} \
             --set triton.nvidiaVisibleDevices=${NVIDIA_VISIBLE_DEVICES} \
             --set rayService.image.tag=${RAY_SERVER_VERSION}-cpu \
+            --set rayService.headGroupSpec.resources.limits.cpu=0 \
+            --set rayService.headGroupSpec.resources.limits.memory=2Gi \
+            --set rayService.headGroupSpec.resources.requests.cpu=0 \
+            --set rayService.headGroupSpec.resources.requests.memory=2Gi \
+            --set rayService.workerGroupSpecs[0].replicas=1 \
+            --set rayService.workerGroupSpecs[0].minReplicas=1 \
+            --set rayService.workerGroupSpecs[0].maxReplicas=1 \
+            --set rayService.workerGroupSpecs[0].groupName=test-group \
+            --set rayService.workerGroupSpecs[0].gpuWorkerGroup.enabled=false \
+            --set rayService.workerGroupSpecs[0].resources.limits.cpu=1 \
+            --set rayService.workerGroupSpecs[0].resources.limits.memory=2Gi \
+            --set rayService.workerGroupSpecs[0].resources.requests.cpu=1 \
+            --set rayService.workerGroupSpecs[0].resources.requests.memory=2Gi \
             --set tags.observability=false
 
       - name: Wait for model deployment
@@ -491,6 +504,19 @@ jobs:
             --set controllerModel.image.tag=${CONTROLLER_MODEL_VERSION} \
             --set triton.nvidiaVisibleDevices=${NVIDIA_VISIBLE_DEVICES} \
             --set rayService.image.tag=${RAY_SERVER_VERSION}-cpu \
+            --set rayService.headGroupSpec.resources.limits.cpu=0 \
+            --set rayService.headGroupSpec.resources.limits.memory=2Gi \
+            --set rayService.headGroupSpec.resources.requests.cpu=0 \
+            --set rayService.headGroupSpec.resources.requests.memory=2Gi \
+            --set rayService.workerGroupSpecs[0].replicas=1 \
+            --set rayService.workerGroupSpecs[0].minReplicas=1 \
+            --set rayService.workerGroupSpecs[0].maxReplicas=1 \
+            --set rayService.workerGroupSpecs[0].groupName=test-group \
+            --set rayService.workerGroupSpecs[0].gpuWorkerGroup.enabled=false \
+            --set rayService.workerGroupSpecs[0].resources.limits.cpu=1 \
+            --set rayService.workerGroupSpecs[0].resources.limits.memory=2Gi \
+            --set rayService.workerGroupSpecs[0].resources.requests.cpu=1 \
+            --set rayService.workerGroupSpecs[0].resources.requests.memory=2Gi \
             --set tags.observability=false
 
       - name: Wait for model deployment
