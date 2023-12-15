@@ -503,7 +503,7 @@ jobs:
             --set modelBackend.image.tag=${MODEL_BACKEND_VERSION} \
             --set controllerModel.image.tag=${CONTROLLER_MODEL_VERSION} \
             --set triton.nvidiaVisibleDevices=${NVIDIA_VISIBLE_DEVICES} \
-            --set rayService.image.tag=${RAY_SERVER_VERSION}-cpu \
+            --set rayService.image.tag=${RAY_SERVER_VERSION}-arm \
             --set rayService.headGroupSpec.resources.limits.cpu=0 \
             --set rayService.headGroupSpec.resources.limits.memory=2Gi \
             --set rayService.headGroupSpec.resources.requests.cpu=0 \

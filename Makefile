@@ -294,12 +294,11 @@ helm-integration-test-latest:                       ## Run integration test on t
 		--set modelBackend.image.tag=latest \
 		--set controllerModel.image.tag=latest \
 		--set triton.nvidiaVisibleDevices=${NVIDIA_VISIBLE_DEVICES} \
-		--set ray.platform=${RAY_PLATFORM} \
+		--set rayService.image.tag=latest-${RAY_PLATFORM} \
 		--set tags.observability=false
 	@kubectl rollout status deployment model-model-backend --namespace instill-ai --timeout=360s
-	@kubectl rollout status deployment model-controller-model --namespace instill-ai --timeout=360s
 	@kubectl rollout status deployment model-triton-inference-server --namespace instill-ai --timeout=360s
-	@kubectl rollout status deployment model-ray-server --namespace instill-ai --timeout=360s
+	@kubectl rollout status deployment model-controller-model --namespace instill-ai --timeout=360s
 	@sleep 10
 ifeq ($(UNAME_S),Darwin)
 	@docker run -t --name ${CONTAINER_BACKEND_INTEGRATION_TEST_NAME}-helm-latest ${CONTAINER_COMPOSE_IMAGE_NAME}:latest /bin/sh -c " \
@@ -351,14 +350,12 @@ helm-integration-test-release:                       ## Run integration test on 
 		--set edition=k8s-ce:test \
 		--set modelBackend.image.tag=${MODEL_BACKEND_VERSION} \
 		--set controllerModel.image.tag=${CONTROLLER_MODEL_VERSION} \
-		--set ray.image.tag=${RAY_SERVER_VERSION} \
+		--set rayService.image.tag=${RAY_SERVER_VERSION}-${RAY_PLATFORM} \
 		--set triton.nvidiaVisibleDevices=${NVIDIA_VISIBLE_DEVICES} \
-		--set ray.platform=${RAY_PLATFORM} \
 		--set tags.observability=false
 	@kubectl rollout status deployment model-model-backend --namespace instill-ai --timeout=360s
-	@kubectl rollout status deployment model-controller-model --namespace instill-ai --timeout=360s
 	@kubectl rollout status deployment model-triton-inference-server --namespace instill-ai --timeout=360s
-	@kubectl rollout status deployment model-ray-server --namespace instill-ai --timeout=360s
+	@kubectl rollout status deployment model-controller-model --namespace instill-ai --timeout=360s
 	@sleep 10
 ifeq ($(UNAME_S),Darwin)
 	@docker run --rm --name ${CONTAINER_BACKEND_INTEGRATION_TEST_NAME}-helm-release ${CONTAINER_COMPOSE_IMAGE_NAME}:${INSTILL_MODEL_VERSION} /bin/sh -c " \
