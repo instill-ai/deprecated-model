@@ -295,7 +295,7 @@ triton:
   condaEnv:
     image:
       repository: instill/triton-conda-env
-      tag: 0.4.0-alpha
+      tag: 0.4.1-alpha
       pullPolicy: IfNotPresent
   shmSizeLimit: 2Gi
   gpu:
@@ -318,7 +318,7 @@ rayService:
   image:
     repository: instill/ray
     version: "2.8.0"
-    tag: 0.2.0-alpha-cpu
+    tag: 0.2.1-alpha-cpu
   headGroupSpec:
     resources:
       limits:
