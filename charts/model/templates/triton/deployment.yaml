@@ -79,8 +79,8 @@ spec:
               scheme: {{ ternary "https" "http" .Values.internalTLS.enabled | upper }}
               port: {{ ternary "https" "http" .Values.internalTLS.enabled }}
             initialDelaySeconds: 5
-            failureThreshold: 1
-            periodSeconds: 10
+            failureThreshold: 3
+            periodSeconds: 5
           {{- if .Values.triton.gpu.enabled }}
           resources:
             limits:
