@@ -26,6 +26,9 @@ data:
         cert: /etc/instill-ai/model/ssl/model/tls.crt
         key: /etc/instill-ai/model/ssl/model/tls.key
       {{- end }}
+    github:
+      patenabled: {{ .Values.modelBackend.github.patenabled }}
+      pat: {{ .Values.modelBackend.github.pat }}
     log:
       external: {{ .Values.tags.observability }}
       otelcollector:
