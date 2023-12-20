@@ -70,8 +70,8 @@ spec:
               path: /v2/health/live
               scheme: {{ ternary "https" "http" .Values.internalTLS.enabled | upper }}
               port: {{ ternary "https" "http" .Values.internalTLS.enabled }}
-            initialDelaySeconds: 5
-            failureThreshold: 1
+            initialDelaySeconds: 15
+            failureThreshold: 3
             periodSeconds: 10
           readinessProbe:
             httpGet:
