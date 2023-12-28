@@ -1,3 +1,4 @@
+{{- if .Values.tags.observability }}
 apiVersion: monitoring.coreos.com/v1
 kind: ServiceMonitor
 metadata:
@@ -45,3 +46,4 @@ spec:
   # A list of endpoints allowed as part of this PodMonitor.
   podMetricsEndpoints:
   - port: metrics
+{{- end }}
