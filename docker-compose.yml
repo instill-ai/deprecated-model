@@ -175,6 +175,9 @@ services:
     environment:
       - RAY_ADDRESS=0.0.0.0:6379
       - RAY_REDIS_ADDRESS=redis:6379
+      - RAY_GRAFANA_HOST=http://${GRAFANA_HOST}:${GRAFANA_PORT}
+      - RAY_PROMETHEUS_HOST=http://${PROMETHEUS_HOST}:${PROMETHEUS_PORT}
+      - RAY_GRAFANA_IFRAME_HOST=http://localhost:${GRAFANA_EXPOSE_PORT}
     entrypoint: ["/bin/bash", "-c"]
     command: |
       'ray start --head --node-ip-address=0.0.0.0 --dashboard-host=0.0.0.0 --metrics-export-port ${RAY_SERVER_PROMETHEUS_PORT} --disable-usage-stats &&
