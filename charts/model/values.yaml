@@ -414,4 +414,5 @@ temporal:
     tolerations: []
     affinity: {}
 tags:
-  observability: true
+  observability: false
+  prometheusStack: false
