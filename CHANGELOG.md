@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.6.1-alpha](https://github.com/instill-ai/model/compare/v0.6.0-alpha...v0.6.1-alpha) (2024-01-02)
+
+
+### Bug Fixes
+
+* **model:** update llava model tag for initilization issue fix ([#77](https://github.com/instill-ai/model/issues/77)) ([3fc18c3](https://github.com/instill-ai/model/commit/3fc18c348ba016686bd2fe9dd03899767cecdc25))
+
+
+### Miscellaneous Chores
+
+* **release:** release v0.6.1-alpha ([d2e6edc](https://github.com/instill-ai/model/commit/d2e6edc4560d2e12bd961d60700d015ce0f71863))
+
 ## [0.6.0-alpha](https://github.com/instill-ai/model/compare/v0.5.0-alpha...v0.6.0-alpha) (2023-12-15)
 
 
