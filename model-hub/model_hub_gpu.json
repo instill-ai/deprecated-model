@@ -6,7 +6,7 @@
     "model_definition": "model-definitions/github",
     "configuration": {
       "repository": "instill-ai/model-mobilenetv2-dvc",
-      "tag": "v1.1-ray-gpu"
+      "tag": "v1.3-ray-gpu"
     }
   },
   {
@@ -16,7 +16,7 @@
     "model_definition": "model-definitions/github",
     "configuration": {
       "repository": "instill-ai/model-yolov7-dvc",
-      "tag": "v1.1-ray-gpu"
+      "tag": "v1.3-ray-gpu"
     }
   },
   {
@@ -36,7 +36,7 @@
     "model_definition": "model-definitions/github",
     "configuration": {
       "repository": "instill-ai/model-stomata-instance-segmentation-dvc",
-      "tag": "v1.0-yolov7-mask-ray-gpu"
+      "tag": "v1.2-yolov7-mask-ray-gpu"
     }
   },
   {
@@ -76,7 +76,7 @@
     "model_definition": "model-definitions/github",
     "configuration": {
       "repository": "instill-ai/model-llava-7b-dvc",
-      "tag": "fp16-7b-tf-gpu0-a100-dvc2_34-hotfix2"
+      "tag": "fp16-7b-tf-gpu0-a100-dvc2_34-hotfix3"
     }
   },
   {
