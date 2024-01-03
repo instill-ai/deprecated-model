@@ -1,0 +1,53 @@
+[
+  {
+    "id": "mobilenetv2",
+    "description": "An efficient image classification model, pretrained on ImageNet dataset which contains images from 1,000 classes.",
+    "task": "TASK_CLASSIFICATION",
+    "model_definition": "model-definitions/github",
+    "configuration": {
+      "repository": "instill-ai/model-mobilenetv2-dvc",
+      "tag": "v1.3-ray-cpu"
+    }
+  },
+  {
+    "id": "yolov7",
+    "description": "YOLOv7 is a state-of-the-art real-time object detector pretrained on MS COCO dataset with 80 object classes.",
+    "task": "TASK_DETECTION",
+    "model_definition": "model-definitions/github",
+    "configuration": {
+      "repository": "instill-ai/model-yolov7-dvc",
+      "tag": "v1.3-ray-cpu"
+    }
+  },
+  {
+    "id": "yolov7-pose",
+    "description": "a keypoint detector, extended on the basis of YOLOv7, to detect keypoints in the human body. The model is pretrained on MS COCO dataset with 17 keypoints.",
+    "task": "TASK_KEYPOINT",
+    "model_definition": "model-definitions/github",
+    "configuration": {
+      "repository": "instill-ai/model-yolov7-pose-dvc",
+      "tag": "v1.0-cpu"
+    }
+  },
+  {
+    "id": "yolov7-stomata",
+    "description": "The instance segmentation model based on Yolov7, fine-tuned on the custom dataset with 337 images and 1 object class 'stomata'.",
+    "task": "TASK_INSTANCE_SEGMENTATION",
+    "model_definition": "model-definitions/github",
+    "configuration": {
+      "repository": "instill-ai/model-stomata-instance-segmentation-dvc",
+      "tag": "v1.2-yolov7-mask-ray-cpu"
+    }
+  },
+  {
+    "id": "stomata-mask-rcnn",
+    "description": "The instance segmentation model based on Mask R-CNN from Detectron2, fine-tuned on the 'stomata200-mix' dataset with 1 object class 'stomata'.",
+    "task": "TASK_INSTANCE_SEGMENTATION",
+    "model_definition": "model-definitions/github",
+    "configuration": {
+      "repository": "instill-ai/model-stomata-instance-segmentation-dvc",
+      "tag": "v2.0-cpu"
+    }
+  }
+]
+
