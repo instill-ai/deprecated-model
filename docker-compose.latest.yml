@@ -5,18 +5,21 @@ services:
     profiles:
       - all
       - controller-model
+      - console
     image: ${MODEL_BACKEND_IMAGE}:latest
 
   model_backend_init:
     profiles:
       - all
       - controller-model
+      - console
     image: ${MODEL_BACKEND_IMAGE}:latest
 
   model_backend_worker:
     profiles:
       - all
       - controller-model
+      - console
     image: ${MODEL_BACKEND_IMAGE}:latest
     environment:
       CFG_SERVER_DEBUG: "true"
@@ -25,6 +28,7 @@ services:
     profiles:
       - all
       - controller-model
+      - console
     image: ${MODEL_BACKEND_IMAGE}:latest
     environment:
       CFG_SERVER_DEBUG: "true"
@@ -37,6 +41,7 @@ services:
     profiles:
       - all
       - controller-model
+      - console
     image: ${MODEL_BACKEND_IMAGE}:latest
     environment:
       CFG_INITMODEL_ENABLED: ${INITMODEL_ENABLED}
@@ -46,6 +51,7 @@ services:
     profiles:
       - all
       - model
+      - console
     image: ${CONTROLLER_MODEL_IMAGE}:latest
     environment:
       CFG_SERVER_DEBUG: "true"
