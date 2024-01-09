@@ -86,7 +86,7 @@
     "model_definition": "model-definitions/github",
     "configuration": {
       "repository": "instill-ai/model-zephyr-7b-dvc",
-      "tag": "fp32-cpu-transormer_triton-v0.7.0"
+      "tag": "fp32-cpu-transormer_triton-v0.7.0-hotfix1"
     }
   },
   {
