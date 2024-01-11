@@ -92,5 +92,4 @@ data:
       key: {{ default "" .Values.modelBackend.temporal.key }}
       serverName: {{ default "" .Values.modelBackend.temporal.serverName }}
     initmodel:
-      path: {{ .Values.modelBackend.initModel.path }}
-      enabled: {{ .Values.modelBackend.initModel.enabled }}
+      {{- toYaml .Values.modelBackend.initModel | nindent 6 }}
