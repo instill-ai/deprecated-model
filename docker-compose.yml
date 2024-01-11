@@ -142,6 +142,8 @@ services:
       CFG_LOG_EXTERNAL: ${OBSERVE_ENABLED}
       CFG_LOG_OTELCOLLECTOR_PORT: ${OTEL_COLLECTOR_PORT}
     entrypoint: ./controller-model
+    volumes:
+      - model_repository:/model-repository
 
   triton_conda_env:
     container_name: triton-conda-env

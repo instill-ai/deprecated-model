@@ -96,6 +96,8 @@ spec:
             - name: config
               mountPath: {{ .Values.controllerModel.configPath }}
               subPath: config.yaml
+            - name: model-repository
+              mountPath: /model-repository
             {{- if .Values.internalTLS.enabled }}
             - name: controller-internal-certs
               mountPath: "/etc/instill-ai/model/ssl/controller"
@@ -117,6 +119,16 @@ spec:
         - name: controller-internal-certs
           secret:
             secretName: {{ template "model.internalTLS.controllerModel.secretName" . }}
+        - name: model-repository
+        {{- if not .Values.persistence.enabled }}
+          emptyDir: {}
+        {{- else if $modelRepository.existingClaim }}
+          persistentVolumeClaim:
+            claimName: {{ $modelRepository.existingClaim }}
+        {{- else }}
+          persistentVolumeClaim:
+            claimName: model-repository-data-volume
+        {{- end }}
         {{- with .Values.controllerModel.extraVolumes }}
         {{- toYaml . | nindent 8 }}
         {{- end }}
