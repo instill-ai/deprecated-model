@@ -35,6 +35,12 @@ data:
         cert: /etc/instill-ai/model/ssl/model/tls.crt
         key: /etc/instill-ai/model/ssl/model/tls.key
       {{- end }}
+    cache:
+      redis:
+        redisoptions:
+          addr: {{ default (include "core.redis.addr" .) .Values.redis.addr }}
+      model:
+        {{- toYaml .Values.modelBackend.cache | nindent 8 }}
     mgmtbackend:
       host: {{ template "core.mgmtBackend" . }}
       publicport: {{ template "core.mgmtBackend.publicPort" . }}
