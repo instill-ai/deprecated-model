@@ -324,8 +324,8 @@ rayService:
           memory: "512Mi"
   image:
     repository: instill/ray
-    version: "2.8.0"
-    tag: 0.2.1-alpha-cpu
+    version: "2.9.0"
+    tag: 0.2.3-alpha-cpu
   headGroupSpec:
     resources:
       limits:
@@ -346,19 +346,19 @@ rayService:
         resources:
           limits:
             cpu: "2"
-            memory: "4Gi"
+            memory: "8Gi"
             nvidia.com/gpu: 1
           requests:
             cpu: "2"
-            memory: "4Gi"
+            memory: "8Gi"
             nvidia.com/gpu: 1
       resources:
         limits:
           cpu: "2"
-          memory: "4Gi"
+          memory: "8Gi"
         requests:
           cpu: "2"
-          memory: "4Gi"
+          memory: "8Gi"
       affinity: {}
       nodeSelector: {}
       # add more worker groups under here
