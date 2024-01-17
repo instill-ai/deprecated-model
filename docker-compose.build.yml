@@ -11,6 +11,10 @@ services:
         K6_VERSION: ${K6_VERSION}
         UBUNTU_VERSION: ${UBUNTU_VERSION}
         ARTIVC_VERSION: ${ARTIVC_VERSION}
+    profiles:
+      - all
+      - controller-model
+      - console
 
   controller_model:
     image: ${CONTROLLER_MODEL_IMAGE}:${CONTROLLER_MODEL_VERSION}
@@ -20,3 +24,7 @@ services:
         SERVICE_NAME: ${CONTROLLER_MODEL_HOST}
         GOLANG_VERSION: ${GOLANG_VERSION}
         K6_VERSION: ${K6_VERSION}
+    profiles:
+      - all
+      - controller-model
+      - console
