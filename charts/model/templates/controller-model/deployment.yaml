@@ -36,10 +36,13 @@ spec:
         {{- toYaml . | nindent 8 }}
         {{- end }}
     spec:
-      # Ubuntu nobody:nogroup is 65534:65534
+      # distroless users
+      # root:x:0:0:root:/root:/sbin/nologin
+      # nobody:x:65534:65534:nobody:/nonexistent:/sbin/nologin
+      # nonroot:x:65532:65532:nonroot:/home/nonroot:/sbin/nologin
       securityContext:
-        runAsUser: 65532
-        runAsGroup: 65532
+        runAsUser: 65534
+        runAsGroup: 65534
       {{- if .Values.controllerModel.serviceAccountName }}
       serviceAccountName: {{ .Values.controllerModel.serviceAccountName }}
       {{- end }}
