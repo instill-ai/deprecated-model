@@ -26,5 +26,5 @@ services:
         K6_VERSION: ${K6_VERSION}
     profiles:
       - all
-      - controller-model
+      - model
       - console
