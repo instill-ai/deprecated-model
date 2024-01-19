@@ -13,8 +13,8 @@ services:
         ARTIVC_VERSION: ${ARTIVC_VERSION}
     profiles:
       - all
-      - controller-model
-      - console
+      - exclude-controller-model
+      - exclude-console
 
   controller_model:
     image: ${CONTROLLER_MODEL_IMAGE}:${CONTROLLER_MODEL_VERSION}
@@ -26,5 +26,5 @@ services:
         K6_VERSION: ${K6_VERSION}
     profiles:
       - all
-      - model
-      - console
+      - exclude-model
+      - exclude-console
