@@ -63,7 +63,7 @@ jobs:
           envFile: .env
 
       - name: Launch Instill Model (latest)
-        run: make latest PROFILE=console EDITION=local-ce:test
+        run: make latest PROFILE=exclude-console EDITION=local-ce:test
    
       - name: List all docker containers
         run: |

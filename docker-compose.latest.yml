@@ -4,22 +4,22 @@ services:
   model_backend_migrate:
     profiles:
       - all
-      - controller-model
-      - console
+      - exclude-controller-model
+      - exclude-console
     image: ${MODEL_BACKEND_IMAGE}:latest
 
   model_backend_init:
     profiles:
       - all
-      - controller-model
-      - console
+      - exclude-controller-model
+      - exclude-console
     image: ${MODEL_BACKEND_IMAGE}:latest
 
   model_backend_worker:
     profiles:
       - all
-      - controller-model
-      - console
+      - exclude-controller-model
+      - exclude-console
     image: ${MODEL_BACKEND_IMAGE}:latest
     environment:
       CFG_SERVER_DEBUG: "true"
@@ -27,8 +27,8 @@ services:
   model_backend:
     profiles:
       - all
-      - controller-model
-      - console
+      - exclude-controller-model
+      - exclude-console
     image: ${MODEL_BACKEND_IMAGE}:latest
     environment:
       CFG_SERVER_DEBUG: "true"
@@ -40,8 +40,8 @@ services:
   model_backend_init_model:
     profiles:
       - all
-      - controller-model
-      - console
+      - exclude-controller-model
+      - exclude-console
     image: ${MODEL_BACKEND_IMAGE}:latest
     environment:
       CFG_INITMODEL_ENABLED: ${INITMODEL_ENABLED}
@@ -50,8 +50,8 @@ services:
   controller_model:
     profiles:
       - all
-      - model
-      - console
+      - exclude-model
+      - exclude-console
     image: ${CONTROLLER_MODEL_IMAGE}:latest
     environment:
       CFG_SERVER_DEBUG: "true"
