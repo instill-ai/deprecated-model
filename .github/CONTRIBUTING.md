@@ -50,7 +50,7 @@ The env variable `PROFILE` is intended to specify which service component you wa
 
 - `{service}`
 
-  When you set `PROFILE={service}`, in which `{service}` can be `controller-model` or `model`, it means you want to develop on that particular service. The `make` command will launch the corresponding stack **WITHOUT** that service component and **WITH** all its dependencies. Given that, you can later on spin up and down the `{service}` in your dev container. Please take the [model-backend](https://github.com/instill-ai/model-backend#local-dev) as an example.
+  When you set `PROFILE=exclude-{service}`, in which `{service}` can be `model` or `controller-model`, it means you want to develop on that particular service. The `make` command will launch the corresponding stack **WITHOUT** that service component and **WITH** all its dependencies. Given that, you can later on spin up and down the `{service}` in your dev container. Please take the [model-backend](https://github.com/instill-ai/model-backend#local-dev) as an example.
 
 ### Tear down the local dev system
 
