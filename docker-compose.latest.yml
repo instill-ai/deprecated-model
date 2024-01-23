@@ -4,22 +4,31 @@ services:
   model_backend_migrate:
     profiles:
       - all
-      - exclude-controller-model
+      - exclude-api-gateway
+      - exclude-mgmt
       - exclude-console
+      - exclude-pipeline
+      - exclude-controller-model
     image: ${MODEL_BACKEND_IMAGE}:latest
 
   model_backend_init:
     profiles:
       - all
-      - exclude-controller-model
+      - exclude-api-gateway
+      - exclude-mgmt
       - exclude-console
+      - exclude-pipeline
+      - exclude-controller-model
     image: ${MODEL_BACKEND_IMAGE}:latest
 
   model_backend_worker:
     profiles:
       - all
-      - exclude-controller-model
+      - exclude-api-gateway
+      - exclude-mgmt
       - exclude-console
+      - exclude-pipeline
+      - exclude-controller-model
     image: ${MODEL_BACKEND_IMAGE}:latest
     environment:
       CFG_SERVER_DEBUG: "true"
@@ -27,8 +36,11 @@ services:
   model_backend:
     profiles:
       - all
-      - exclude-controller-model
+      - exclude-api-gateway
+      - exclude-mgmt
       - exclude-console
+      - exclude-pipeline
+      - exclude-controller-model
     image: ${MODEL_BACKEND_IMAGE}:latest
     environment:
       CFG_SERVER_DEBUG: "true"
@@ -40,8 +52,11 @@ services:
   model_backend_init_model:
     profiles:
       - all
-      - exclude-controller-model
+      - exclude-api-gateway
+      - exclude-mgmt
       - exclude-console
+      - exclude-pipeline
+      - exclude-controller-model
     image: ${MODEL_BACKEND_IMAGE}:latest
     environment:
       CFG_INITMODEL_ENABLED: ${INITMODEL_ENABLED}
@@ -50,8 +65,11 @@ services:
   controller_model:
     profiles:
       - all
-      - exclude-model
+      - exclude-api-gateway
+      - exclude-mgmt
       - exclude-console
+      - exclude-pipeline
+      - exclude-model
     image: ${CONTROLLER_MODEL_IMAGE}:latest
     environment:
       CFG_SERVER_DEBUG: "true"
