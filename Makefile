@@ -82,7 +82,7 @@ all:			## Launch all services with their up-to-date release version
 				cp /instill-ai/core/.env $${TMP_CONFIG_DIR}/.env && \
 				cp /instill-ai/core/docker-compose.build.yml $${TMP_CONFIG_DIR}/docker-compose.build.yml && \
 				cp -r /instill-ai/core/configs/influxdb $${TMP_CONFIG_DIR} && \
-				/bin/sh -c 'cd /instill-ai/core && make all BUILD=$${BUILD} PROJECT=core EDITION=$${EDITION:=local-ce} INSTILL_CORE_HOST=$${INSTILL_CORE_HOST} SYSTEM_CONFIG_PATH=$${SYSTEM_CONFIG_PATH} BUILD_CONFIG_DIR_PATH=$${TMP_CONFIG_DIR} OBSERVE_CONFIG_DIR_PATH=$${TMP_CONFIG_DIR}' && \
+				/bin/sh -c 'cd /instill-ai/core && make all BUILD=${BUILD} PROJECT=core EDITION=$${EDITION:=local-ce} INSTILL_CORE_HOST=$${INSTILL_CORE_HOST} SYSTEM_CONFIG_PATH=$${SYSTEM_CONFIG_PATH} BUILD_CONFIG_DIR_PATH=$${TMP_CONFIG_DIR} OBSERVE_CONFIG_DIR_PATH=$${TMP_CONFIG_DIR}' && \
 				rm -rf $${TMP_CONFIG_DIR}/* \
 			" && rm -rf $${TMP_CONFIG_DIR}; \
 	fi
@@ -96,7 +96,7 @@ endif
 
 .PHONY: latest
 latest:			## Lunch all dependent services with their latest codebase
-	@make build-latest
+	@make build-latest PROFILE=${PROFILE}
 	@if ! docker compose ls -q | grep -q "instill-core"; then \
 		export TMP_CONFIG_DIR=$(shell mktemp -d) && \
 		export SYSTEM_CONFIG_PATH=$(shell eval echo ${SYSTEM_CONFIG_PATH}) && \
@@ -109,16 +109,16 @@ latest:			## Lunch all dependent services with their latest codebase
 				cp /instill-ai/core/.env $${TMP_CONFIG_DIR}/.env && \
 				cp /instill-ai/core/docker-compose.build.yml $${TMP_CONFIG_DIR}/docker-compose.build.yml && \
 				cp -r /instill-ai/core/configs/influxdb $${TMP_CONFIG_DIR} && \
-				/bin/sh -c 'cd /instill-ai/core && make latest PROJECT=core PROFILE=$${PROFILE} EDITION=$${EDITION:=local-ce:latest} INSTILL_CORE_HOST=$${INSTILL_CORE_HOST} SYSTEM_CONFIG_PATH=$${SYSTEM_CONFIG_PATH} BUILD_CONFIG_DIR_PATH=$${TMP_CONFIG_DIR} OBSERVE_CONFIG_DIR_PATH=$${TMP_CONFIG_DIR}' && \
+				/bin/sh -c 'cd /instill-ai/core && make latest PROFILE=${PROFILE} PROJECT=core EDITION=$${EDITION:=local-ce:latest} INSTILL_CORE_HOST=$${INSTILL_CORE_HOST} SYSTEM_CONFIG_PATH=$${SYSTEM_CONFIG_PATH} BUILD_CONFIG_DIR_PATH=$${TMP_CONFIG_DIR} OBSERVE_CONFIG_DIR_PATH=$${TMP_CONFIG_DIR}' && \
 				rm -rf $${TMP_CONFIG_DIR}/* \
 			" && rm -rf $${TMP_CONFIG_DIR}; \
 	fi
 ifeq (${NVIDIA_GPU_AVAILABLE}, true)
 	@docker inspect --type=image instill/tritonserver:${TRITON_SERVER_VERSION} >/dev/null 2>&1 || printf "\033[1;33mINFO:\033[0m This may take a while due to the enormous size of the Triton server image, but the image pulling process should be just a one-time effort.\n" && sleep 5
 	@cat docker-compose.nvidia.yml | yq '.services.triton_server.deploy.resources.reservations.devices[0].device_ids |= (strenv(NVIDIA_VISIBLE_DEVICES) | split(",")) | ..style="double"' | \
-		COMPOSE_PROFILES=$(PROFILE) EDITION=$${EDITION:=local-ce:latest} docker compose -f docker-compose.yml -f docker-compose.latest.yml -f - up -d --quiet-pull
+		COMPOSE_PROFILES=${PROFILE} EDITION=$${EDITION:=local-ce:latest} docker compose -f docker-compose.yml -f docker-compose.latest.yml -f - up -d --quiet-pull
 else
-	@COMPOSE_PROFILES=$(PROFILE) EDITION=$${EDITION:=local-ce:latest} docker compose -f docker-compose.yml -f docker-compose.latest.yml up -d --quiet-pull
+	@COMPOSE_PROFILES=${PROFILE} EDITION=$${EDITION:=local-ce:latest} docker compose -f docker-compose.yml -f docker-compose.latest.yml up -d --quiet-pull
 endif
 
 .PHONY: logs
@@ -210,7 +210,7 @@ build-latest:				## Build latest images for all model components
 		${CONTAINER_COMPOSE_IMAGE_NAME}:latest /bin/sh -c " \
 			MODEL_BACKEND_VERSION=latest \
 			CONTROLLER_MODEL_VERSION=latest \
-			docker compose -f docker-compose.build.yml build --progress plain \
+			COMPOSE_PROFILES=${PROFILE} docker compose -f docker-compose.build.yml build --progress plain \
 		"
 
 .PHONY: build-release
@@ -233,12 +233,12 @@ build-release:				## Build release images for all model components
 		${CONTAINER_COMPOSE_IMAGE_NAME}:${INSTILL_MODEL_VERSION} /bin/sh -c " \
 			MODEL_BACKEND_VERSION=${MODEL_BACKEND_VERSION} \
 			CONTROLLER_MODEL_VERSION=${CONTROLLER_MODEL_VERSION} \
-			docker compose -f docker-compose.build.yml build --progress plain \
+			COMPOSE_PROFILES=${PROFILE} docker compose -f docker-compose.build.yml build --progress plain \
 		"
 
 .PHONY: integration-test-latest
 integration-test-latest:			## Run integration test on the latest model
-	@make latest BUILD=true PROFILE=all EDITION=local-ce:test ITMODE_ENABLED=true
+	@make latest EDITION=local-ce:test ITMODE_ENABLED=true
 	@docker run --rm \
 		--network instill-network \
 		--name ${CONTAINER_BACKEND_INTEGRATION_TEST_NAME}-latest \
