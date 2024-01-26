@@ -56,6 +56,7 @@ data:
     rayserver:
       grpcuri: {{ include "model.ray" . }}:{{ include "model.ray.serveGrpcPort" . }}
       modelstore: /model-repository
+      vram: {{ .Values.rayService.vram }}
     database:
       username: {{ default (include "core.database.username" .) .Values.database.username }}
       password: {{ default (include "core.database.rawPassword" .) .Values.database.password }}

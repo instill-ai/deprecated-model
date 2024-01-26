@@ -313,6 +313,7 @@ kuberay-operator:
   watchNamespace:
     - "instill-ai"
 rayService:
+  vram:
   spec:
     autoscalerOptions:
       resources:
