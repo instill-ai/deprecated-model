@@ -326,7 +326,7 @@ rayService:
   image:
     repository: instill/ray
     version: "2.9.0"
-    tag: 0.2.3-alpha-cpu
+    tag: 0.2.4-alpha-cpu
   headGroupSpec:
     resources:
       limits:
@@ -340,7 +340,7 @@ rayService:
   workerGroupSpecs:
     - replicas: 1
       minReplicas: 1
-      maxReplicas: 5
+      maxReplicas: 1
       groupName: "cpu-group"
       gpuWorkerGroup:
         enabled: false
