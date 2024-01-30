@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.8.0-alpha](https://github.com/instill-ai/model/compare/v0.7.0-alpha...v0.8.0-alpha) (2024-01-30)
+
+
+### Features
+
+* **model:** update model-cloud serving tag to 0.8.0 ([#97](https://github.com/instill-ai/model/issues/97)) ([b03f34b](https://github.com/instill-ai/model/commit/b03f34b50a7082e05d6bfec38471a1dc09b9258e))
+
 ## [0.7.0-alpha](https://github.com/instill-ai/model/compare/v0.6.1-alpha...v0.7.0-alpha) (2024-01-17)
 
 
