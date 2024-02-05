@@ -140,6 +140,7 @@ modelBackend:
   replicaCount: 1
   # -- The model initialization configuration
   initModel:
+    ownertype: users
     ownerid: admin
     enabled: false
     path: https://raw.githubusercontent.com/instill-ai/model/main/model-hub/model_hub_cpu.json
