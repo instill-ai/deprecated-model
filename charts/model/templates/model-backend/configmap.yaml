@@ -93,3 +93,6 @@ data:
       serverName: {{ default "" .Values.modelBackend.temporal.serverName }}
     initmodel:
       {{- toYaml .Values.modelBackend.initModel | nindent 6 }}
+    openfga:
+      host: {{ template "core.openfga" . }}
+      port: 8080

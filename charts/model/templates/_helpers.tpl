@@ -104,6 +104,10 @@ app.kubernetes.io/name: {{ include "model.name" . }}
   {{- print "core-mgmt-backend" -}}
 {{- end -}}
 
+{{- define "core.openfga" -}}
+  {{- printf "core-openfga" -}}
+{{- end -}}
+
 {{- define "model.modelBackend" -}}
   {{- printf "%s-model-backend" (include "model.fullname" .) -}}
 {{- end -}}
