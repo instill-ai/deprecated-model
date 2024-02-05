@@ -91,6 +91,8 @@ jobs:
           EDITION=local-ce:test \
           ITMODE_ENABLED=true \
           TRITON_CONDA_ENV_PLATFORM=cpu \
+          TRITON_SERVER_IMAGE=nvcr.io/nvidia/tritonserver \
+          TRITON_SERVER_VERSION=23.04-pyt-python-py3 \
           RAY_PLATFORM=cpu \
           COMPOSE_PROFILES=all \
           docker compose -f docker-compose.yml -f docker-compose.latest.yml up -d --quiet-pull
@@ -187,6 +189,8 @@ jobs:
           EDITION=local-ce:test \
           ITMODE_ENABLED=true \
           TRITON_CONDA_ENV_PLATFORM=cpu \
+          TRITON_SERVER_IMAGE=nvcr.io/nvidia/tritonserver \
+          TRITON_SERVER_VERSION=23.04-pyt-python-py3 \
           RAY_PLATFORM=arm \
           COMPOSE_PROFILES=all \
           docker compose -f docker-compose.yml -f docker-compose.latest.yml up -d --quiet-pull
@@ -310,6 +314,8 @@ jobs:
           EDITION=local-ce:test \
           ITMODE_ENABLED=true \
           TRITON_CONDA_ENV_PLATFORM=cpu \
+          TRITON_SERVER_IMAGE=nvcr.io/nvidia/tritonserver \
+          TRITON_SERVER_VERSION=23.04-pyt-python-py3 \
           RAY_PLATFORM=cpu \
           docker compose up -d --quiet-pull
           EDITION=local-ce:test \
@@ -405,6 +411,8 @@ jobs:
           EDITION=local-ce:test \
           ITMODE_ENABLED=true \
           TRITON_CONDA_ENV_PLATFORM=cpu \
+          TRITON_SERVER_IMAGE=nvcr.io/nvidia/tritonserver \
+          TRITON_SERVER_VERSION=23.04-pyt-python-py3 \
           RAY_PLATFORM=arm \
           docker compose up -d --quiet-pull
           EDITION=local-ce:test \
