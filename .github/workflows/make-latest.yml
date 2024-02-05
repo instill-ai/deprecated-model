@@ -64,7 +64,7 @@ jobs:
 
       - name: Launch Instill Model (latest)
         run: |
-          make latest PROFILE=exclude-console EDITION=local-ce:test
+          make latest PROFILE=exclude-console EDITION=local-ce:test TRITON_SERVER_IMAGE=nvcr.io/nvidia/tritonserver TRITON_SERVER_VERSION=23.04-pyt-python-py3
 
       - name: List all docker containers
         run: |
