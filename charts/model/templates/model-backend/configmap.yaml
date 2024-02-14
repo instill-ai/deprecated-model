@@ -50,9 +50,6 @@ data:
         cert: /etc/instill-ai/model/ssl/controller/tls.crt
         key: /etc/instill-ai/model/ssl/controller/tls.key
       {{- end }}
-    tritonserver:
-      grpcuri: {{ include "model.triton" . }}:{{ include "model.triton.grpcPort" . }}
-      modelstore: /model-repository
     rayserver:
       grpcuri: {{ include "model.ray" . }}:{{ include "model.ray.serveGrpcPort" . }}
       modelstore: /model-repository
@@ -87,6 +84,7 @@ data:
     temporal:
       hostport: {{ default (printf "%s-frontend-headless:%s" (include "core.temporal" .) (include "core.temporal.frontend.grpcPort" .)) .Values.modelBackend.temporal.hostPort }}
       namespace: {{ default "model-backend" .Values.modelBackend.temporal.namespace }}
+      retention: {{ default "1d" .Values.modelBackend.temporal.retention }}
       ca: {{ default "" .Values.modelBackend.temporal.ca }}
       cert: {{ default "" .Values.modelBackend.temporal.cert }}
       key: {{ default "" .Values.modelBackend.temporal.key }}

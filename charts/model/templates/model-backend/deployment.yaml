@@ -115,17 +115,6 @@ spec:
               value: "{{ template "core.mgmtBackend" . }}"
             - name: MGMT_BACKEND_PORT
               value: "{{ template "core.mgmtBackend.publicPort" . }}"
-        - name: wait-for-triton-server
-          image: curlimages/curl:8.00.1
-          command: ['sh', '-c']
-          args:
-          - >
-            while [[ "$(curl -s -o /dev/null -w ''%{http_code}'' ${TRITON_SERVER_HOST}:${TRITON_SERVER_HTTP_PORT}/v2/health/ready)" != "200" ]]; do echo waiting for triton-server; sleep 1; done
-          env:
-            - name: TRITON_SERVER_HOST
-              value: "{{ template "model.triton" . }}"
-            - name: TRITON_SERVER_HTTP_PORT
-              value: "{{ template "model.triton.httpPort" . }}"
         - name: wait-for-ray-server
           image: curlimages/curl:8.00.1
           command: ['sh', '-c']

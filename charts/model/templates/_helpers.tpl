@@ -116,10 +116,6 @@ app.kubernetes.io/name: {{ include "model.name" . }}
   {{- printf "%s-controller-model" (include "model.fullname" .) -}}
 {{- end -}}
 
-{{- define "model.triton" -}}
-  {{- printf "%s-triton-inference-server" (include "model.fullname" .) -}}
-{{- end -}}
-
 {{- define "model.kuberay-operator" -}}
   {{- printf "%s-kuberay-operator" (include "model.fullname" .) -}}
 {{- end -}}
@@ -171,18 +167,6 @@ app.kubernetes.io/name: {{ include "model.name" . }}
 {{/* mgmt-backend service and container private port */}}
 {{- define "core.mgmtBackend.privatePort" -}}
   {{- printf "3084" -}}
-{{- end -}}
-
-{{- define "model.triton.httpPort" -}}
-  {{- printf "8000" -}}
-{{- end -}}
-
-{{- define "model.triton.grpcPort" -}}
-  {{- printf "8001" -}}
-{{- end -}}
-
-{{- define "model.triton.metricsPort" -}}
-  {{- printf "8002" -}}
 {{- end -}}
 
 {{- define "model.ray.clientPort" -}}
