@@ -22,10 +22,6 @@ data:
       host: {{ template "core.etcd" . }}
       port: {{ template "core.etcd.clientPort" . }}
       timeout: 5
-    tritonserver:
-      host: {{ include "model.triton" . }}
-      grpcuri: {{ include "model.triton" . }}:{{ include "model.triton.grpcPort" . }}
-      modelstore: /modelstore-repository
     modelbackend:
       host: {{ template "model.modelBackend" . }}
       publicport: {{ template "model.modelBackend.publicPort" . }}

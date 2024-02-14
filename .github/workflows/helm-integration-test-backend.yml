@@ -100,9 +100,6 @@ jobs:
             --set edition=k8s-ce:test \
             --set modelBackend.image.tag=latest \
             --set controllerModel.image.tag=latest \
-            --set triton.nvidiaVisibleDevices=${NVIDIA_VISIBLE_DEVICES} \
-            --set triton.image.repository=nvcr.io/nvidia/tritonserver \
-            --set triton.image.tag=23.04-pyt-python-py3 \
             --set rayService.image.tag=latest-cpu \
             --set rayService.headGroupSpec.resources.limits.cpu=0 \
             --set rayService.headGroupSpec.resources.limits.memory=2Gi \
@@ -237,9 +234,6 @@ jobs:
             --set edition=k8s-ce:test \
             --set modelBackend.image.tag=latest \
             --set controllerModel.image.tag=latest \
-            --set triton.nvidiaVisibleDevices=${NVIDIA_VISIBLE_DEVICES} \
-            --set triton.image.repository=nvcr.io/nvidia/tritonserver \
-            --set triton.image.tag=23.04-pyt-python-py3 \
             --set rayService.image.tag=latest-arm \
             --set rayService.headGroupSpec.resources.limits.cpu=0 \
             --set rayService.headGroupSpec.resources.limits.memory=2Gi \
@@ -365,9 +359,6 @@ jobs:
             --set edition=k8s-ce:test \
             --set modelBackend.image.tag=${MODEL_BACKEND_VERSION} \
             --set controllerModel.image.tag=${CONTROLLER_MODEL_VERSION} \
-            --set triton.nvidiaVisibleDevices=${NVIDIA_VISIBLE_DEVICES} \
-            --set triton.image.repository=nvcr.io/nvidia/tritonserver \
-            --set triton.image.tag=23.04-pyt-python-py3 \
             --set rayService.image.tag=${RAY_SERVER_VERSION}-cpu \
             --set rayService.headGroupSpec.resources.limits.cpu=0 \
             --set rayService.headGroupSpec.resources.limits.memory=2Gi \
@@ -508,9 +499,6 @@ jobs:
             --set edition=k8s-ce:test \
             --set modelBackend.image.tag=${MODEL_BACKEND_VERSION} \
             --set controllerModel.image.tag=${CONTROLLER_MODEL_VERSION} \
-            --set triton.nvidiaVisibleDevices=${NVIDIA_VISIBLE_DEVICES} \
-            --set triton.image.repository=nvcr.io/nvidia/tritonserver \
-            --set triton.image.tag=23.04-pyt-python-py3 \
             --set rayService.image.tag=${RAY_SERVER_VERSION}-arm \
             --set rayService.headGroupSpec.resources.limits.cpu=0 \
             --set rayService.headGroupSpec.resources.limits.memory=2Gi \

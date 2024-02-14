@@ -50,9 +50,6 @@ data:
         cert: /etc/instill-ai/model/ssl/controller/tls.crt
         key: /etc/instill-ai/model/ssl/controller/tls.key
       {{- end }}
-    tritonserver:
-      grpcuri: {{ include "model.triton" . }}:{{ include "model.triton.grpcPort" . }}
-      modelstore: /model-repository
     rayserver:
       grpcuri: {{ include "model.ray" . }}:{{ include "model.ray.serveGrpcPort" . }}
       modelstore: /model-repository

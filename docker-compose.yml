@@ -83,6 +83,8 @@ services:
       CFG_SERVER_ITMODE_ENABLED: ${ITMODE_ENABLED}
       CFG_SERVER_USAGE_ENABLED: ${USAGE_ENABLED}
       CFG_SERVER_EDITION: ${EDITION}
+      CFG_RAYSERVER_GRPCURI: ${RAY_SERVER_HOST}:${RAY_SERVER_SERVE_GRPC_PORT}
+      CFG_RAYSERVER_MODELSTORE: /model-repository
       CFG_RAYSERVER_VRAM: ${RAY_SERVER_VRAM}
       CFG_DATABASE_HOST: ${POSTGRESQL_HOST}
       CFG_DATABASE_PORT: ${POSTGRESQL_PORT}
@@ -90,10 +92,8 @@ services:
       CFG_DATABASE_PASSWORD: password
       CFG_MGMTBACKEND_HOST: ${MGMT_BACKEND_HOST}
       CFG_MGMTBACKEND_PRIVATEPORT: ${MGMT_BACKEND_PRIVATEPORT}
-      CFG_TRITONSERVER_GRPCURI: ${TRITON_SERVER_HOST}:${TRITON_SERVER_PORT}
       CFG_TEMPORAL_CLIENTOPTIONS_HOSTPORT: ${TEMPORAL_HOST}:${TEMPORAL_PORT}
       CFG_CACHE_REDIS_REDISOPTIONS_ADDR: ${REDIS_HOST}:${REDIS_PORT}
-      CFG_TRITONSERVER_MODELSTORE: /model-repository
       CFG_LOG_EXTERNAL: ${OBSERVE_ENABLED}
       CFG_LOG_OTELCOLLECTOR_PORT: ${OTEL_COLLECTOR_PORT}
     volumes:
@@ -112,7 +112,7 @@ services:
       retries: 10
     entrypoint: ./model-backend
     depends_on:
-      - triton_server
+      - ray_server
       - model_backend_worker
 
   model_backend_init_model:
@@ -146,31 +146,6 @@ services:
     entrypoint: ./controller-model
     volumes:
       - model_repository:/model-repository
-
-  triton_conda_env:
-    container_name: triton-conda-env
-    image: instill/triton-conda-env:${TRITON_CONDA_ENV_VERSION}-${TRITON_CONDA_ENV_PLATFORM}
-    volumes:
-      - conda_pack:/conda-pack
-
-  triton_server:
-    container_name: ${TRITON_SERVER_HOST}
-    image: ${TRITON_SERVER_IMAGE}:${TRITON_SERVER_VERSION}
-    restart: unless-stopped
-    command: tritonserver --model-store=/model-repository --model-control-mode=explicit --allow-http=true
-    volumes:
-      - model_repository:/model-repository
-      - conda_pack:/conda-pack
-    healthcheck:
-      test: ["CMD", "curl", "localhost:8000/v2/health/ready"]
-      timeout: 20s
-      retries: 10
-    shm_size: 2gb
-    ulimits:
-      memlock: -1
-      stack: 67108864
-    depends_on:
-      - triton_conda_env
 
   ray_server:
     container_name: ${RAY_SERVER_HOST}
