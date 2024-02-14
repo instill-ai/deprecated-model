@@ -119,7 +119,7 @@ modelBackend:
   # -- The path of configuration file for model-backend
   configPath: /model-backend/config/config.yaml
   # -- The database migration version
-  dbVersion: 3
+  dbVersion: 4
   # -- The configuration of Temporal Cloud
   temporal:
     hostPort:
