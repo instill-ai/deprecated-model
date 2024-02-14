@@ -124,6 +124,7 @@ modelBackend:
   temporal:
     hostPort:
     namespace:
+    retention:
     ca:
     cert:
     key:
