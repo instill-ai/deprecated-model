@@ -70,13 +70,13 @@
     }
   },
   {
-    "id": "llava-7b",
+    "id": "llava-1-6-7b",
     "description": "LLaVa-7b, from liuhaotian, is trained to generate text based on your prompts with miltimodal input.",
     "task": "TASK_VISUAL_QUESTION_ANSWERING",
     "model_definition": "model-definitions/github",
     "configuration": {
       "repository": "instill-ai/model-llava-7b-dvc",
-      "tag": "f16-gpuAuto-transformer-ray-v0.8.0"
+      "tag": "f16-gpuAuto-transformer-ray-v0.8.16"
     }
   },
   {
@@ -107,6 +107,26 @@
     "configuration": {
       "repository": "instill-ai/model-controlnet-dvc",
       "tag": "f16-gpuAuto-diffusers-ray-v0.8.0"
+    }
+  },
+  {
+    "id": "llava-34b",
+    "description": "LLaVa-34b, from liuhaotian, is trained to generate text based on your prompts with miltimodal input.",
+    "task": "TASK_VISUAL_QUESTION_ANSWERING",
+    "model_definition": "model-definitions/github",
+    "configuration": {
+      "repository": "instill-ai/model-llava-7b-dvc",
+      "tag": "f8-1gpu-transformer34b-ray-v0.9.16"
+    }
+  },
+  {
+    "id": "codellama-70b",
+    "description": "CodeLlama-70b, from meta, is trained to generate text based on your prompts.",
+    "task": "TASK_TEXT_GENERATION",
+    "model_definition": "model-definitions/github",
+    "configuration": {
+      "repository": "instill-ai/model-codellama-7b-dvc",
+      "tag": "f4-1gpu-transformer70b-ray-v0.9.0"
     }
   }
 ]
