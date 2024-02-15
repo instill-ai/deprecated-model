@@ -36,6 +36,7 @@ data:
         port: {{ template "core.otel.port" . }}
     mgmtbackend:
       host: {{ template "core.mgmtBackend" . }}
+      publicport: {{ template "core.mgmtBackend.publicPort" . }}
       privateport: {{ template "core.mgmtBackend.privatePort" . }}
       {{- if .Values.internalTLS.enabled }}
       https:

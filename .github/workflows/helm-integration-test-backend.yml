@@ -110,9 +110,9 @@ jobs:
             --set rayService.workerGroupSpecs[0].maxReplicas=1 \
             --set rayService.workerGroupSpecs[0].groupName=test-group \
             --set rayService.workerGroupSpecs[0].gpuWorkerGroup.enabled=false \
-            --set rayService.workerGroupSpecs[0].resources.limits.cpu=2 \
+            --set rayService.workerGroupSpecs[0].resources.limits.cpu=1 \
             --set rayService.workerGroupSpecs[0].resources.limits.memory=2Gi \
-            --set rayService.workerGroupSpecs[0].resources.requests.cpu=2 \
+            --set rayService.workerGroupSpecs[0].resources.requests.cpu=1 \
             --set rayService.workerGroupSpecs[0].resources.requests.memory=2Gi \
             --set tags.observability=false
 
@@ -244,9 +244,9 @@ jobs:
             --set rayService.workerGroupSpecs[0].maxReplicas=1 \
             --set rayService.workerGroupSpecs[0].groupName=test-group \
             --set rayService.workerGroupSpecs[0].gpuWorkerGroup.enabled=false \
-            --set rayService.workerGroupSpecs[0].resources.limits.cpu=2 \
+            --set rayService.workerGroupSpecs[0].resources.limits.cpu=1 \
             --set rayService.workerGroupSpecs[0].resources.limits.memory=2Gi \
-            --set rayService.workerGroupSpecs[0].resources.requests.cpu=2 \
+            --set rayService.workerGroupSpecs[0].resources.requests.cpu=1 \
             --set rayService.workerGroupSpecs[0].resources.requests.memory=2Gi \
             --set tags.observability=false
 
@@ -369,9 +369,9 @@ jobs:
             --set rayService.workerGroupSpecs[0].maxReplicas=1 \
             --set rayService.workerGroupSpecs[0].groupName=test-group \
             --set rayService.workerGroupSpecs[0].gpuWorkerGroup.enabled=false \
-            --set rayService.workerGroupSpecs[0].resources.limits.cpu=2 \
+            --set rayService.workerGroupSpecs[0].resources.limits.cpu=1 \
             --set rayService.workerGroupSpecs[0].resources.limits.memory=2Gi \
-            --set rayService.workerGroupSpecs[0].resources.requests.cpu=2 \
+            --set rayService.workerGroupSpecs[0].resources.requests.cpu=1 \
             --set rayService.workerGroupSpecs[0].resources.requests.memory=2Gi \
             --set tags.observability=false
 
@@ -509,9 +509,9 @@ jobs:
             --set rayService.workerGroupSpecs[0].maxReplicas=1 \
             --set rayService.workerGroupSpecs[0].groupName=test-group \
             --set rayService.workerGroupSpecs[0].gpuWorkerGroup.enabled=false \
-            --set rayService.workerGroupSpecs[0].resources.limits.cpu=2 \
+            --set rayService.workerGroupSpecs[0].resources.limits.cpu=1 \
             --set rayService.workerGroupSpecs[0].resources.limits.memory=2Gi \
-            --set rayService.workerGroupSpecs[0].resources.requests.cpu=2 \
+            --set rayService.workerGroupSpecs[0].resources.requests.cpu=1 \
             --set rayService.workerGroupSpecs[0].resources.requests.memory=2Gi \
             --set tags.observability=false
 
