@@ -44,7 +44,7 @@ jobs:
           swap-storage: true
 
       - name: Start Minikube
-        run: minikube start --cpus 2 --memory 7G
+        run: minikube start --cpus 4 --memory 12G
 
       - name: Checkout repo (core)
         uses: actions/checkout@v4
@@ -299,7 +299,7 @@ jobs:
           swap-storage: true
 
       - name: Start Minikube
-        run: minikube start --cpus 2 --memory 6096
+        run: minikube start --cpus 4 --memory 12G
 
       - name: Checkout repo (core)
         uses: actions/checkout@v4

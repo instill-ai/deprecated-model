@@ -105,7 +105,7 @@ modelBackend:
   # -- The image of model-backend
   image:
     repository: instill/model-backend
-    tag: 0.21.3-alpha
+    tag: 0.22.0-alpha
     pullPolicy: IfNotPresent
   # -- Annotation for deployment
   annotations: {}
@@ -195,7 +195,7 @@ controllerModel:
   # -- The image of controller
   image:
     repository: instill/controller-model
-    tag: 0.3.1-alpha
+    tag: 0.4.0-alpha
     pullPolicy: IfNotPresent
   # -- The command names to be executed
   commandName:
@@ -266,7 +266,7 @@ rayService:
   image:
     repository: instill/ray
     version: "2.9.0"
-    tag: 0.2.4-alpha-cpu
+    tag: 0.2.5-alpha-cpu
   headGroupSpec:
     resources:
       limits:
@@ -339,7 +339,7 @@ temporal:
     # -- The image of Temporal admin-tools
     image:
       repository: temporalio/admin-tools
-      tag: 1.19.1
+      tag: 1.22.3
       pullPolicy: IfNotPresent
     # -- Set the service account to be used, default if left empty
     serviceAccountName: ""
