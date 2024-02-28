@@ -8,38 +8,24 @@ export
 
 # NVIDIA_GPU_AVAILABLE:
 # 	The env variable NVIDIA_GPU_AVAILABLE is set to true if NVIDIA GPU is available. Otherwise, it will be set to false.
-# RAY_PLATFORM:
-# 	By default, the env variable RAY_PLATFORM is set to cpu, if NVIDIA GPU is available, it will be set to gpu.
-# 	Specify the env variable RAY_PLATFORM to override the default value.
 # NVIDIA_VISIBLE_DEVICES:
 # 	By default, the env variable NVIDIA_VISIBLE_DEVICES is set to all if NVIDIA GPU is available. Otherwise, it is unset.
 #	Specify the env variable NVIDIA_VISIBLE_DEVICES to override the default value.
-RAY_PLATFORM := ${RAY_PLATFORM}
 NVIDIA_VISIBLE_DEVICES := ${NVIDIA_VISIBLE_DEVICES}
 ifeq ($(shell nvidia-smi 2>/dev/null 1>&2; echo $$?),0)
 	NVIDIA_GPU_AVAILABLE := true
-	ifndef RAY_PLATFORM
-		RAY_PLATFORM := gpu
-	endif
 	ifndef NVIDIA_VISIBLE_DEVICES
 		NVIDIA_VISIBLE_DEVICES := all
 	endif
+	RAY_LATEST_TAG := latest-gpu
+	RAY_RELEASE_TAG := ${RAY_SERVER_VERSION}-gpu
 else
 	NVIDIA_GPU_AVAILABLE := false
-	RAY_PLATFORM := cpu
+	RAY_LATEST_TAG := latest
+	RAY_RELEASE_TAG := ${RAY_SERVER_VERSION}
 endif
 
 UNAME_S := $(shell uname -s)
-
-ifeq ($(shell uname -p),arm)
-	RAY_PLATFORM := arm
-else ifeq ($(shell uname -m),aarch64)
-	RAY_PLATFORM := arm
-else ifeq ($(shell uname -m),arm64)
-	RAY_PLATFORM := arm
-else ifeq ($(shell uname -s),Darwin)
-	RAY_PLATFORM := arm
-endif
 
 INSTILL_MODEL_VERSION := $(shell git tag --sort=committerdate | grep -E '[0-9]' | tail -1 | cut -b 2-)
 
@@ -87,9 +73,9 @@ all:			## Launch all services with their up-to-date release version
 ifeq (${NVIDIA_GPU_AVAILABLE}, true)
 	@docker inspect --type=image instill/ray:${RAY_SERVER_VERSION} >/dev/null 2>&1 || printf "\033[1;33mINFO:\033[0m This may take a while due to the enormous size of the Ray server image, but the image pulling process should be just a one-time effort.\n" && sleep 5
 	@cat docker-compose.nvidia.yml | yq '.services.ray_server.deploy.resources.reservations.devices[0].device_ids |= (strenv(NVIDIA_VISIBLE_DEVICES) | split(",")) | ..style="double"' | \
-		EDITION=$${EDITION:=local-ce} docker compose -f docker-compose.yml -f - up -d --quiet-pull
+		EDITION=$${EDITION:=local-ce} RAY_RELEASE_TAG=${RAY_RELEASE_TAG} docker compose -f docker-compose.yml -f - up -d --quiet-pull
 else
-	@EDITION=$${EDITION:=local-ce} docker compose -f docker-compose.yml up -d --quiet-pull
+	@EDITION=$${EDITION:=local-ce} RAY_RELEASE_TAG=${RAY_RELEASE_TAG} docker compose -f docker-compose.yml up -d --quiet-pull
 endif
 
 .PHONY: latest
@@ -114,9 +100,9 @@ latest:			## Lunch all dependent services with their latest codebase
 ifeq (${NVIDIA_GPU_AVAILABLE}, true)
 	@docker inspect --type=image instill/ray:${RAY_SERVER_VERSION} >/dev/null 2>&1 || printf "\033[1;33mINFO:\033[0m This may take a while due to the enormous size of the Ray server image, but the image pulling process should be just a one-time effort.\n" && sleep 5
 	@cat docker-compose.nvidia.yml | yq '.services.ray_server.deploy.resources.reservations.devices[0].device_ids |= (strenv(NVIDIA_VISIBLE_DEVICES) | split(",")) | ..style="double"' | \
-		COMPOSE_PROFILES=${PROFILE} EDITION=$${EDITION:=local-ce:latest} docker compose -f docker-compose.yml -f docker-compose.latest.yml -f - up -d --quiet-pull
+		COMPOSE_PROFILES=${PROFILE} EDITION=$${EDITION:=local-ce:latest} RAY_LATEST_TAG=${RAY_LATEST_TAG} docker compose -f docker-compose.yml -f docker-compose.latest.yml -f - up -d --quiet-pull
 else
-	@COMPOSE_PROFILES=${PROFILE} EDITION=$${EDITION:=local-ce:latest} docker compose -f docker-compose.yml -f docker-compose.latest.yml up -d --quiet-pull
+	@COMPOSE_PROFILES=${PROFILE} EDITION=$${EDITION:=local-ce:latest} RAY_LATEST_TAG=${RAY_LATEST_TAG} docker compose -f docker-compose.yml -f docker-compose.latest.yml up -d --quiet-pull
 endif
 
 .PHONY: logs
@@ -291,7 +277,7 @@ helm-integration-test-latest:                       ## Run integration test on t
 		--set edition=k8s-ce:test \
 		--set modelBackend.image.tag=latest \
 		--set controllerModel.image.tag=latest \
-		--set rayService.image.tag=latest-${RAY_PLATFORM} \
+		--set rayService.image.tag=${RAY_LATEST_TAG} \
 		--set tags.observability=false
 	@kubectl rollout status deployment model-model-backend --namespace instill-ai --timeout=360s
 	@kubectl rollout status deployment model-controller-model --namespace instill-ai --timeout=360s
@@ -346,7 +332,7 @@ helm-integration-test-release:                       ## Run integration test on 
 		--set edition=k8s-ce:test \
 		--set modelBackend.image.tag=${MODEL_BACKEND_VERSION} \
 		--set controllerModel.image.tag=${CONTROLLER_MODEL_VERSION} \
-		--set rayService.image.tag=${RAY_SERVER_VERSION}-${RAY_PLATFORM} \
+		--set rayService.image.tag=${RAY_RELEASE_TAG} \
 		--set tags.observability=false
 	@kubectl rollout status deployment model-model-backend --namespace instill-ai --timeout=360s
 	@kubectl rollout status deployment model-controller-model --namespace instill-ai --timeout=360s

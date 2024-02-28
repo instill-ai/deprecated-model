@@ -90,11 +90,11 @@ jobs:
         run: |
           EDITION=local-ce:test \
           ITMODE_ENABLED=true \
-          RAY_PLATFORM=cpu \
+          RAY_LATEST_TAG=latest \
           COMPOSE_PROFILES=all \
           docker compose -f docker-compose.yml -f docker-compose.latest.yml up -d --quiet-pull
           EDITION=local-ce:test \
-          RAY_PLATFORM=cpu \
+          RAY_LATEST_TAG=latest \
           docker compose -f docker-compose.yml -f docker-compose.latest.yml rm -f
 
       - name: Run ${{ inputs.component }} integration test (latest)
@@ -184,11 +184,11 @@ jobs:
         run: |
           EDITION=local-ce:test \
           ITMODE_ENABLED=true \
-          RAY_PLATFORM=arm \
+          RAY_LATEST_TAG=latest \
           COMPOSE_PROFILES=all \
           docker compose -f docker-compose.yml -f docker-compose.latest.yml up -d --quiet-pull
           EDITION=local-ce:test \
-          RAY_PLATFORM=arm \
+          RAY_LATEST_TAG=latest \
           docker compose -f docker-compose.yml -f docker-compose.latest.yml rm -f
 
       - name: Run ${{ inputs.component }} integration test (latest)
@@ -305,10 +305,10 @@ jobs:
         run: |
           EDITION=local-ce:test \
           ITMODE_ENABLED=true \
-          RAY_PLATFORM=cpu \
+          RAY_RELEASE_TAG=${RAY_SERVER_VERSION} \
           docker compose up -d --quiet-pull
           EDITION=local-ce:test \
-          RAY_PLATFORM=cpu \
+          RAY_RELEASE_TAG=${RAY_SERVER_VERSION} \
           docker compose rm -f
 
       - name: Run ${{ inputs.component }} integration test (release)
@@ -398,10 +398,10 @@ jobs:
         run: |
           EDITION=local-ce:test \
           ITMODE_ENABLED=true \
-          RAY_PLATFORM=arm \
+          RAY_RELEASE_TAG=${RAY_SERVER_VERSION} \
           docker compose up -d --quiet-pull
           EDITION=local-ce:test \
-          RAY_PLATFORM=arm \
+          RAY_RELEASE_TAG=${RAY_SERVER_VERSION} \
           docker compose rm -f
 
       - name: Run ${{ inputs.component }} integration test (release)
