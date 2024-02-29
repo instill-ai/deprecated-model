@@ -265,7 +265,7 @@ rayService:
           memory: "512Mi"
   image:
     repository: instill/ray
-    version: "2.9.0"
+    version: "2.9.3"
     tag: 0.2.5-alpha-cpu
   headGroupSpec:
     resources:
