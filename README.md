@@ -31,7 +31,7 @@ Execute the following commands to pull pre-built images with all the dependencie
 
 <!-- x-release-please-start-version -->
 ```bash
-$ git clone -b v0.9.0-alpha https://github.com/instill-ai/deprecated-model.git && cd deprecated-model
+$ git clone -b v0.10.0-alpha https://github.com/instill-ai/deprecated-model.git && cd deprecated-model
 
 # Launch all services
 $ make all
