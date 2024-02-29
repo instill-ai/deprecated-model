@@ -77,7 +77,7 @@ jobs:
           source .env
           yq ".modelBackend.image.tag=\"$MODEL_BACKEND_VERSION\"" -i charts/model/values.yaml
           yq ".controllerModel.image.tag=\"$CONTROLLER_MODEL_VERSION\"" -i charts/model/values.yaml
-          yq ".rayService.image.tag=\"$RAY_SERVER_VERSION-cpu\"" -i charts/model/values.yaml
+          yq ".rayService.image.tag=\"$RAY_SERVER_VERSION\"" -i charts/model/values.yaml
           yq ".temporal.admintools.image.tag=\"$TEMPORAL_ADMIN_TOOLS_VERSION\"" -i charts/model/values.yaml
       - name: Get current chart version
         id: get-current-chart-version
