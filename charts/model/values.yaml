@@ -105,7 +105,7 @@ modelBackend:
   # -- The image of model-backend
   image:
     repository: instill/model-backend
-    tag: 0.22.0-alpha
+    tag: 0.23.0-alpha
     pullPolicy: IfNotPresent
   # -- Annotation for deployment
   annotations: {}
@@ -266,7 +266,7 @@ rayService:
   image:
     repository: instill/ray
     version: "2.9.3"
-    tag: 0.2.5-alpha-cpu
+    tag: 0.3.0-alpha
   headGroupSpec:
     resources:
       limits:

@@ -2,8 +2,8 @@ apiVersion: v2
 name: model
 description: The Helm chart of Instill Model
 type: application
-version: 0.1.15-alpha #! auto-updated by the CI workflow
-appVersion: 0.9.0-alpha #! auto-updated by the CI workflow
+version: 0.1.16-alpha #! auto-updated by the CI workflow
+appVersion: 0.10.0-alpha #! auto-updated by the CI workflow
 keywords:
   - unstructured data
   - pipeline
